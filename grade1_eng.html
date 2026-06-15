@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Simon Says Learning Arena</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #0f172a;
+      overflow: hidden;
+      /* ป้องกันการกระเด้งของหน้าระหว่างรูดนิ้วมือบน iOS */
+      position: fixed; 
+    }
+    .iframe-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 412px;
+      max-height: 846px;
+      aspect-ratio: 9 / 16;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+    @media (max-width: 480px) {
+      .iframe-wrapper {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0px;
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col justify-center items-center h-screen w-screen p-0 sm:p-4">
+
+  <div class="iframe-wrapper bg-slate-900">
+    <iframe 
+      src="ใส่_URL_WEB_APP_ของ_GAS_ตรงนี้" 
+      class="w-full h-full border-0"
+      allow="microphone; autoplay;"
+      scrolling="no">
+    </iframe>
+  </div>
+
+  <div class="mt-3 z-50 text-center px-4">
+    <a href="https://script.google.com/macros/s/AKfycbxKgC11bpG_eHtFKnUQmg__-4Srt6hucgjZ1qdtM7kaz2c_1aKKK_ipuH2v9eCGYmSYxA/exec" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-full border border-slate-700 transition active:scale-95 inline-flex items-center gap-1.5">
+      🚀 Microphone Blocked? Click here to Launch Direct Game
+    </a>
+  </div>
+
+</body>
+</html>
