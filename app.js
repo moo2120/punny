@@ -50,11 +50,25 @@ function initApp() {
 function showWordCard(index) {
   const item = wordsData[index];
   
-  // อัปเดตรูปภาพ
+// อัปเดตรูปภาพ (ปรับปรุงระบบรองรับไฟล์สัมพันธ์)
   if (item.imageUrl) {
-    imgWord.src = item.imageUrl;
+    let finalImgUrl = item.imageUrl.trim();
+    
+    // หากลิงก์ไม่ได้ขึ้นต้นด้วย http แสดงว่าเป็นไฟล์ในโปรเจกต์ (เช่น /apple.jpg หรือ apple.jpg)
+    if (!finalImgUrl.startsWith("http")) {
+      // ลบเครื่องหมาย / ด้านหน้าออกก่อนหากมี เพื่อไม่ให้ชนกันตอนต่อลิงก์
+      const cleanPath = finalImgUrl.startsWith("/") ? finalImgUrl.slice(1) : finalImgUrl;
+      // ต่อลิงก์เข้ากับโดเมนปัจจุบันของเว็บเราอัตโนมัติ
+      finalImgUrl = window.location.origin + "/" + cleanPath;
+    }
+    
+    imgWord.src = finalImgUrl;
     imgWord.classList.remove("hidden");
     placeholderImg.classList.add("hidden");
+  } else {
+    imgWord.classList.add("hidden");
+    placeholderImg.textContent = "ไม่มีรูปภาพประกอบ";
+    placeholderImg.classList.remove("hidden");
   } else {
     imgWord.classList.add("hidden");
     placeholderImg.textContent = "ไม่มีรูปภาพประกอบ";
