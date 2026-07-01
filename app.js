@@ -1,5 +1,5 @@
 // ใส่ลิงก์ Web App URL ที่คัดลอกมาจากขั้นตอนที่ 1.2
-const GOOGLE_SHEETS_API_URL = "ใส่ลิงก์_Web_App_URL_ของคุณตรงนี้";
+const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbxOda7H_Ucihf2Yy5w5Ui8Ys0RAInww4a51NXN1U8TaQ8HUJ-LcsbCts0Hq12mhsL9O/exec";
 
 let wordsData = [];
 let currentIndex = 0;
