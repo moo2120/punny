@@ -1,35 +1,36 @@
-// ตรวจสอบ Browser Prefix ของ Web Speech API
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+// ⚠️ วางลิงก์ดาวน์โหลด CSV ของ Google Sheet ที่คุณเตรียมไว้ตรงนี้
+const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1hRiqV447IXq2spKWuF2nljHGG8mE-4y2Po-7UraVTGc/export?format=csv";
+
 let recognition;
-let sentences = [];
+let allSentences = [];       
+let filteredSentences = [];  
 let currentIdx = 0;
 let isRecording = false;
 
-// เริ่มต้นโหลดเมื่อเปิดหน้าเว็บ
 window.onload = async () => {
     initSpeechRecognition();
     await fetchSentences();
     renderHistoryTable();
 };
 
-// 1. ตรวจสอบการรองรับและตั้งค่า Web Speech API
+// 1. ตั้งค่าการดักจับเสียง
 function initSpeechRecognition() {
     const statusMsg = document.getElementById("status-message");
     const btnMic = document.getElementById("btn-mic");
 
     if (!SpeechRecognition) {
-        statusMsg.innerText = "Error: Web Speech API is not supported in this browser. Please use Chrome, Safari, or Edge.";
+        statusMsg.innerText = "Error: Web Speech API is not supported in this browser.";
         btnMic.disabled = true;
         return;
     }
 
     recognition = new SpeechRecognition();
-    recognition.lang = 'en-US'; // กำหนดให้ฟังภาษาอังกฤษสำเนียงอเมริกา
-    recognition.interimResults = false; // รับเฉพาะผลลัพธ์สุดท้ายที่ประมวลผลเสร็จแล้ว
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    // เหตุการณ์เมื่อเริ่มฟังเสียง
     recognition.onstart = () => {
         isRecording = true;
         btnMic.innerText = "🔴 Listening... Speak Now";
@@ -37,26 +38,25 @@ function initSpeechRecognition() {
         document.getElementById("status-message").innerText = "Listening to your voice...";
     };
 
-    // เหตุการณ์เมื่อประมวลผลเสียงพูดเสร็จ
     recognition.onresult = (event) => {
         const spokenText = event.results[0][0].transcript;
         evaluatePronunciation(spokenText);
     };
 
-    // เหตุการณ์เมื่อเกิดข้อผิดพลาด
     recognition.onerror = (event) => {
         const statusMsg = document.getElementById("status-message");
         if (event.error === 'not-allowed') {
             statusMsg.innerText = "Error: Microphone permission denied.";
         } else if (event.error === 'no-speech') {
-            statusMsg.innerText = "Error: No speech detected. Try again.";
+            statusMsg.innerText = "Error: No speech detected. Please try again.";
+        } else if (event.error === 'network') {
+            statusMsg.innerText = "Error: Network error. Web Speech API requires internet. (Avoid Brave Browser)";
         } else {
-            statusMsg.innerText = `Error detected: ${event.error}`;
+            statusMsg.innerText = `Error: ${event.error}`;
         }
         resetMicButton();
     };
 
-    // เหตุการณ์เมื่อหยุดทำงาน
     recognition.onend = () => {
         resetMicButton();
     };
@@ -69,105 +69,210 @@ function resetMicButton() {
     btnMic.className = "btn-success";
 }
 
-// 2. ดึงข้อมูลจากไฟล์ sentences.csv
+// ฟังก์ชันแกะรหัสแถวของ CSV อย่างปลอดภัย (รองรับกรณีมีเครื่องหมายคอมมาในประโยค)
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+            inQuotes = !inQuotes; // สลับสถานะเปิด/ปิดเครื่องหมายคำพูด
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current.trim());
+    return result;
+}
+
+// 2. ดึงข้อมูลจาก Google Sheets (อ่านแทนไฟล์ sentences.csv ท้องถิ่น)
 async function fetchSentences() {
     try {
-        const response = await fetch('sentences.csv');
-        if (!response.ok) throw new Error("Failed to fetch sentences.csv");
+        const response = await fetch(GOOGLE_SHEET_CSV_URL);
+        if (!response.ok) throw new Error("Failed to fetch Google Sheets database.");
         const data = await response.text();
         
-        // แยกบรรทัดและแปลงข้อมูล CSV เป็น Array ของ Object
-        const lines = data.split('\n').filter(line => line.trim() !== '');
-        const headers = lines[0].split(',');
+        // แยกบรรทัด (รองรับทั้งระบบ Windows \r\n และ Unix \n)
+        const lines = data.split(/\r?\n/).filter(line => line.trim() !== '');
         
-        sentences = lines.slice(1).map(line => {
-            const values = line.split(',');
+        allSentences = lines.slice(1).map(line => {
+            const values = parseCSVLine(line);
             return {
-                id: values[0],
-                text: values[1],
-                difficulty: values[2]
+                id: values[0] ? values[0].replace(/"/g, "") : "",
+                mode: values[1] ? values[1].replace(/"/g, "") : "",
+                text1: values[2] ? values[2].replace(/"/g, "") : "",
+                text2: values[3] ? values[3].replace(/"/g, "") : "",
+                text3: values[4] ? values[4].replace(/"/g, "") : "",
+                difficulty: values[5] ? values[5].replace(/"/g, "") : "",
+                image_url: values[6] ? values[6].replace(/"/g, "").trim() : ""
             };
         });
 
-        if (sentences.length > 0) {
-            displaySentence();
-        }
+        applyFilters();
     } catch (err) {
-        document.getElementById("target-sentence").innerText = "Failed to load sentences. Make sure files are on a server.";
+        document.getElementById("target-sentence").innerText = "Error: Unable to connect to Google Sheets database.";
         console.error(err);
     }
 }
 
-function displaySentence() {
-    if (sentences.length === 0) return;
-    const item = sentences[currentIdx];
-    document.getElementById("target-sentence").innerText = item.text;
-    document.getElementById("difficulty-badge").innerText = item.difficulty;
+// 3. กรองข้อมูลตามที่ผู้ใช้เลือกโหมดและระดับความยาก
+function applyFilters() {
+    const selectedMode = document.getElementById("filter-mode").value;
+    const selectedDiff = document.getElementById("filter-difficulty").value;
+
+    filteredSentences = allSentences.filter(item => {
+        const matchMode = item.mode === selectedMode;
+        const matchDiff = (selectedDiff === "all") || (item.difficulty.toLowerCase() === selectedDiff.toLowerCase());
+        return matchMode && matchDiff;
+    });
+
+    currentIdx = 0;
+    displayCurrentItem();
+}
+
+// 4. แสดงผลตามโหมดการเล่น
+function displayCurrentItem() {
+    const targetDiv = document.getElementById("target-sentence");
+    const imgDisplay = document.getElementById("image-display");
+    const btnPlayAudio = document.getElementById("btn-play-audio");
+    const diffBadge = document.getElementById("difficulty-badge");
+    const btnMic = document.getElementById("btn-mic");
+
     document.getElementById("comparison-result").innerHTML = "";
     document.getElementById("score-text").innerText = "";
-    document.getElementById("status-message").innerText = "Click 'Start Practice' to begin.";
+    document.getElementById("status-message").innerText = "Ready. Click 'Start Practice' to begin.";
+
+    if (filteredSentences.length === 0) {
+        targetDiv.innerText = "No sentences found for this selection.";
+        diffBadge.innerText = "-";
+        imgDisplay.style.display = "none";
+        btnPlayAudio.style.display = "none";
+        btnMic.disabled = true;
+        return;
+    }
+
+    btnMic.disabled = false;
+    const item = filteredSentences[currentIdx];
+    diffBadge.innerText = item.difficulty.toUpperCase();
+
+    if (item.mode === "read") {
+        imgDisplay.style.display = "none";
+        btnPlayAudio.style.display = "none";
+        targetDiv.innerText = item.text1;
+        targetDiv.style.filter = "none";
+    } 
+    else if (item.mode === "listen") {
+        imgDisplay.style.display = "none";
+        btnPlayAudio.style.display = "inline-block";
+        targetDiv.innerText = "🔊 Listen to the audio and repeat.";
+        targetDiv.style.filter = "blur(4px)"; 
+    } 
+    else if (item.mode === "image") {
+        btnPlayAudio.style.display = "none";
+        if (item.image_url) {
+            imgDisplay.src = item.image_url;
+            imgDisplay.style.display = "block";
+        } else {
+            imgDisplay.style.display = "none";
+        }
+        targetDiv.innerText = "Look at the image and say what it is.";
+        targetDiv.style.filter = "none";
+    }
+}
+
+// 5. โหมดฟังแล้วพูด: สังเคราะห์เสียงพูดให้ผู้เรียนฟัง
+function playTargetAudio() {
+    if (filteredSentences.length === 0) return;
+    const item = filteredSentences[currentIdx];
+    
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(item.text1);
+    utterance.lang = 'en-US';
+    window.speechSynthesis.speak(utterance);
 }
 
 function loadNextSentence() {
-    currentIdx = (currentIdx + 1) % sentences.length;
-    displaySentence();
+    if (filteredSentences.length === 0) return;
+    currentIdx = (currentIdx + 1) % filteredSentences.length;
+    displayCurrentItem();
 }
 
-// 3. เริ่มต้น/หยุด อัดเสียงผ่านปุ่มกด (User-gesture ทริกเกอร์ตามเงื่อนไข Safari)
 function toggleRecording() {
-    if (!recognition) return;
+    if (!recognition || filteredSentences.length === 0) return;
     if (isRecording) {
         recognition.stop();
     } else {
-        // ขอสิทธิ์แบบ User-Initiated Event ซึ่งปลอดภัยต่อระบบป้องกันบน iOS/Safari
         recognition.start();
     }
 }
 
-// 4. ระบบเปรียบเทียบคำพูดและการคำนวณคะแนน
+// 6. วิเคราะห์เปรียบเทียบประเมินการพูด (รองรับสูงสุด 3 ตัวเลือกเฉลย)
 function evaluatePronunciation(spokenText) {
-    const targetText = sentences[currentIdx].text;
+    const item = filteredSentences[currentIdx];
     
-    // คลีนตัวอักษรพิเศษและเปลี่ยนเป็นตัวเล็กทั้งหมด
+    const targets = [item.text1, item.text2, item.text3].filter(t => t && t.trim() !== "");
+    
+    let bestScore = -1;
+    let bestResultHTML = "";
+    let bestMatchedTarget = "";
+
     const clean = str => str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "").trim();
-    
-    const targetWords = clean(targetText).split(/\s+/);
     const spokenWords = clean(spokenText).split(/\s+/);
-    
-    let correctCount = 0;
-    
-    // สร้างผลลัพธ์ HTML แสดงความถูกต้องรายคำ
-    const comparisonHTML = targetWords.map((word, idx) => {
-        // หากคำที่พูดในลำดับนั้นตรงกัน หรือออกเสียงใกล้เคียง
-        if (spokenWords[idx] === word) {
-            correctCount++;
-            return `<span class="word-correct">${word}</span>`;
-        } else {
-            return `<span class="word-incorrect">${word}</span>`;
+
+    targets.forEach(target => {
+        const targetWords = clean(target).split(/\s+/);
+        let correctCount = 0;
+        
+        const comparisonHTML = targetWords.map((word, idx) => {
+            if (spokenWords[idx] === word) {
+                correctCount++;
+                return `<span class="word-correct">${word}</span>`;
+            } else {
+                return `<span class="word-incorrect">${word}</span>`;
+            }
+        });
+        
+        const score = Math.round((correctCount / targetWords.length) * 100);
+        
+        if (score > bestScore) {
+            bestScore = score;
+            bestResultHTML = comparisonHTML.join(" ");
+            bestMatchedTarget = target;
         }
     });
 
-    // คำนวณคะแนนเป็นเปอร์เซ็นต์
-    const score = Math.round((correctCount / targetWords.length) * 100);
+    const targetDiv = document.getElementById("target-sentence");
+    targetDiv.style.filter = "none"; 
     
-    document.getElementById("comparison-result").innerHTML = comparisonHTML.join(" ");
-    document.getElementById("status-message").innerText = `You said: "${spokenText}"`;
-    document.getElementById("score-text").innerText = `Score: ${score}%`;
+    if (item.mode === "listen") {
+        targetDiv.innerHTML = `<strong>Answer:</strong> ${item.text1}`;
+    } else if (item.mode === "image") {
+        targetDiv.innerHTML = `<strong>Target Options:</strong> ${targets.join(" / ")}`;
+    }
 
-    // บันทึกลง LocalStorage
-    saveToHistory(targetText, spokenText, score);
+    document.getElementById("comparison-result").innerHTML = bestResultHTML;
+    document.getElementById("status-message").innerText = `You said: "${spokenText}"`;
+    document.getElementById("score-text").innerText = `Score: ${bestScore}%`;
+
+    saveToHistory(item.mode, bestMatchedTarget, spokenText, bestScore);
 }
 
-// 5. จัดการระบบเก็บข้อมูล Local Storage
-function saveToHistory(sentence, spoken, score) {
+// 7. จัดการตารางแสดงผลประวัติ
+function saveToHistory(mode, target, spoken, score) {
     const history = JSON.parse(localStorage.getItem("practice_history") || "[]");
     const newRecord = {
         timestamp: new Date().toLocaleString(),
-        sentence: sentence,
+        mode: mode.toUpperCase(),
+        target: target,
         spoken: spoken,
         score: score
     };
-    history.unshift(newRecord); // นำประวัติใหม่ไว้ด้านบนสุด
+    history.unshift(newRecord);
     localStorage.setItem("practice_history", JSON.stringify(history));
     renderHistoryTable();
 }
@@ -178,13 +283,14 @@ function renderHistoryTable() {
     tbody.innerHTML = history.slice(0, 5).map(row => `
         <tr>
             <td>${row.timestamp}</td>
-            <td>${row.sentence}</td>
+            <td><span style="font-weight:bold; color:var(--primary);">${row.mode}</span></td>
+            <td><strong>Target:</strong> ${row.target}<br><small style="color:#7f8c8d;">You: ${row.spoken}</small></td>
             <td><strong>${row.score}%</strong></td>
         </tr>
     `).join("");
 }
 
-// 6. ส่งออกข้อมูล (Export) เป็นไฟล์ CSV ให้ผู้ใช้ดาวน์โหลด
+// 8. ส่งออกไฟล์ CSV
 function exportHistoryToCSV() {
     const history = JSON.parse(localStorage.getItem("practice_history") || "[]");
     if (history.length === 0) {
@@ -192,19 +298,17 @@ function exportHistoryToCSV() {
         return;
     }
 
-    // กำหนดหัวตารางของ CSV
-    let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // ใส่ BOM ป้องกันปัญหากับอักษรภาษาไทย/ภาษาอื่น
-    csvContent += "Timestamp,Target Sentence,Spoken Text,Score\n";
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+    csvContent += "Timestamp,Mode,Target Sentence,Spoken Text,Score\n";
 
     history.forEach(row => {
-        // หุ้มข้อความด้วยเครื่องหมายอัญประกาศคู่เพื่อหลีกเลี่ยงผลกระทบจาก comma ในประโยค
-        csvContent += `"${row.timestamp}","${row.sentence}","${row.spoken}",${row.score}\n`;
+        csvContent += `"${row.timestamp}","${row.mode}","${row.target}","${row.spoken}",${row.score}\n`;
     });
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "pronunciation_practice_history.csv");
+    link.setAttribute("download", "pronunciation_trainer_history.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
