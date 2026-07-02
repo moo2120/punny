@@ -172,13 +172,6 @@
             transition: var(--transition);
         }
 
-        /* Blur target effect for Listen Mode */
-        .text-blurred {
-            filter: blur(6px);
-            user-select: none;
-            pointer-events: none;
-        }
-
         #image-container {
             max-width: 100%;
             margin-bottom: 15px;
@@ -336,6 +329,13 @@
             transition: var(--transition);
         }
 
+        button:disabled {
+            background-color: #D1D5DB !important;
+            color: #9CA3AF !important;
+            cursor: not-allowed;
+            box-shadow: none !important;
+        }
+
         .btn-block {
             width: 100%;
         }
@@ -348,7 +348,6 @@
 
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
-        .btn-primary:disabled { background: #D1D5DB; cursor: not-allowed; }
 
         .btn-secondary { background: #E5E7EB; color: #4B5563; font-weight: 600; padding: 10px 20px; font-size: 14px; }
         .btn-secondary:hover { background: #D1D5DB; }
@@ -557,7 +556,10 @@
     <div id="history-panel" class="history-section" style="display: none;">
         <div class="history-header">
             <h3>📈 Your Practice History</h3>
-            <button class="btn-secondary btn-sm" onclick="exportHistoryToCSV()">📤 Export CSV</button>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn-secondary btn-sm" onclick="exportHistoryToCSV()">📤 Export CSV</button>
+                <button class="btn-danger btn-sm" onclick="clearPracticeHistory()">🗑️ Clear History</button>
+            </div>
         </div>
         <div class="table-responsive">
             <table>
