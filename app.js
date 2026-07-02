@@ -176,8 +176,13 @@ function displayCurrentItem() {
     const imgDisplay = document.getElementById("image-display");
     const audioContainer = document.getElementById("audio-container");
     const diffBadge = document.getElementById("difficulty-badge");
+    
     const btnMic = document.getElementById("btn-mic");
+    const btnSubmitType = document.getElementById("btn-submit-type");
     const btnRetry = document.getElementById("btn-retry");
+    
+    const typeContainer = document.getElementById("type-container");
+    const typeInput = document.getElementById("type-input");
 
     document.getElementById("comparison-result").innerHTML = "";
     document.getElementById("score-text").innerText = "";
@@ -189,8 +194,12 @@ function displayCurrentItem() {
     bestAttemptHTML = "";
     bestAttemptSpoken = "";
     
+    // Default speaking mode layout configurations
+    btnMic.style.display = "inline-flex";
     btnMic.disabled = false;
-    btnRetry.style.display = "none"; // Hide retry button at the start of a challenge
+    btnSubmitType.style.display = "none";
+    btnRetry.style.display = "none"; 
+    typeContainer.style.display = "none";
 
     const curNumSpan = document.getElementById("current-question-num");
     const totalNumSpan = document.getElementById("total-questions-num");
@@ -223,7 +232,6 @@ function displayCurrentItem() {
     else if (item.mode === "listen") {
         imgContainer.style.display = "none";
         audioContainer.style.display = "block";
-        // Prompt instructs users to listen and repeat, fully hiding any text previews
         targetDiv.innerText = "🎧 Tap the button below to listen, then repeat!";
     } 
     else if (item.mode === "image") {
@@ -235,6 +243,39 @@ function displayCurrentItem() {
             imgContainer.style.display = "none";
         }
         targetDiv.innerText = "Look at the image and say what it is.";
+    }
+    // New Mode: Listen and Type
+    else if (item.mode === "listen_type") {
+        imgContainer.style.display = "none";
+        audioContainer.style.display = "block";
+        targetDiv.innerText = "🎧 Listen to the audio and type what you hear!";
+        
+        // Show typing elements
+        typeContainer.style.display = "block";
+        typeInput.disabled = false;
+        typeInput.value = "";
+        btnSubmitType.style.display = "inline-flex";
+        btnSubmitType.disabled = false;
+        btnMic.style.display = "none";
+    }
+    // New Mode: Look and Type
+    else if (item.mode === "image_type") {
+        audioContainer.style.display = "none";
+        if (item.image_url) {
+            imgDisplay.src = item.image_url;
+            imgContainer.style.display = "block";
+        } else {
+            imgContainer.style.display = "none";
+        }
+        targetDiv.innerText = "Look at the image and type what it is.";
+        
+        // Show typing elements
+        typeContainer.style.display = "block";
+        typeInput.disabled = false;
+        typeInput.value = "";
+        btnSubmitType.style.display = "inline-flex";
+        btnSubmitType.disabled = false;
+        btnMic.style.display = "none";
     }
 }
 
@@ -310,7 +351,7 @@ function loadNextSentence() {
     displayCurrentItem();
 }
 
-// New: Allows users to retry/re-practice the current challenge at any time
+// Allows users to retry/re-practice the current challenge at any time
 function retryCurrentSentence() {
     if (filteredSentences.length === 0) return;
     displayCurrentItem();
@@ -325,7 +366,98 @@ function toggleRecording() {
     }
 }
 
-// 8. Pronunciation Speech Assessment logic with dynamic mode evaluation
+// Support keydown enter for typing answer checking
+function handleTypeEnter(event) {
+    if (event.key === "Enter") {
+        evaluateTyping();
+    }
+}
+
+// ================== Helper Functions for Robust Text Comparison ==================
+// Converts to lowercase, removes punctuation, normalizes duplicate spaces to single spaces, and trims
+const cleanText = str => {
+    if (!str) return "";
+    return str
+        .toLowerCase()
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+};
+
+// Splits cleaned text into an array of normalized words
+const getWordsArray = str => {
+    const cleaned = cleanText(str);
+    return cleaned ? cleaned.split(" ") : [];
+};
+
+// 8. Evaluates Textual Input for Typing Modes (Listen and Type / Look and Type)
+function evaluateTyping() {
+    const item = filteredSentences[currentIdx];
+    const typedText = document.getElementById("type-input").value;
+    
+    if (!typedText || !typedText.trim()) {
+        alert("Please type your answer first! ⌨️");
+        return;
+    }
+
+    const targets = [item.text1, item.text2, item.text3].filter(t => t && t.trim() !== "");
+    let bestScore = -1;
+    let bestResultHTML = "";
+    let bestMatchedTarget = "";
+
+    const typedWords = getWordsArray(typedText);
+
+    targets.forEach(target => {
+        const targetWords = getWordsArray(target);
+        let correctCount = 0;
+        
+        const comparisonHTML = targetWords.map((word, idx) => {
+            if (typedWords[idx] === word) {
+                correctCount++;
+                return `<span class="word-correct">${word}</span>`;
+            } else {
+                return `<span class="word-incorrect">${word}</span>`;
+            }
+        });
+        
+        const score = Math.round((correctCount / targetWords.length) * 100);
+        
+        if (score > bestScore) {
+            bestScore = score;
+            bestResultHTML = comparisonHTML.join(" ");
+            bestMatchedTarget = target;
+        }
+    });
+
+    const targetDiv = document.getElementById("target-sentence");
+    const comparisonDiv = document.getElementById("comparison-result");
+    const statusMsg = document.getElementById("status-message");
+    const scoreText = document.getElementById("score-text");
+    
+    const btnSubmit = document.getElementById("btn-submit-type");
+    const btnRetry = document.getElementById("btn-retry");
+    const typeInput = document.getElementById("type-input");
+
+    // Reveal Targets
+    if (item.mode === "listen_type") {
+        targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
+    } else if (item.mode === "image_type") {
+        targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
+    }
+
+    comparisonDiv.innerHTML = bestResultHTML;
+    statusMsg.innerText = `You typed: "${typedText.trim()}"`;
+    scoreText.innerText = `Score: ${bestScore}%`;
+
+    // Lock typing fields and activate practice again button
+    typeInput.disabled = true;
+    btnSubmit.style.display = "none";
+    btnRetry.style.display = "inline-flex";
+
+    saveToHistory(item.mode, bestMatchedTarget, typedText.trim(), bestScore);
+}
+
+// 9. Pronunciation Speech Assessment logic with dynamic mode evaluation (Speak Modes)
 function evaluatePronunciation(spokenText) {
     const item = filteredSentences[currentIdx];
     const targets = [item.text1, item.text2, item.text3].filter(t => t && t.trim() !== "");
@@ -334,11 +466,10 @@ function evaluatePronunciation(spokenText) {
     let currentBestHTML = "";
     let currentBestMatchedTarget = "";
 
-    const clean = str => str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "").trim();
-    const spokenWords = clean(spokenText).split(/\s+/);
+    const spokenWords = getWordsArray(spokenText);
 
     targets.forEach(target => {
-        const targetWords = clean(target).split(/\s+/);
+        const targetWords = getWordsArray(target);
         let correctCount = 0;
         
         const comparisonHTML = targetWords.map((word, idx) => {
@@ -366,7 +497,7 @@ function evaluatePronunciation(spokenText) {
     const btnMic = document.getElementById("btn-mic");
     const btnRetry = document.getElementById("btn-retry");
 
-    // ================== Mode 1: Listen and Speak Mode (3-Attempt Logic) ==================
+    // ================== Mode A: Listen and Speak Mode (3-Attempt Logic) ==================
     if (item.mode === "listen") {
         attemptsCount++;
 
@@ -377,7 +508,7 @@ function evaluatePronunciation(spokenText) {
             bestAttemptSpoken = spokenText;
         }
 
-        // Case A: Perfect Pronunciation (100% Score) - Complete turn immediately
+        // Case I: Perfect Pronunciation (100% Score) - Complete turn immediately
         if (currentBestScore === 100) {
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
             comparisonDiv.innerHTML = currentBestHTML;
@@ -389,14 +520,14 @@ function evaluatePronunciation(spokenText) {
 
             saveToHistory(item.mode, currentBestMatchedTarget, spokenText, 100);
         }
-        // Case B: Under 100% and still have attempts left
+        // Case II: Under 100% and still have attempts left
         else if (attemptsCount < 3) {
             // Hide correct answer, show current attempt score and transcript
             comparisonDiv.innerHTML = `<span style="color:#6B7280; font-size:14px;">You said: "${spokenText}"</span>`;
             statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•)`;
             scoreText.innerText = `Attempt Score: ${currentBestScore}%`;
         }
-        // Case C: Under 100% and used up all 3 attempts
+        // Case III: Under 100% and used up all 3 attempts
         else {
             // Reveal the correct answers now that attempts are exhausted
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
@@ -412,7 +543,7 @@ function evaluatePronunciation(spokenText) {
             saveToHistory(item.mode, currentBestMatchedTarget, bestAttemptSpoken, bestAttemptScore);
         }
     }
-    // ================== Mode 2: Read/Look Mode (Immediate Evaluation Logic) ==================
+    // ================== Mode B: Read/Look Mode (Immediate Evaluation Logic) ==================
     else {
         // Reveal target texts / answers immediately on the first speak
         if (item.mode === "image") {
@@ -432,7 +563,7 @@ function evaluatePronunciation(spokenText) {
     }
 }
 
-// 9. Process Local Session History Logs
+// 10. Process Local Session History Logs
 function saveToHistory(mode, target, spoken, score) {
     const history = JSON.parse(localStorage.getItem("practice_history") || "[]");
     const newRecord = {
@@ -462,7 +593,7 @@ function renderHistoryTable() {
                 <td><span style="font-weight:700; color:var(--primary);">${row.mode}</span></td>
                 <td>
                     <div class="history-target">${row.target}</div>
-                    <div class="history-user">Speech: "${row.spoken || '...'}"</div>
+                    <div class="history-user">Answer: "${row.spoken || '...'}"</div>
                 </td>
                 <td><span class="score-pill ${scoreClass}">${row.score}%</span></td>
             </tr>
