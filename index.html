@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Pronunciation Trainer</title>
-    <!-- นำเข้า Google Fonts: Poppins (EN) และ Noto Sans Thai (TH) -->
+    <title>English Pronunciation Trainer 🌟</title>
+    <!-- Google Fonts: Poppins (Clean and Modern) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --primary: #4F46E5;       /* Indigo */
+            --primary: #4F46E5;       /* Modern Indigo */
             --primary-hover: #4338CA;
             --success: #10B981;       /* Emerald */
             --success-hover: #059669;
-            --danger: #EF4444;        /* Rose */
+            --danger: #EF4444;        /* Rose Alert */
             --danger-hover: #DC2626;
-            --dark: #1F2937;          /* Slate */
+            --dark: #1F2937;          /* Slate Dark */
             --light: #F9FAFB;
             --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
             --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -30,7 +30,7 @@
         }
 
         body {
-            font-family: 'Poppins', 'Noto Sans Thai', -apple-system, sans-serif;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #F3F4F6;
             color: var(--dark);
             min-height: 100vh;
@@ -52,7 +52,7 @@
             transition: var(--transition);
         }
 
-        /* ระบบแบ่งหน้า (Single-Page App Views) */
+        /* Screen Navigation (Single-Page App Layout) */
         .screen-section {
             display: none;
         }
@@ -81,7 +81,7 @@
             margin-bottom: 30px;
         }
 
-        /* ฟอร์มหน้าแรก (Setup Screen) */
+        /* Setup Screen Controls */
         .setup-card {
             background-color: var(--light);
             padding: 25px;
@@ -97,7 +97,7 @@
         }
 
         .filter-group label {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             margin-bottom: 8px;
             color: #4B5563;
@@ -122,7 +122,7 @@
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
         }
 
-        /* หน้าประเมินผลฝึกฝน (Trainer Screen) */
+        /* Practice / Training Screen */
         .trainer-header {
             display: flex;
             justify-content: space-between;
@@ -172,7 +172,7 @@
             transition: var(--transition);
         }
 
-        /* เอฟเฟกต์เบลอโหมดฟังแล้วพูด */
+        /* Blur target effect for Listen Mode */
         .text-blurred {
             filter: blur(6px);
             user-select: none;
@@ -194,7 +194,7 @@
             object-fit: contain;
         }
 
-        /* ปุ่มและตัวครอบโหมด Listen and Speak */
+        /* Listen and Speak Audio Controls */
         #audio-container {
             display: none;
             width: 100%;
@@ -203,7 +203,50 @@
         .audio-instruction {
             font-size: 13px;
             color: #6B7280;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
+        }
+
+        /* Voice Selection Controls inside Audio Card */
+        .voice-settings {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .setting-item label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #4B5563;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .setting-item select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1.5px solid #E5E7EB;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--dark);
+            background-color: white;
+            transition: var(--transition);
+            cursor: pointer;
         }
 
         .btn-audio-play {
@@ -228,7 +271,6 @@
             transform: translateY(-1px);
         }
 
-        /* เอฟเฟกต์คลื่นสัญญาณวิทยุกระจายขณะรอบรับการเล่น */
         .btn-audio-play::after {
             content: '';
             position: absolute;
@@ -248,7 +290,7 @@
             100% { transform: scale(1.15); opacity: 0; }
         }
 
-        /* ตัวแสดงคำและคะแนน */
+        /* Pronunciation feedback markers */
         .word-correct { color: var(--success); font-weight: 700; margin: 0 3px; border-bottom: 2px solid var(--success); }
         .word-incorrect { color: var(--danger); text-decoration: underline dashed; margin: 0 3px; }
 
@@ -278,7 +320,7 @@
             min-height: 48px;
         }
 
-        /* ปุ่มหลักด้านล่าง */
+        /* Action Buttons */
         .btn-group {
             display: flex;
             gap: 15px;
@@ -318,7 +360,7 @@
         .btn-danger { background: var(--danger); color: white; }
         .btn-danger:hover { background: var(--danger-hover); }
 
-        /* ปุ่มบันทึกเสียงขนาดใหญ่ */
+        /* Mic Action Settings */
         .btn-mic {
             display: inline-flex;
             align-items: center;
@@ -330,7 +372,6 @@
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
 
-        /* สัญญาณไฟกะพริบขณะพูด */
         .btn-mic-active {
             animation: recording-glow 1.5s infinite;
         }
@@ -341,7 +382,7 @@
             100% { background-color: var(--danger); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        /* ส่วนของตารางประวัติ */
+        /* Practice History Section */
         .history-section {
             max-width: 650px;
             width: 100%;
@@ -417,27 +458,27 @@
 </head>
 <body>
 
-    <!-- ==================== หน้า 1: เลือกโหมด (Setup Screen) ==================== -->
+    <!-- ==================== Screen 1: Study Configuration (Setup Screen) ==================== -->
     <div id="screen-setup" class="container screen-section active">
-        <h1>Pronunciation App</h1>
-        <p class="subtitle">เลือกโหมดและความยาก เพื่อเริ่มต้นฝึกฝนออกเสียงภาษาอังกฤษ</p>
+        <h1>Pronunciation App 🌟</h1>
+        <p class="subtitle">Train your speaking skills with native audio feedback! (◕‿◕)</p>
         
         <div class="setup-card">
             <div class="filter-group">
-                <label for="filter-mode">🎛️ MODE (โหมดการฝึก)</label>
+                <label for="filter-mode">🎛️ STUDY MODE</label>
                 <select id="filter-mode">
-                    <option value="read">Read and Speak (อ่านแล้วพูด)</option>
-                    <option value="listen">Listen and Speak (ฟังแล้วพูด)</option>
-                    <option value="image">Look and Speak (ดูภาพแล้วพูด)</option>
+                    <option value="read">📖 Read and Speak (See text and repeat)</option>
+                    <option value="listen">🎧 Listen and Speak (Listen and mimic voice)</option>
+                    <option value="image">🖼️ Look and Speak (Identify pictures)</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label for="filter-difficulty">🎯 DIFFICULTY (ระดับความยาก)</label>
+                <label for="filter-difficulty">🎯 DIFFICULTY LEVEL</label>
                 <select id="filter-difficulty">
-                    <option value="all">All Levels (ทุกระดับ)</option>
-                    <option value="easy">Easy (ระดับง่าย)</option>
-                    <option value="medium">Medium (ระดับปานกลาง)</option>
-                    <option value="hard">Hard (ระดับยาก)</option>
+                    <option value="all">⭐ All Levels</option>
+                    <option value="easy">🟢 Easy</option>
+                    <option value="medium">🟡 Medium</option>
+                    <option value="hard">🔴 Hard</option>
                 </select>
             </div>
         </div>
@@ -447,55 +488,76 @@
         </button>
     </div>
 
-    <!-- ==================== หน้า 2: หน้าการฝึกฝน (Trainer Screen) ==================== -->
+    <!-- ==================== Screen 2: Interactive Training (Trainer Screen) ==================== -->
     <div id="screen-trainer" class="container screen-section">
         <div class="trainer-header">
-            <button class="btn-secondary btn-sm" onclick="goBackToSetup()">⚙️ Change Settings</button>
+            <button class="btn-secondary btn-sm" onclick="goBackToSetup()">⚙️ Change Mode</button>
             <span id="difficulty-badge" class="badge">-</span>
         </div>
         
         <div class="progress-indicator">
-            Question <span id="current-question-num">0</span> / <span id="total-questions-num">0</span>
+            Challenge <span id="current-question-num">0</span> / <span id="total-questions-num">0</span>
         </div>
 
-        <!-- หน้าต่างแสดงผลข้อความตามโหมด -->
+        <!-- Dynamic Challenge Area -->
         <div class="card">
-            <!-- แสดงรูปภาพสำหรับโหมด (Look and Speak) -->
+            <!-- Image Card (Look and Speak) -->
             <div id="image-container">
                 <img id="image-display" src="" alt="Look at this image">
             </div>
             
-            <!-- ปุ่มเล่นเสียงสำหรับโหมด (Listen and Speak) -->
+            <!-- Audio Controller with Voice Setup (Listen and Speak) -->
             <div id="audio-container">
-                <p class="audio-instruction">คลิกที่ปุ่มด้านล่างเพื่อฟังต้นฉบับสำเนียงอเมริกัน</p>
+                <p class="audio-instruction">🔊 Listen carefully and repeat after the speaker! (•◡•)</p>
+                
+                <div class="voice-settings">
+                    <div class="setting-item">
+                        <label for="select-voice-type">🗣️ Speaker</label>
+                        <select id="select-voice-type" onchange="updateVoiceSettings()">
+                            <option value="female" selected>👩 Woman (Normal)</option>
+                            <option value="male">👨 Man (Normal)</option>
+                            <option value="girl">👧 Girl (High Pitch)</option>
+                            <option value="boy">👦 Boy (High Pitch)</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="select-voice-speed">⚡ Speed</label>
+                        <select id="select-voice-speed" onchange="updateVoiceSettings()">
+                            <option value="0.7">🐢 Slow (0.7x)</option>
+                            <option value="1.0" selected>🚶 Normal (1.0x)</option>
+                            <option value="1.3">🚀 Fast (1.3x)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <button class="btn-audio-play" id="btn-play-audio" onclick="playTargetAudio()">
                     🔊 Hear Pronunciation
                 </button>
             </div>
             
-            <!-- ข้อความเฉลย/เป้าหมาย -->
+            <!-- Hidden/Revealed targets -->
             <div id="target-sentence">Loading...</div>
         </div>
         
-        <!-- ส่วนแสดงเปรียบเทียบคำพูดทีละพยางค์ -->
+        <!-- Interactive evaluation -->
         <div id="comparison-result" class="comparison-result"></div>
 
         <div class="status-text" id="status-message">Ready. Click 'Start Practice' to begin.</div>
         <div class="score-display" id="score-text"></div>
 
         <div class="btn-group">
-            <button class="btn-secondary" id="btn-next" onclick="loadNextSentence()">Next Question ➡️</button>
+            <button class="btn-secondary" id="btn-next" onclick="loadNextSentence()">Next Challenge ➡️</button>
             <button class="btn-success btn-mic" id="btn-mic" onclick="toggleRecording()">
-                🎙️ Start Practice
+                🎙️ Start Practice (•◡•)
             </button>
         </div>
     </div>
 
-    <!-- ==================== ตารางประวัติ (มีผลรวมเก็บประวัติจาก LocalStorage) ==================== -->
+    <!-- ==================== Activity History Panel ==================== -->
     <div id="history-panel" class="history-section" style="display: none;">
         <div class="history-header">
-            <h3>Your Practice History</h3>
-            <button class="btn-secondary btn-sm" onclick="exportHistoryToCSV()">📤 Export History (CSV)</button>
+            <h3>📈 Your Practice History</h3>
+            <button class="btn-secondary btn-sm" onclick="exportHistoryToCSV()">📤 Export CSV</button>
         </div>
         <div class="table-responsive">
             <table>
@@ -503,12 +565,12 @@
                     <tr>
                         <th style="width: 25%">Time</th>
                         <th style="width: 15%">Mode</th>
-                        <th style="width: 45%">Target Sentence & Your Voice</th>
+                        <th style="width: 45%">Target Sentence & Your Speech</th>
                         <th style="width: 15%">Score</th>
                     </tr>
                 </thead>
                 <tbody id="history-table-body">
-                    <!-- ประวัติจะเขียนขึ้นมาผ่าน JavaScript -->
+                    <!-- Loaded dynamically via JavaScript -->
                 </tbody>
             </table>
         </div>
