@@ -329,6 +329,22 @@
             margin: 15px 0;
         }
 
+        /* Grammar Advisor Box style */
+        #grammar-tip {
+            font-size: 13px;
+            color: var(--primary);
+            background-color: rgba(79, 70, 229, 0.08);
+            padding: 10px 14px;
+            border-radius: 10px;
+            display: none;
+            margin: 12px auto;
+            max-width: 95%;
+            line-height: 1.5;
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            animation: fadeIn 0.3s ease-out;
+            text-align: left;
+        }
+
         .status-text {
             text-align: center;
             font-size: 13px;
@@ -642,7 +658,7 @@
                     <option value="read">📖 Read and Speak (See text and repeat)</option>
                     <option value="listen">🎧 Listen and Speak (Listen and mimic voice)</option>
                     <option value="image">🖼️ Look and Speak (Identify pictures)</option>
-                    <!-- New typing modes -->
+                    <!-- Typing modes -->
                     <option value="listen_type">⌨️ Listen and Type (Hear audio and spell)</option>
                     <option value="image_type">🖼️ Look and Type (Look at image and spell)</option>
                 </select>
@@ -720,8 +736,9 @@
             <div id="target-sentence">Loading...</div>
         </div>
         
-        <!-- Interactive evaluation -->
+        <!-- Interactive evaluation and grammar tips -->
         <div id="comparison-result" class="comparison-result"></div>
+        <div id="grammar-tip"></div>
 
         <div class="status-text" id="status-message">Ready. Click 'Start Practice' to begin.</div>
         <div class="score-display" id="score-text"></div>
