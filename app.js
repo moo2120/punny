@@ -118,16 +118,17 @@ async function fetchSentences() {
         
         allSentences = lines.slice(1).map(line => {
             const values = parseCSVLine(line);
+            if (values.length < 3) return null;
             return {
                 id: values[0] ? values[0].replace(/"/g, "") : "",
                 mode: values[1] ? values[1].replace(/"/g, "") : "",
-                text1: values[2] ? values[2].replace(/"/g, "") : "",
-                text2: values[3] ? values[3].replace(/"/g, "") : "",
-                text3: values[4] ? values[4].replace(/"/g, "") : "",
-                difficulty: values[5] ? values[5].replace(/"/g, "") : "",
+                question: values[2] ? values[2].replace(/"/g, "") : "",
+                text1: values[3] ? values[3].replace(/"/g, "") : "",
+                text2: values[4] ? values[4].replace(/"/g, "") : "",
+                text3: values[5] ? values[5].replace(/"/g, "") : "",
                 image_url: values[6] ? values[6].replace(/"/g, "").trim() : ""
             };
-        });
+        }).filter(item => item !== null);
 
         const btnStart = document.getElementById("btn-start");
         btnStart.disabled = false;
@@ -154,15 +155,12 @@ function goBackToSetup() {
     document.getElementById("history-panel").style.display = "none";
 }
 
-// 4. Group data matching filter configurations
+// 4. Group data matching filter configurations (Removed difficulty filtering completely)
 function applyFilters() {
     const selectedMode = document.getElementById("filter-mode").value;
-    const selectedDiff = document.getElementById("filter-difficulty").value;
 
     filteredSentences = allSentences.filter(item => {
-        const matchMode = item.mode === selectedMode;
-        const matchDiff = (selectedDiff === "all") || (item.difficulty.toLowerCase() === selectedDiff.toLowerCase());
-        return matchMode && matchDiff;
+        return item.mode === selectedMode;
     });
 
     currentIdx = 0;
@@ -175,7 +173,6 @@ function displayCurrentItem() {
     const imgContainer = document.getElementById("image-container");
     const imgDisplay = document.getElementById("image-display");
     const audioContainer = document.getElementById("audio-container");
-    const diffBadge = document.getElementById("difficulty-badge");
     
     const btnMic = document.getElementById("btn-mic");
     const btnSubmitType = document.getElementById("btn-submit-type");
@@ -211,8 +208,6 @@ function displayCurrentItem() {
 
     if (filteredSentences.length === 0) {
         targetDiv.innerText = "No sentences found for this selection.";
-        diffBadge.innerText = "-";
-        diffBadge.className = "badge";
         imgContainer.style.display = "none";
         audioContainer.style.display = "none";
         btnMic.disabled = true;
@@ -226,13 +221,10 @@ function displayCurrentItem() {
     curNumSpan.innerText = currentIdx + 1;
     totalNumSpan.innerText = filteredSentences.length;
 
-    diffBadge.innerText = item.difficulty.toUpperCase();
-    diffBadge.className = `badge badge-${item.difficulty.toLowerCase()}`;
-
     if (item.mode === "read") {
         imgContainer.style.display = "none";
         audioContainer.style.display = "none";
-        targetDiv.innerText = item.text1;
+        targetDiv.innerText = item.question; // Displays question phrase on screen
     } 
     else if (item.mode === "listen") {
         imgContainer.style.display = "none";
@@ -247,7 +239,7 @@ function displayCurrentItem() {
         } else {
             imgContainer.style.display = "none";
         }
-        targetDiv.innerText = "Look at the image and say what it is.";
+        targetDiv.innerText = item.question ? item.question : "Look at the image and say what it is.";
     }
     // Mode: Listen and Type
     else if (item.mode === "listen_type") {
@@ -272,7 +264,7 @@ function displayCurrentItem() {
         } else {
             imgContainer.style.display = "none";
         }
-        targetDiv.innerText = "Look at the image and type what it is.";
+        targetDiv.innerText = item.question ? item.question : "Look at the image and type what it is.";
         
         // Show typing elements
         typeContainer.style.display = "block";
@@ -318,14 +310,15 @@ function getBestVoice(type) {
     return enVoices[0];
 }
 
-// 7. Text-To-Speech Pronunciation Engine
+// 7. Text-To-Speech Pronunciation Engine (Synthesizing audio based on question instead of text1)
 function playTargetAudio() {
     if (filteredSentences.length === 0) return;
     const item = filteredSentences[currentIdx];
     
     window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(item.text1);
+    // Playback based on question stimulus
+    const utterance = new SpeechSynthesisUtterance(item.question);
     utterance.lang = 'en-US';
     
     const matchedVoice = getBestVoice(voiceType);
@@ -586,11 +579,7 @@ function evaluateTyping() {
 
     // Case I: Perfect Typing (100% Score) - Complete turn immediately
     if (bestScore === 100) {
-        if (item.mode === "listen_type") {
-            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
-        } else if (item.mode === "image_type") {
-            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
-        }
+        targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
 
         comparisonDiv.innerHTML = bestResultHTML;
         statusMsg.innerText = `🎉 Perfect! Excellent job! (◕‿◕)`;
@@ -621,11 +610,7 @@ function evaluateTyping() {
     }
     // Case III: Under 100% and used up all 3 attempts
     else {
-        if (item.mode === "listen_type") {
-            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
-        } else if (item.mode === "image_type") {
-            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
-        }
+        targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
 
         // Display results from their best performing attempt
         comparisonDiv.innerHTML = bestAttemptHTML;
@@ -726,7 +711,7 @@ function evaluatePronunciation(spokenText) {
 
         // Case I: Perfect Pronunciation (100% Score) - Complete turn immediately
         if (currentBestScore === 100) {
-            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
             comparisonDiv.innerHTML = currentBestHTML;
             statusMsg.innerText = `🎉 Perfect! Excellent job! (◕‿◕)`;
             scoreText.innerText = `Score: 100%`;
@@ -754,7 +739,7 @@ function evaluatePronunciation(spokenText) {
         }
         // Case III: Under 100% and used up all 3 attempts
         else {
-            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
             comparisonDiv.innerHTML = bestAttemptHTML;
             statusMsg.innerText = `😔 Out of attempts! Here is the correct answer.`;
             scoreText.innerText = `Best Score: ${bestAttemptScore}%`;
@@ -782,7 +767,7 @@ function evaluatePronunciation(spokenText) {
         if (item.mode === "image") {
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
         } else {
-            targetDiv.innerText = item.text1;
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
         }
 
         comparisonDiv.innerHTML = currentBestHTML;
