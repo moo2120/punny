@@ -257,6 +257,8 @@
             transition: var(--transition);
             box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
             position: relative;
+            /* 🛠️ เพิ่มบรรทัดนี้เพื่อเว้นระยะห่างด้านล่างของปุ่ม (ปรับตัวเลขได้ตามใจชอบ) */
+            margin-bottom: 30px; 
         }
 
         .btn-audio-play:hover {
@@ -663,7 +665,7 @@
                 </div>
 
                 <button class="btn-audio-play" id="btn-play-audio" onclick="playTargetAudio()">
-                    🔊 Hear Pronunciation
+                    🔊 Listen to me
                 </button>
             </div>
             
