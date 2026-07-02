@@ -177,6 +177,7 @@ function displayCurrentItem() {
     const audioContainer = document.getElementById("audio-container");
     const diffBadge = document.getElementById("difficulty-badge");
     const btnMic = document.getElementById("btn-mic");
+    const btnRetry = document.getElementById("btn-retry");
 
     document.getElementById("comparison-result").innerHTML = "";
     document.getElementById("score-text").innerText = "";
@@ -187,7 +188,9 @@ function displayCurrentItem() {
     bestAttemptScore = -1;
     bestAttemptHTML = "";
     bestAttemptSpoken = "";
+    
     btnMic.disabled = false;
+    btnRetry.style.display = "none"; // Hide retry button at the start of a challenge
 
     const curNumSpan = document.getElementById("current-question-num");
     const totalNumSpan = document.getElementById("total-questions-num");
@@ -307,6 +310,12 @@ function loadNextSentence() {
     displayCurrentItem();
 }
 
+// New: Allows users to retry/re-practice the current challenge at any time
+function retryCurrentSentence() {
+    if (filteredSentences.length === 0) return;
+    displayCurrentItem();
+}
+
 function toggleRecording() {
     if (!recognition || filteredSentences.length === 0) return;
     if (isRecording) {
@@ -355,6 +364,7 @@ function evaluatePronunciation(spokenText) {
     const statusMsg = document.getElementById("status-message");
     const scoreText = document.getElementById("score-text");
     const btnMic = document.getElementById("btn-mic");
+    const btnRetry = document.getElementById("btn-retry");
 
     // ================== Mode 1: Listen and Speak Mode (3-Attempt Logic) ==================
     if (item.mode === "listen") {
@@ -373,7 +383,9 @@ function evaluatePronunciation(spokenText) {
             comparisonDiv.innerHTML = currentBestHTML;
             statusMsg.innerText = `🎉 Perfect! Excellent job! (◕‿◕)`;
             scoreText.innerText = `Score: 100%`;
+            
             btnMic.disabled = true; // Block practicing for this question since it is already perfect
+            btnRetry.style.display = "inline-flex"; // Enable Retry Button for practicing again
 
             saveToHistory(item.mode, currentBestMatchedTarget, spokenText, 100);
         }
@@ -393,7 +405,9 @@ function evaluatePronunciation(spokenText) {
             comparisonDiv.innerHTML = bestAttemptHTML;
             statusMsg.innerText = `😔 Out of attempts! Here is the correct answer.`;
             scoreText.innerText = `Best Score: ${bestAttemptScore}%`;
-            btnMic.disabled = true; // Complete current question, block microphone until they click next
+            
+            btnMic.disabled = true; // Complete current question, block microphone until they click next or retry
+            btnRetry.style.display = "inline-flex"; // Enable Retry Button for practicing again
 
             saveToHistory(item.mode, currentBestMatchedTarget, bestAttemptSpoken, bestAttemptScore);
         }
@@ -410,7 +424,9 @@ function evaluatePronunciation(spokenText) {
         comparisonDiv.innerHTML = currentBestHTML;
         statusMsg.innerText = `You said: "${spokenText}"`;
         scoreText.innerText = `Score: ${currentBestScore}%`;
-        btnMic.disabled = true; // Complete current question, block microphone until they click next
+        
+        btnMic.disabled = true; // Complete current question, block microphone until they click next or retry
+        btnRetry.style.display = "inline-flex"; // Enable Retry Button for practicing again
 
         saveToHistory(item.mode, currentBestMatchedTarget, spokenText, currentBestScore);
     }
