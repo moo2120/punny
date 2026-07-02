@@ -19,17 +19,13 @@ let bestAttemptScore = -1;
 let bestAttemptHTML = "";
 let bestAttemptSpoken = "";
 
+// State tracking for completed missions (getting 100% score)
+let completedChallenges = new Set();
+let selectedMode = "read"; // Tracks active selected study mode
+
 window.onload = async () => {
     initSpeechRecognition();
     await fetchSentences();
-    renderHistoryTable();
-
-    // Trigger local SpeechSynthesis setup to load system speech engines
-    if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
-        speechSynthesis.onvoiceschanged = () => {
-            // Fires when client voices load asynchronously
-        };
-    }
 };
 
 // 1. Initialize Speech API
@@ -130,6 +126,9 @@ async function fetchSentences() {
             };
         }).filter(item => item !== null);
 
+        // Scan which modes have actual spreadsheet rows and disable empty buttons
+        checkAvailableModes();
+
         const btnStart = document.getElementById("btn-start");
         btnStart.disabled = false;
         btnStart.innerText = "🚀 Start Practicing! (•◡•)";
@@ -140,30 +139,60 @@ async function fetchSentences() {
     }
 }
 
+// Check which categories are present and toggle button states
+function checkAvailableModes() {
+    const availableModes = new Set(allSentences.map(item => item.mode));
+    const modeList = ["read", "listen", "image", "listen_type", "image_type"];
+    
+    modeList.forEach(m => {
+        const btn = document.getElementById(`mode-${m}`);
+        if (btn) {
+            if (!availableModes.has(m)) {
+                btn.disabled = true;
+            } else {
+                btn.disabled = false;
+            }
+        }
+    });
+    
+    // Auto-select first available category
+    const firstAvailable = modeList.find(m => availableModes.has(m));
+    if (firstAvailable) {
+        selectMode(firstAvailable);
+    }
+}
+
+// Handles selecting study mode via interactive icon button clicks
+function selectMode(mode) {
+    selectedMode = mode;
+    document.querySelectorAll(".mode-btn").forEach(btn => btn.classList.remove("active"));
+    const activeBtn = document.getElementById(`mode-${mode}`);
+    if (activeBtn) {
+        activeBtn.classList.add("active");
+    }
+}
+
 // 3. Interface Management
 function startTrainingSession() {
     applyFilters();
     
     document.getElementById("screen-setup").classList.remove("active");
     document.getElementById("screen-trainer").classList.add("active");
-    document.getElementById("history-panel").style.display = "block";
 }
 
 function goBackToSetup() {
     document.getElementById("screen-trainer").classList.remove("active");
     document.getElementById("screen-setup").classList.add("active");
-    document.getElementById("history-panel").style.display = "none";
 }
 
 // 4. Group data matching filter configurations
 function applyFilters() {
-    const selectedMode = document.getElementById("filter-mode").value;
-
     filteredSentences = allSentences.filter(item => {
         return item.mode === selectedMode;
     });
 
     currentIdx = 0;
+    completedChallenges.clear();
     displayCurrentItem();
 }
 
@@ -180,15 +209,8 @@ function displayCurrentItem() {
     
     const typeContainer = document.getElementById("type-container");
     const typeInput = document.getElementById("type-input");
-    const grammarTipDiv = document.getElementById("grammar-tip");
 
-    document.getElementById("comparison-result").innerHTML = "";
-    document.getElementById("score-text").innerText = "";
     document.getElementById("status-message").innerText = "Ready. Click 'Start Practice' to begin.";
-    
-    // Clear grammar feedback boxes
-    grammarTipDiv.innerHTML = "";
-    grammarTipDiv.style.display = "none";
 
     // Reset attempt states when transitioning to a new sentence
     attemptsCount = 0;
@@ -224,7 +246,7 @@ function displayCurrentItem() {
     if (item.mode === "read") {
         imgContainer.style.display = "none";
         audioContainer.style.display = "none";
-        targetDiv.innerText = item.question; // Displays question phrase on screen
+        targetDiv.innerText = item.question; 
     } 
     else if (item.mode === "listen") {
         imgContainer.style.display = "none";
@@ -372,7 +394,6 @@ function handleTypeEnter(event) {
 }
 
 // ================== Helper Functions for Robust Text Comparison ==================
-// Converts to lowercase, removes punctuation, normalizes duplicate spaces to single spaces, and trims
 const cleanText = str => {
     if (!str) return "";
     return str
@@ -382,28 +403,9 @@ const cleanText = str => {
         .trim();
 };
 
-// Splits cleaned text into an array of normalized words
-// Supports English (space-split) and Thai (Intl.Segmenter auto-detection) natively & offline
 const getWordsArray = str => {
     const cleaned = cleanText(str);
-    if (!cleaned) return [];
-    
-    // Auto-detect if string contains Thai characters
-    const containsThai = /[\u0E00-\u0E7F]/.test(cleaned);
-    
-    if (containsThai && typeof Intl !== 'undefined' && Intl.Segmenter) {
-        try {
-            // Use built-in browser Intl.Segmenter for Thai word-segmentation (Totally Free & Offline)
-            const segmenter = new Intl.Segmenter('th', { granularity: 'word' });
-            const segments = segmenter.segment(cleaned);
-            return [...segments].filter(s => s.isWordLike).map(s => s.segment);
-        } catch (e) {
-            console.warn("Intl.Segmenter error, fallback to space-split:", e);
-        }
-    }
-    
-    // Standard English/space-separated word splitting
-    return cleaned.split(" ");
+    return cleaned ? cleaned.split(" ") : [];
 };
 
 // Advanced Multi-Heuristic Client-Side Grammar Advisor (Totally free, zero latency, zero memory overhead)
@@ -411,8 +413,7 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
     const cleanedInput = inputText.toLowerCase().trim();
     const suggestions = [];
 
-    // --- ENGINE 1: Standalone Indefinite Article Checks (a/an ESL mismatches) ---
-    // Rule A: Incorrect "a" before vowel sound words (e.g. "a apple")
+    // Check A: Incorrect "a" before vowel sound words (e.g. "a apple")
     const aVowelPattern = /\ba\s+([aeiou][a-z]*)\b/g;
     const nonSilentU = ["university", "union", "unique", "useful", "user", "unit", "one"];
     let match;
@@ -423,7 +424,7 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
         }
     }
 
-    // Rule B: Incorrect "an" before consonant sounds (e.g. "an banana")
+    // Check B: Incorrect "an" before consonant sounds (e.g. "an banana")
     const anConsonantPattern = /\ban\s+([bcdfghjklmnpqrstvwxyz][a-z]*)\b/g;
     const silentH = ["hour", "honest", "honor", "heir"];
     while ((match = anConsonantPattern.exec(cleanedInput)) !== null) {
@@ -433,55 +434,39 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
         }
     }
 
-    // --- Engine 2: Target-Guided Structure Diagnostics (Subject-Verb agreement / Plurals / Copula) ---
     // Only perform morphological alignment diagnostics if the user didn't hit a keyword-match
     if (!isKeywordMatch && targetText) {
         const spokenWords = getWordsArray(inputText);
         const targetWords = getWordsArray(targetText);
 
-        // A. Missing Preposition / Structural Word Spotter
         const spokenSet = new Set(spokenWords);
         const prepositions = ["in", "on", "at", "to", "for", "with", "by", "of", "from", "about", "into", "through", "under", "over"];
         const missingPrepositions = targetWords.filter(w => prepositions.includes(w) && !spokenSet.has(w));
         
-        if (missingWords = missingWordsCheck(targetWords, spokenSet)) {
-            suggestions.push(`💡 <strong>Preposition Tip:</strong> Did you miss the preposition? Try including: "<strong>${missingWords.join(", ")}</strong>".`);
+        if (missingPrepositions.length > 0) {
+            suggestions.push(`💡 <strong>Preposition Tip:</strong> Did you miss the preposition? Try including: "<strong>${missingPrepositions.join(", ")}</strong>".`);
         }
 
-        // B. Morphological Alignment Check (comparing same position mismatches)
         const minLength = Math.min(spokenWords.length, targetWords.length);
         for (let i = 0; i < minLength; i++) {
             const sw = spokenWords[i];
             const tw = targetWords[i];
             if (sw !== tw) {
-                // 1. Noun Inflection Check (Singular vs Plural e.g. "apple" vs "apples")
                 if (sw + "s" === tw || sw + "es" === tw || tw + "s" === sw || tw + "es" === sw) {
                     suggestions.push(`💡 <strong>Noun Agreement Tip:</strong> You said "<strong>${sw}</strong>" but the target sentence requires plural/singular form: "<strong>${tw}</strong>".`);
                 }
-                
-                // 2. Copula/Verb Tense Agreement Mismatch (e.g. "is" vs "are", "was" vs "were", "go" vs "went")
                 const copulas = ["is", "are", "was", "were", "am", "be", "been"];
                 if (copulas.includes(sw) && copulas.includes(tw)) {
                     suggestions.push(`💡 <strong>Subject-Verb Agreement Tip:</strong> Try using the correct verb form "<strong>${tw}</strong>" instead of "${sw}".`);
                 }
-
-                // 3. Aspect / Auxiliary Mismatch (e.g. "has" vs "have", "do" vs "does")
                 const auxiliaries = ["has", "have", "had", "do", "does", "did", "can", "could", "will", "would", "should"];
                 if (auxiliaries.includes(sw) && auxiliaries.includes(tw)) {
                     suggestions.push(`💡 <strong>Auxiliary Verb Tip:</strong> Try using "<strong>${tw}</strong>" instead of "${sw}".`);
                 }
-
-                // 4. Common Irregular Verb Tense Misuse (e.g. "run/ran", "speak/spoke", "eat/ate", "write/wrote")
                 const irregulars = [
-                    ["go", "went", "gone", "going"],
-                    ["run", "ran", "running"],
-                    ["see", "saw", "seen", "seeing"],
-                    ["do", "did", "done", "doing"],
-                    ["eat", "ate", "eaten", "eating"],
-                    ["write", "wrote", "written", "writing"],
-                    ["speak", "spoke", "spoken", "speaking"],
-                    ["take", "took", "taken", "taking"],
-                    ["make", "made", "making"],
+                    ["go", "went", "gone", "going"], ["run", "ran", "running"], ["see", "saw", "seen", "seeing"],
+                    ["do", "did", "done", "doing"], ["eat", "ate", "eaten", "eating"], ["write", "wrote", "written", "writing"],
+                    ["speak", "spoke", "spoken", "speaking"], ["take", "took", "taken", "taking"], ["make", "made", "making"],
                     ["buy", "bought", "buying"]
                 ];
                 for (const group of irregulars) {
@@ -490,8 +475,6 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
                         break;
                     }
                 }
-
-                // 5. Regular Verb Tense Misuse (Inflection check e.g. "walked" vs "walking" vs "walk")
                 const cleanVerbRoot = w => w.replace(/(ing|ed|s|es)$/, "");
                 if (cleanVerbRoot(sw) === cleanVerbRoot(tw) && sw !== tw) {
                     if (tw.endsWith("ing")) {
@@ -503,15 +486,7 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
             }
         }
     }
-
     return suggestions.join("<br>");
-}
-
-// Helper to filter missing target prepositions
-function missingWordsCheck(targetWords, spokenSet) {
-    const prepositions = ["in", "on", "at", "to", "for", "with", "by", "of", "from", "about", "into", "through", "under", "over"];
-    const missing = targetWords.filter(w => prepositions.includes(w) && !spokenSet.has(w));
-    return missing.length > 0 ? missing : null;
 }
 
 // 8. Evaluates Textual Input for Typing Modes with 3-Attempt Logic
@@ -555,7 +530,6 @@ function evaluateTyping() {
 
     attemptsCount++;
 
-    // Track the overall best score and HTML across all 3 attempts
     if (bestScore > bestAttemptScore) {
         bestAttemptScore = bestScore;
         bestAttemptHTML = bestResultHTML;
@@ -563,82 +537,50 @@ function evaluateTyping() {
     }
 
     const targetDiv = document.getElementById("target-sentence");
-    const comparisonDiv = document.getElementById("comparison-result");
     const statusMsg = document.getElementById("status-message");
-    const scoreText = document.getElementById("score-text");
-    const grammarTipDiv = document.getElementById("grammar-tip");
-    
     const btnSubmit = document.getElementById("btn-submit-type");
     const btnRetry = document.getElementById("btn-retry");
     const typeInput = document.getElementById("type-input");
 
-    // Clear and calculate client-side grammar advisor logs
-    grammarTipDiv.innerHTML = "";
-    grammarTipDiv.style.display = "none";
     const localGrammarFeedback = analyzeGrammarHeuristics(typedText, bestMatchedTarget, false);
 
-    // Case I: Perfect Typing (100% Score) - Complete turn immediately
+    // Case I: Perfect Typing (100% Score) - Complete turn immediately, launch popup modal
     if (bestScore === 100) {
         targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
 
-        comparisonDiv.innerHTML = bestResultHTML;
-        statusMsg.innerText = `🎉 Perfect! Excellent job! (◕‿◕)`;
-        scoreText.innerText = `Score: 100%`;
-
-        if (localGrammarFeedback) {
-            grammarTipDiv.innerHTML = localGrammarFeedback;
-            grammarTipDiv.style.display = "block";
-        }
-
-        // Lock typing fields and activate practice again button
+        // Lock fields and update main screen
         typeInput.disabled = true;
         btnSubmit.style.display = "none";
         btnRetry.style.display = "inline-flex";
 
-        saveToHistory(item.mode, bestMatchedTarget, typedText.trim(), 100);
+        showResultModal(100, bestResultHTML, localGrammarFeedback, `🎉 Perfect! Excellent job! (◕‿◕)`, item.id);
     }
     // Case II: Under 100% and still have attempts left (< 3)
     else if (attemptsCount < 3) {
-        comparisonDiv.innerHTML = `<span style="color:#6B7280; font-size:14px;">You typed: "${typedText.trim()}"</span>`;
-        statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•)`;
-        scoreText.innerText = `Attempt Score: ${bestScore}%`;
-
-        if (localGrammarFeedback) {
-            grammarTipDiv.innerHTML = localGrammarFeedback;
-            grammarTipDiv.style.display = "block";
-        }
+        // Keeps user on training screen with inline guidance, no popup modal until finished
+        const inlineComparison = document.getElementById("comparison-result");
+        inlineComparison.innerHTML = `<span style="color:#6B7280; font-size:14px;">You typed: "${typedText.trim()}"</span>`;
+        statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•). Score: ${bestScore}%`;
     }
     // Case III: Under 100% and used up all 3 attempts
     else {
         targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
 
-        // Display results from their best performing attempt
-        comparisonDiv.innerHTML = bestAttemptHTML;
-        statusMsg.innerText = `😔 Out of attempts! Here is the correct answer.`;
-        scoreText.innerText = `Best Score: ${bestAttemptScore}%`;
-        
+        typeInput.disabled = true;
+        btnSubmit.style.display = "none";
+        btnRetry.style.display = "inline-flex";
+
         let finalGrammarFeedback = localGrammarFeedback;
         if (bestMatchedTarget) {
             const guidance = `💡 <strong>Review Tip:</strong> Practice writing: "<strong>${bestMatchedTarget}</strong>"`;
             finalGrammarFeedback = finalGrammarFeedback ? `${guidance}<br>${finalGrammarFeedback}` : guidance;
         }
 
-        if (finalGrammarFeedback) {
-            grammarTipDiv.innerHTML = finalGrammarFeedback;
-            grammarTipDiv.style.display = "block";
-        }
-
-        // Lock typing fields and activate practice again button
-        typeInput.disabled = true;
-        btnSubmit.style.display = "none";
-        btnRetry.style.display = "inline-flex";
-
-        saveToHistory(item.mode, bestMatchedTarget, bestAttemptSpoken.trim(), bestAttemptScore);
+        showResultModal(bestAttemptScore, bestAttemptHTML, finalGrammarFeedback, `😔 Out of attempts! Here is the correct answer.`, item.id);
     }
 }
 
 // 9. Pronunciation Speech Assessment logic (Voice Modes)
-// Supports Keyword Detection (gives 100% if spoken includes target) + Grammar Suggestions
 function evaluatePronunciation(spokenText) {
     const item = filteredSentences[currentIdx];
     const targets = [item.text1, item.text2, item.text3].filter(t => t && t.trim() !== "");
@@ -686,16 +628,10 @@ function evaluatePronunciation(spokenText) {
     });
 
     const targetDiv = document.getElementById("target-sentence");
-    const comparisonDiv = document.getElementById("comparison-result");
     const statusMsg = document.getElementById("status-message");
-    const scoreText = document.getElementById("score-text");
     const btnMic = document.getElementById("btn-mic");
     const btnRetry = document.getElementById("btn-retry");
-    const grammarTipDiv = document.getElementById("grammar-tip");
 
-    // Reset and compute client-side Grammar coaching (now using advanced morphological comparison)
-    grammarTipDiv.innerHTML = "";
-    grammarTipDiv.style.display = "none";
     const localGrammarFeedback = analyzeGrammarHeuristics(spokenText, currentBestMatchedTarget, isBestMatchKeywordBased);
 
     // ================== Mode A: Listen and Speak Mode (3-Attempt Logic) ==================
@@ -709,57 +645,33 @@ function evaluatePronunciation(spokenText) {
             bestAttemptSpoken = spokenText;
         }
 
-        // Case I: Perfect Pronunciation (100% Score) - Complete turn immediately
+        // Case I: Perfect Pronunciation (100% Score) - Complete turn immediately, launch popup modal
         if (currentBestScore === 100) {
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
-            comparisonDiv.innerHTML = currentBestHTML;
-            statusMsg.innerText = `🎉 Perfect! Excellent job! (◕‿◕)`;
-            scoreText.innerText = `Score: 100%`;
-            
-            if (localGrammarFeedback) {
-                grammarTipDiv.innerHTML = localGrammarFeedback;
-                grammarTipDiv.style.display = "block";
-            }
+            btnMic.disabled = true; 
+            btnRetry.style.display = "inline-flex"; 
 
-            btnMic.disabled = true; // Block practicing for this question since it is already perfect
-            btnRetry.style.display = "inline-flex"; // Enable Retry Button for practicing again
-
-            saveToHistory(item.mode, currentBestMatchedTarget, spokenText, 100);
+            showResultModal(100, currentBestHTML, localGrammarFeedback, `🎉 Perfect! Excellent job! (◕‿◕)`, item.id);
         }
         // Case II: Under 100% and still have attempts left
         else if (attemptsCount < 3) {
-            comparisonDiv.innerHTML = `<span style="color:#6B7280; font-size:14px;">You said: "${spokenText}"</span>`;
-            statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•)`;
-            scoreText.innerText = `Attempt Score: ${currentBestScore}%`;
-
-            if (localGrammarFeedback) {
-                grammarTipDiv.innerHTML = localGrammarFeedback;
-                grammarTipDiv.style.display = "block";
-            }
+            const inlineComparison = document.getElementById("comparison-result");
+            inlineComparison.innerHTML = `<span style="color:#6B7280; font-size:14px;">You said: "${spokenText}"</span>`;
+            statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•). Score: ${currentBestScore}%`;
         }
         // Case III: Under 100% and used up all 3 attempts
         else {
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
-            comparisonDiv.innerHTML = bestAttemptHTML;
-            statusMsg.innerText = `😔 Out of attempts! Here is the correct answer.`;
-            scoreText.innerText = `Best Score: ${bestAttemptScore}%`;
-            
-            // Build dual tips (Ground truth guidance + Grammar rule evaluation)
+            btnMic.disabled = true; 
+            btnRetry.style.display = "inline-flex"; 
+
             let finalGrammarFeedback = localGrammarFeedback;
             if (currentBestMatchedTarget) {
                 const guidance = `💡 <strong>Review Tip:</strong> Practice saying: "<strong>${currentBestMatchedTarget}</strong>"`;
                 finalGrammarFeedback = finalGrammarFeedback ? `${guidance}<br>${finalGrammarFeedback}` : guidance;
             }
 
-            if (finalGrammarFeedback) {
-                grammarTipDiv.innerHTML = finalGrammarFeedback;
-                grammarTipDiv.style.display = "block";
-            }
-
-            btnMic.disabled = true; // Complete current question, block microphone until they click next or retry
-            btnRetry.style.display = "inline-flex"; // Enable Retry Button for practicing again
-
-            saveToHistory(item.mode, currentBestMatchedTarget, bestAttemptSpoken, bestAttemptScore);
+            showResultModal(bestAttemptScore, bestAttemptHTML, finalGrammarFeedback, `😔 Out of attempts! Here is the correct answer.`, item.id);
         }
     }
     // ================== Mode B: Read/Look Mode (Immediate Evaluation Logic) ==================
@@ -770,94 +682,188 @@ function evaluatePronunciation(spokenText) {
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
         }
 
-        comparisonDiv.innerHTML = currentBestHTML;
-        statusMsg.innerText = `You said: "${spokenText}"`;
-        scoreText.innerText = `Score: ${currentBestScore}%`;
-        
+        btnMic.disabled = true; 
+        btnRetry.style.display = "inline-flex"; 
+
         let finalGrammarFeedback = localGrammarFeedback;
         if (currentBestMatchedTarget) {
             const guidance = `💡 <strong>Review Tip:</strong> Practice saying: "<strong>${currentBestMatchedTarget}</strong>"`;
             finalGrammarFeedback = finalGrammarFeedback ? `${guidance}<br>${finalGrammarFeedback}` : guidance;
         }
 
-        if (finalGrammarFeedback) {
-            grammarTipDiv.innerHTML = finalGrammarFeedback;
-            grammarTipDiv.style.display = "block";
+        showResultModal(currentBestScore, currentBestHTML, finalGrammarFeedback, `You said: "${spokenText}"`, item.id);
+    }
+}
+
+// 10. Pop-up Modal System with Confetti & Ascending Fanfare Chime on 100%
+function showResultModal(score, comparisonHTML, grammarFeedback, statusText, questionId) {
+    document.getElementById("modal-score").innerText = `${score}%`;
+    document.getElementById("modal-comparison").innerHTML = comparisonHTML;
+    document.getElementById("modal-status").innerText = statusText;
+
+    const tipDiv = document.getElementById("modal-grammar-tip");
+    if (grammarFeedback) {
+        tipDiv.innerHTML = grammarFeedback;
+        tipDiv.style.display = "block";
+    } else {
+        tipDiv.style.display = "none";
+    }
+
+    // Launch evaluation overlay screen
+    document.getElementById("evaluation-modal").style.display = "block";
+
+    if (score === 100) {
+        completedChallenges.add(questionId);
+        playCelebrationSound();
+        startConfetti();
+
+        // Check if all challenges in this mode have been cleared with 100% score
+        if (completedChallenges.size === filteredSentences.length) {
+            setTimeout(() => {
+                showMissionCompletedModal();
+            }, 1000);
         }
-
-        btnMic.disabled = true; // Complete current question, block microphone until they click next or retry
-        btnRetry.style.display = "inline-flex"; // Enable Retry Button for practicing again
-
-        saveToHistory(item.mode, currentBestMatchedTarget, spokenText, currentBestScore);
     }
 }
 
-// 10. Process Local Session History Logs
-function saveToHistory(mode, target, spoken, score) {
-    const history = JSON.parse(localStorage.getItem("practice_history") || "[]");
-    const newRecord = {
-        timestamp: new Date().toLocaleString('en-US'),
-        mode: mode.toUpperCase(),
-        target: target,
-        spoken: spoken,
-        score: score
-    };
-    history.unshift(newRecord);
-    localStorage.setItem("practice_history", JSON.stringify(history));
-    renderHistoryTable();
+function closeModal() {
+    document.getElementById("evaluation-modal").style.display = "none";
 }
 
-function renderHistoryTable() {
-    const history = JSON.parse(localStorage.getItem("practice_history") || "[]");
-    const tbody = document.getElementById("history-table-body");
+function closeModalAndRetry() {
+    closeModal();
+    retryCurrentSentence();
+}
+
+function closeModalAndNext() {
+    closeModal();
+    loadNextSentence();
+}
+
+// Mission Accomplished Pop-up (Completing 100% across all mode cards)
+function showMissionCompletedModal() {
+    closeModal();
+    document.getElementById("mission-modal").style.display = "flex";
+    playCelebrationSound();
+    startConfetti();
+}
+
+function restartMission() {
+    document.getElementById("mission-modal").style.display = "none";
+    completedChallenges.clear();
+    currentIdx = 0;
+    displayCurrentItem();
+}
+
+function changeMissionMode() {
+    document.getElementById("mission-modal").style.display = "none";
+    goBackToSetup();
+}
+
+// ================== Celebrating Fanfare Music & Particle confetti (Web-Native, Offline, Totally Free) ==================
+function playCelebrationSound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        
+        // Ascending major chord (Fanfare style chime)
+        const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
+        const dur = 0.15;
+        
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + i * dur);
+            
+            gain.gain.setValueAtTime(0.15, ctx.currentTime + i * dur);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (i + 1) * dur);
+            
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            
+            osc.start(ctx.currentTime + i * dur);
+            osc.stop(ctx.currentTime + (i + 1) * dur);
+        });
+    } catch (e) {
+        console.error("Fanfare audio generator failed: ", e);
+    }
+}
+
+let confettiActive = false;
+function startConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
     
-    tbody.innerHTML = history.slice(0, 5).map(row => {
-        let scoreClass = 'score-pill-low';
-        if (row.score >= 80) scoreClass = 'score-pill-high';
-        else if (row.score >= 50) scoreClass = 'score-pill-med';
-
-        return `
-            <tr>
-                <td><span style="color:#6B7280; font-size:12px;">${row.timestamp}</span></td>
-                <td><span style="font-weight:700; color:var(--primary);">${row.mode}</span></td>
-                <td>
-                    <div class="history-target">${row.target}</div>
-                    <div class="history-user">Answer: "${row.spoken || '...'}"</div>
-                </td>
-                <td><span class="score-pill ${scoreClass}">${row.score}%</span></td>
-            </tr>
-        `;
-    }).join("");
-}
-
-// Clear all local records with confirmation warning
-function clearPracticeHistory() {
-    if (confirm("Are you sure you want to clear all practice history? 🗑️ This action cannot be undone!")) {
-        localStorage.removeItem("practice_history");
-        renderHistoryTable();
+    let particles = [];
+    const colors = ['#4F46E5', '#10B981', '#EF4444', '#F59E0B', '#EC4899', '#3B82F6'];
+    
+    for (let i = 0; i < 100; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            r: Math.random() * 6 + 4,
+            d: Math.random() * canvas.height,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            tilt: Math.random() * 10 - 5,
+            tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+            tiltAngle: 0
+        });
     }
-}
-
-// Export logs to a local CSV file
-function exportHistoryToCSV() {
-    const history = JSON.parse(localStorage.getItem("practice_history") || "[]");
-    if (history.length === 0) {
-        alert("No history to export yet!");
-        return;
+    
+    confettiActive = true;
+    let animationFrameId;
+    
+    function draw() {
+        if (!confettiActive) {
+            canvas.style.display = 'none';
+            return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach((p, index) => {
+            p.tiltAngle += p.tiltAngleIncremental;
+            p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+            p.x += Math.sin(p.tiltAngle);
+            p.tilt = Math.sin(p.tiltAngle - index / 3) * 15;
+            
+            ctx.beginPath();
+            ctx.lineWidth = p.r;
+            ctx.strokeStyle = p.color;
+            ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+            ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+            ctx.stroke();
+            
+            if (p.y > canvas.height) {
+                particles[index] = {
+                    x: Math.random() * canvas.width,
+                    y: -20,
+                    r: p.r,
+                    d: p.d,
+                    color: p.color,
+                    tilt: p.tilt,
+                    tiltAngleIncremental: p.tiltAngleIncremental,
+                    tiltAngle: p.tiltAngle
+                };
+            }
+        });
+        
+        animationFrameId = requestAnimationFrame(draw);
     }
-
-    let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-    csvContent += "Timestamp,Mode,Target Sentence,Spoken Text,Score\n";
-
-    history.forEach(row => {
-        csvContent += `"${row.timestamp}","${row.mode}","${row.target}","${row.spoken}",${row.score}\n`;
-    });
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "pronunciation_trainer_history.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    
+    draw();
+    
+    // Auto-disable anim frames after 3 seconds
+    setTimeout(() => {
+        confettiActive = false;
+        cancelAnimationFrame(animationFrameId);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.display = 'none';
+    }, 3000);
 }
