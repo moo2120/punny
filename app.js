@@ -1,6 +1,6 @@
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-// ลิงก์ดาวน์โหลด CSV ของ Google Sheet ที่จัดเตรียมไว้
+// Google Sheet URL representing sentence resources
 const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1hRiqV447IXq2spKWuF2nljHGG8mE-4y2Po-7UraVTGc/export?format=csv";
 
 let recognition;
@@ -9,13 +9,24 @@ let filteredSentences = [];
 let currentIdx = 0;
 let isRecording = false;
 
+// Audio customization parameters
+let voiceType = "female";
+let voiceSpeed = 1.0;
+
 window.onload = async () => {
     initSpeechRecognition();
     await fetchSentences();
     renderHistoryTable();
+
+    // Trigger local SpeechSynthesis setup to load system speech engines
+    if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = () => {
+            // Fires when client voices load asynchronously
+        };
+    }
 };
 
-// 1. ตั้งค่าเสียงดักจับ (Speech Recognition)
+// 1. Initialize Speech API
 function initSpeechRecognition() {
     const statusMsg = document.getElementById("status-message");
     const btnMic = document.getElementById("btn-mic");
@@ -67,10 +78,10 @@ function resetMicButton() {
     isRecording = false;
     const btnMic = document.getElementById("btn-mic");
     btnMic.className = "btn-success btn-mic";
-    btnMic.innerHTML = "🎙️ Start Practice";
+    btnMic.innerHTML = "🎙️ Start Practice (•◡•)";
 }
 
-// แกะรหัสข้อมูลแถว CSV
+// Safely parses line inputs for comma delimiters inside quotes
 function parseCSVLine(line) {
     const result = [];
     let current = '';
@@ -90,11 +101,11 @@ function parseCSVLine(line) {
     return result;
 }
 
-// 2. ดึงข้อมูลประโยคจาก Google Sheets
+// 2. Load external sentence data
 async function fetchSentences() {
     try {
         const response = await fetch(GOOGLE_SHEET_CSV_URL);
-        if (!response.ok) throw new Error("Failed to fetch Google Sheets database.");
+        if (!response.ok) throw new Error("Failed to fetch database.");
         const data = await response.text();
         
         const lines = data.split(/\r?\n/).filter(line => line.trim() !== '');
@@ -112,35 +123,32 @@ async function fetchSentences() {
             };
         });
 
-        // เปิดใช้งานปุ่มเข้าสู่ระบบฝึกซ้อมเมื่อดึงข้อมูลเสร็จสิ้น
         const btnStart = document.getElementById("btn-start");
         btnStart.disabled = false;
-        btnStart.innerText = "🚀 Start Training / เริ่มต้นฝึกซ้อม";
+        btnStart.innerText = "🚀 Start Practicing! (•◡•)";
 
     } catch (err) {
-        alert("ขออภัย! ไม่สามารถดึงฐานข้อมูลคำศัพท์ได้ กรุณาลองใหม่อีกครั้ง");
+        alert("Sorry! Unable to connect to the database. Please reload or check your network.");
         console.error(err);
     }
 }
 
-// 3. เริ่มต้นเซสชันฝึกซ้อม (เปลี่ยนสลับไปหน้า 2)
+// 3. Interface Management
 function startTrainingSession() {
     applyFilters();
     
-    // สลับหน้าจอ
     document.getElementById("screen-setup").classList.remove("active");
     document.getElementById("screen-trainer").classList.add("active");
     document.getElementById("history-panel").style.display = "block";
 }
 
-// คลิกย้อนกลับไปเปลี่ยนตั้งค่าโหมด (กลับไปหน้าแรก)
 function goBackToSetup() {
     document.getElementById("screen-trainer").classList.remove("active");
     document.getElementById("screen-setup").classList.add("active");
     document.getElementById("history-panel").style.display = "none";
 }
 
-// 4. กรองรายการข้อมูลตามที่ผู้เรียนเลือกโหมดและความยาก
+// 4. Group data matching filter configurations
 function applyFilters() {
     const selectedMode = document.getElementById("filter-mode").value;
     const selectedDiff = document.getElementById("filter-difficulty").value;
@@ -155,7 +163,7 @@ function applyFilters() {
     displayCurrentItem();
 }
 
-// 5. แสดงผลการฝึกตามโจทย์ปัจจุบัน
+// 5. Render Target Challenges
 function displayCurrentItem() {
     const targetDiv = document.getElementById("target-sentence");
     const imgContainer = document.getElementById("image-container");
@@ -168,7 +176,6 @@ function displayCurrentItem() {
     document.getElementById("score-text").innerText = "";
     document.getElementById("status-message").innerText = "Ready. Click 'Start Practice' to begin.";
 
-    // อัปเดตตัวเลขแสดงความก้าวหน้าคำ
     const curNumSpan = document.getElementById("current-question-num");
     const totalNumSpan = document.getElementById("total-questions-num");
 
@@ -188,11 +195,9 @@ function displayCurrentItem() {
     btnMic.disabled = false;
     const item = filteredSentences[currentIdx];
     
-    // ตั้งค่าตัวนับข้อ
     curNumSpan.innerText = currentIdx + 1;
     totalNumSpan.innerText = filteredSentences.length;
 
-    // ตั้งระดับความยากและการ์ดสี
     diffBadge.innerText = item.difficulty.toUpperCase();
     diffBadge.className = `badge badge-${item.difficulty.toLowerCase()}`;
 
@@ -204,9 +209,9 @@ function displayCurrentItem() {
     } 
     else if (item.mode === "listen") {
         imgContainer.style.display = "none";
-        audioContainer.style.display = "block"; // เปิดเผย container ลำโพงเสียง
+        audioContainer.style.display = "block";
         targetDiv.innerText = item.text1;
-        targetDiv.classList.add("text-blurred"); // เปิดเอฟเฟกต์เบลอบังคำเฉลยก่อน
+        targetDiv.classList.add("text-blurred"); // Blur card element to challenge player listening
     } 
     else if (item.mode === "image") {
         audioContainer.style.display = "none";
@@ -221,7 +226,41 @@ function displayCurrentItem() {
     }
 }
 
-// 6. โหมดฟังแล้วพูด: สังเคราะห์เสียงพูดให้ผู้เรียนฟัง
+// 6. Voice Customizer Helpers
+function updateVoiceSettings() {
+    voiceType = document.getElementById("select-voice-type").value;
+    voiceSpeed = parseFloat(document.getElementById("select-voice-speed").value);
+}
+
+// Dynamic voice lookup supporting fallback options
+function getBestVoice(type) {
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices || voices.length === 0) return null;
+    
+    // Filter to English voice engines
+    const enVoices = voices.filter(v => v.lang.toLowerCase().startsWith('en'));
+    if (enVoices.length === 0) return null;
+
+    // Filter profiles matching speaker gender tags
+    const femaleNames = ["zira", "samantha", "hazel", "susan", "karen", "veena", "tessa", "moira", "female", "siri", "victoria"];
+    const maleNames = ["david", "george", "ravi", "mark", "richard", "male", "microsoft david", "daniel", "alex"];
+
+    if (type === "female" || type === "girl") {
+        const voice = enVoices.find(v => femaleNames.some(name => v.name.toLowerCase().includes(name)));
+        if (voice) return voice;
+    } else if (type === "male" || type === "boy") {
+        const voice = enVoices.find(v => maleNames.some(name => v.name.toLowerCase().includes(name)));
+        if (voice) return voice;
+    }
+    
+    // US English Fallback
+    const usVoice = enVoices.find(v => v.lang.toLowerCase().includes('us'));
+    if (usVoice) return usVoice;
+
+    return enVoices[0];
+}
+
+// 7. Text-To-Speech Pronunciation Engine
 function playTargetAudio() {
     if (filteredSentences.length === 0) return;
     const item = filteredSentences[currentIdx];
@@ -230,6 +269,26 @@ function playTargetAudio() {
 
     const utterance = new SpeechSynthesisUtterance(item.text1);
     utterance.lang = 'en-US';
+    
+    const matchedVoice = getBestVoice(voiceType);
+    if (matchedVoice) {
+        utterance.voice = matchedVoice;
+    }
+
+    // Set voice rate speed
+    utterance.rate = voiceSpeed;
+
+    // Pitch customizers simulating age profiles
+    if (voiceType === "girl") {
+        utterance.pitch = 1.5; 
+    } else if (voiceType === "boy") {
+        utterance.pitch = 1.4; 
+    } else if (voiceType === "male") {
+        utterance.pitch = 0.9; 
+    } else {
+        utterance.pitch = 1.0; 
+    }
+
     window.speechSynthesis.speak(utterance);
 }
 
@@ -248,7 +307,7 @@ function toggleRecording() {
     }
 }
 
-// 7. วิเคราะห์เปรียบเทียบประเมินการพูด
+// 8. Pronunciation Speech Assessment logic
 function evaluatePronunciation(spokenText) {
     const item = filteredSentences[currentIdx];
     const targets = [item.text1, item.text2, item.text3].filter(t => t && t.trim() !== "");
@@ -282,14 +341,13 @@ function evaluatePronunciation(spokenText) {
         }
     });
 
-    // ปลดเอฟเฟกต์เบลอบังคำออก เมื่อประเมินผลเรียบร้อยแล้ว
     const targetDiv = document.getElementById("target-sentence");
-    targetDiv.classList.remove("text-blurred"); 
+    targetDiv.classList.remove("text-blurred"); // Remove text blur reveal challenge targets
     
     if (item.mode === "listen") {
-        targetDiv.innerHTML = `<span style="font-size:14px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
+        targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
     } else if (item.mode === "image") {
-        targetDiv.innerHTML = `<span style="font-size:14px; color:#6B7280; display:block; margin-bottom:5px;">Acceptable Answers:</span> ${targets.join(" / ")}`;
+        targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
     }
 
     document.getElementById("comparison-result").innerHTML = bestResultHTML;
@@ -299,11 +357,11 @@ function evaluatePronunciation(spokenText) {
     saveToHistory(item.mode, bestMatchedTarget, spokenText, bestScore);
 }
 
-// 8. บันทึกและแสดงผลประวัติฝึกซ้อม
+// 9. Process Local Session History Logs
 function saveToHistory(mode, target, spoken, score) {
     const history = JSON.parse(localStorage.getItem("practice_history") || "[]");
     const newRecord = {
-        timestamp: new Date().toLocaleString('th-TH'),
+        timestamp: new Date().toLocaleString('en-US'),
         mode: mode.toUpperCase(),
         target: target,
         spoken: spoken,
@@ -337,7 +395,7 @@ function renderHistoryTable() {
     }).join("");
 }
 
-// ส่งออกไฟล์ประวัติการเล่น (CSV)
+// Export logs to a local CSV file
 function exportHistoryToCSV() {
     const history = JSON.parse(localStorage.getItem("practice_history") || "[]");
     if (history.length === 0) {
