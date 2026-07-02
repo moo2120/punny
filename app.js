@@ -390,9 +390,27 @@ const cleanText = str => {
 };
 
 // Splits cleaned text into an array of normalized words
+// Supports English (space-split) and Thai (Intl.Segmenter auto-detection) natively & offline
 const getWordsArray = str => {
     const cleaned = cleanText(str);
-    return cleaned ? cleaned.split(" ") : [];
+    if (!cleaned) return [];
+    
+    // Auto-detect if string contains Thai characters
+    const containsThai = /[\u0E00-\u0E7F]/.test(cleaned);
+    
+    if (containsThai && typeof Intl !== 'undefined' && Intl.Segmenter) {
+        try {
+            // Use built-in browser Intl.Segmenter for Thai word-segmentation (Totally Free & Offline)
+            const segmenter = new Intl.Segmenter('th', { granularity: 'word' });
+            const segments = segmenter.segment(cleaned);
+            return [...segments].filter(s => s.isWordLike).map(s => s.segment);
+        } catch (e) {
+            console.warn("Intl.Segmenter error, fallback to space-split:", e);
+        }
+    }
+    
+    // Standard English/space-separated word splitting
+    return cleaned.split(" ");
 };
 
 // Advanced Multi-Heuristic Client-Side Grammar Advisor (Totally free, zero latency, zero memory overhead)
@@ -401,7 +419,7 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
     const suggestions = [];
 
     // --- ENGINE 1: Standalone Indefinite Article Checks (a/an ESL mismatches) ---
-    // Rule A: Incorrect "a" before vowel sounds (e.g. "a apple")
+    // Rule A: Incorrect "a" before vowel sound words (e.g. "a apple")
     const aVowelPattern = /\ba\s+([aeiou][a-z]*)\b/g;
     const nonSilentU = ["university", "union", "unique", "useful", "user", "unit", "one"];
     let match;
@@ -422,7 +440,7 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
         }
     }
 
-    // --- Engine 2: Target-Guided Comparison (Plurals, Copulas, Verb conjugations, Prepositions) ---
+    // --- Engine 2: Target-Guided Structure Diagnostics (Subject-Verb agreement / Plurals / Copula) ---
     // Only perform morphological alignment diagnostics if the user didn't hit a keyword-match
     if (!isKeywordMatch && targetText) {
         const spokenWords = getWordsArray(inputText);
