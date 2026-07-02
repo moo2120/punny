@@ -183,10 +183,15 @@ function displayCurrentItem() {
     
     const typeContainer = document.getElementById("type-container");
     const typeInput = document.getElementById("type-input");
+    const grammarTipDiv = document.getElementById("grammar-tip");
 
     document.getElementById("comparison-result").innerHTML = "";
     document.getElementById("score-text").innerText = "";
     document.getElementById("status-message").innerText = "Ready. Click 'Start Practice' to begin.";
+    
+    // Clear grammar feedback boxes
+    grammarTipDiv.innerHTML = "";
+    grammarTipDiv.style.display = "none";
 
     // Reset attempt states when transitioning to a new sentence
     attemptsCount = 0;
@@ -390,6 +395,114 @@ const getWordsArray = str => {
     return cleaned ? cleaned.split(" ") : [];
 };
 
+// Advanced Multi-Heuristic Client-Side Grammar Advisor (Totally free, zero latency, zero memory overhead)
+function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
+    const cleanedInput = inputText.toLowerCase().trim();
+    const suggestions = [];
+
+    // --- ENGINE 1: Standalone Indefinite Article Checks (a/an ESL mismatches) ---
+    // Rule A: Incorrect "a" before vowel sounds (e.g. "a apple")
+    const aVowelPattern = /\ba\s+([aeiou][a-z]*)\b/g;
+    const nonSilentU = ["university", "union", "unique", "useful", "user", "unit", "one"];
+    let match;
+    while ((match = aVowelPattern.exec(cleanedInput)) !== null) {
+        const word = match[1];
+        if (!nonSilentU.some(exception => word.startsWith(exception))) {
+            suggestions.push(`💡 <strong>Grammar Tip:</strong> Use "<strong>an</strong>" instead of "a" before vowel sounds (e.g. "an ${word}").`);
+        }
+    }
+
+    // Rule B: Incorrect "an" before consonant sounds (e.g. "an banana")
+    const anConsonantPattern = /\ban\s+([bcdfghjklmnpqrstvwxyz][a-z]*)\b/g;
+    const silentH = ["hour", "honest", "honor", "heir"];
+    while ((match = anConsonantPattern.exec(cleanedInput)) !== null) {
+        const word = match[1];
+        if (!silentH.some(exception => word.startsWith(exception))) {
+            suggestions.push(`💡 <strong>Grammar Tip:</strong> Use "<strong>a</strong>" instead of "an" before consonant sounds (e.g. "a ${word}").`);
+        }
+    }
+
+    // --- Engine 2: Target-Guided Comparison (Plurals, Copulas, Verb conjugations, Prepositions) ---
+    // Only perform morphological alignment diagnostics if the user didn't hit a keyword-match
+    if (!isKeywordMatch && targetText) {
+        const spokenWords = getWordsArray(inputText);
+        const targetWords = getWordsArray(targetText);
+
+        // A. Missing Preposition / Structural Word Spotter
+        const spokenSet = new Set(spokenWords);
+        const prepositions = ["in", "on", "at", "to", "for", "with", "by", "of", "from", "about", "into", "through", "under", "over"];
+        const missingPrepositions = targetWords.filter(w => prepositions.includes(w) && !spokenSet.has(w));
+        
+        if (missingWords = missingWordsCheck(targetWords, spokenSet)) {
+            suggestions.push(`💡 <strong>Preposition Tip:</strong> Did you miss the preposition? Try including: "<strong>${missingWords.join(", ")}</strong>".`);
+        }
+
+        // B. Morphological Alignment Check (comparing same position mismatches)
+        const minLength = Math.min(spokenWords.length, targetWords.length);
+        for (let i = 0; i < minLength; i++) {
+            const sw = spokenWords[i];
+            const tw = targetWords[i];
+            if (sw !== tw) {
+                // 1. Noun Inflection Check (Singular vs Plural e.g. "apple" vs "apples")
+                if (sw + "s" === tw || sw + "es" === tw || tw + "s" === sw || tw + "es" === sw) {
+                    suggestions.push(`💡 <strong>Noun Agreement Tip:</strong> You said "<strong>${sw}</strong>" but the target sentence requires plural/singular form: "<strong>${tw}</strong>".`);
+                }
+                
+                // 2. Copula/Verb Tense Agreement Mismatch (e.g. "is" vs "are", "was" vs "were", "go" vs "went")
+                const copulas = ["is", "are", "was", "were", "am", "be", "been"];
+                if (copulas.includes(sw) && copulas.includes(tw)) {
+                    suggestions.push(`💡 <strong>Subject-Verb Agreement Tip:</strong> Try using the correct verb form "<strong>${tw}</strong>" instead of "${sw}".`);
+                }
+
+                // 3. Aspect / Auxiliary Mismatch (e.g. "has" vs "have", "do" vs "does")
+                const auxiliaries = ["has", "have", "had", "do", "does", "did", "can", "could", "will", "would", "should"];
+                if (auxiliaries.includes(sw) && auxiliaries.includes(tw)) {
+                    suggestions.push(`💡 <strong>Auxiliary Verb Tip:</strong> Try using "<strong>${tw}</strong>" instead of "${sw}".`);
+                }
+
+                // 4. Common Irregular Verb Tense Misuse (e.g. "run/ran", "speak/spoke", "eat/ate", "write/wrote")
+                const irregulars = [
+                    ["go", "went", "gone", "going"],
+                    ["run", "ran", "running"],
+                    ["see", "saw", "seen", "seeing"],
+                    ["do", "did", "done", "doing"],
+                    ["eat", "ate", "eaten", "eating"],
+                    ["write", "wrote", "written", "writing"],
+                    ["speak", "spoke", "spoken", "speaking"],
+                    ["take", "took", "taken", "taking"],
+                    ["make", "made", "making"],
+                    ["buy", "bought", "buying"]
+                ];
+                for (const group of irregulars) {
+                    if (group.includes(sw) && group.includes(tw)) {
+                        suggestions.push(`💡 <strong>Verb Tense Tip:</strong> You said "<strong>${sw}</strong>" but the correct verb conjugation is "<strong>${tw}</strong>".`);
+                        break;
+                    }
+                }
+
+                // 5. Regular Verb Tense Misuse (Inflection check e.g. "walked" vs "walking" vs "walk")
+                const cleanVerbRoot = w => w.replace(/(ing|ed|s|es)$/, "");
+                if (cleanVerbRoot(sw) === cleanVerbRoot(tw) && sw !== tw) {
+                    if (tw.endsWith("ing")) {
+                        suggestions.push(`💡 <strong>Verb Form Tip:</strong> Try using continuous participle "<strong>${tw}</strong>" instead of "${sw}".`);
+                    } else if (tw.endsWith("ed")) {
+                        suggestions.push(`💡 <strong>Verb Tense Tip:</strong> Use the past-tense "<strong>${tw}</strong>" instead of the present "${sw}".`);
+                    }
+                }
+            }
+        }
+    }
+
+    return suggestions.join("<br>");
+}
+
+// Helper to filter missing target prepositions
+function missingWordsCheck(targetWords, spokenSet) {
+    const prepositions = ["in", "on", "at", "to", "for", "with", "by", "of", "from", "about", "into", "through", "under", "over"];
+    const missing = targetWords.filter(w => prepositions.includes(w) && !spokenSet.has(w));
+    return missing.length > 0 ? missing : null;
+}
+
 // 8. Evaluates Textual Input for Typing Modes with 3-Attempt Logic
 function evaluateTyping() {
     const item = filteredSentences[currentIdx];
@@ -401,9 +514,9 @@ function evaluateTyping() {
     }
 
     const targets = [item.text1, item.text2, item.text3].filter(t => t && t.trim() !== "");
-    let currentBestScore = -1;
-    let currentBestHTML = "";
-    let currentBestMatchedTarget = "";
+    let bestScore = -1;
+    let bestResultHTML = "";
+    let bestMatchedTarget = "";
 
     const typedWords = getWordsArray(typedText);
 
@@ -422,19 +535,19 @@ function evaluateTyping() {
         
         const score = Math.round((correctCount / targetWords.length) * 100);
         
-        if (score > currentBestScore) {
-            currentBestScore = score;
-            currentBestHTML = comparisonHTML.join(" ");
-            currentBestMatchedTarget = target;
+        if (score > bestScore) {
+            bestScore = score;
+            bestResultHTML = comparisonHTML.join(" ");
+            bestMatchedTarget = target;
         }
     });
 
     attemptsCount++;
 
     // Track the overall best score and HTML across all 3 attempts
-    if (currentBestScore > bestAttemptScore) {
-        bestAttemptScore = currentBestScore;
-        bestAttemptHTML = currentBestHTML;
+    if (bestScore > bestAttemptScore) {
+        bestAttemptScore = bestScore;
+        bestAttemptHTML = bestResultHTML;
         bestAttemptSpoken = typedText;
     }
 
@@ -442,40 +555,54 @@ function evaluateTyping() {
     const comparisonDiv = document.getElementById("comparison-result");
     const statusMsg = document.getElementById("status-message");
     const scoreText = document.getElementById("score-text");
+    const grammarTipDiv = document.getElementById("grammar-tip");
     
     const btnSubmit = document.getElementById("btn-submit-type");
     const btnRetry = document.getElementById("btn-retry");
     const typeInput = document.getElementById("type-input");
 
+    // Clear and calculate client-side grammar advisor logs
+    grammarTipDiv.innerHTML = "";
+    grammarTipDiv.style.display = "none";
+    const localGrammarFeedback = analyzeGrammarHeuristics(typedText, bestMatchedTarget, false);
+
     // Case I: Perfect Typing (100% Score) - Complete turn immediately
-    if (currentBestScore === 100) {
+    if (bestScore === 100) {
         if (item.mode === "listen_type") {
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
         } else if (item.mode === "image_type") {
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
         }
 
-        comparisonDiv.innerHTML = currentBestHTML;
+        comparisonDiv.innerHTML = bestResultHTML;
         statusMsg.innerText = `🎉 Perfect! Excellent job! (◕‿◕)`;
         scoreText.innerText = `Score: 100%`;
+
+        if (localGrammarFeedback) {
+            grammarTipDiv.innerHTML = localGrammarFeedback;
+            grammarTipDiv.style.display = "block";
+        }
 
         // Lock typing fields and activate practice again button
         typeInput.disabled = true;
         btnSubmit.style.display = "none";
         btnRetry.style.display = "inline-flex";
 
-        saveToHistory(item.mode, currentBestMatchedTarget, typedText.trim(), 100);
+        saveToHistory(item.mode, bestMatchedTarget, typedText.trim(), 100);
     }
     // Case II: Under 100% and still have attempts left (< 3)
     else if (attemptsCount < 3) {
-        // Hide correct answer, show current attempt score and transcript
         comparisonDiv.innerHTML = `<span style="color:#6B7280; font-size:14px;">You typed: "${typedText.trim()}"</span>`;
         statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•)`;
-        scoreText.innerText = `Attempt Score: ${currentBestScore}%`;
+        scoreText.innerText = `Attempt Score: ${bestScore}%`;
+
+        if (localGrammarFeedback) {
+            grammarTipDiv.innerHTML = localGrammarFeedback;
+            grammarTipDiv.style.display = "block";
+        }
     }
     // Case III: Under 100% and used up all 3 attempts
     else {
-        // Reveal the correct answers now that attempts are exhausted
         if (item.mode === "listen_type") {
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
         } else if (item.mode === "image_type") {
@@ -487,16 +614,28 @@ function evaluateTyping() {
         statusMsg.innerText = `😔 Out of attempts! Here is the correct answer.`;
         scoreText.innerText = `Best Score: ${bestAttemptScore}%`;
         
+        let finalGrammarFeedback = localGrammarFeedback;
+        if (bestMatchedTarget) {
+            const guidance = `💡 <strong>Review Tip:</strong> Practice writing: "<strong>${bestMatchedTarget}</strong>"`;
+            finalGrammarFeedback = finalGrammarFeedback ? `${guidance}<br>${finalGrammarFeedback}` : guidance;
+        }
+
+        if (finalGrammarFeedback) {
+            grammarTipDiv.innerHTML = finalGrammarFeedback;
+            grammarTipDiv.style.display = "block";
+        }
+
         // Lock typing fields and activate practice again button
         typeInput.disabled = true;
         btnSubmit.style.display = "none";
         btnRetry.style.display = "inline-flex";
 
-        saveToHistory(item.mode, currentBestMatchedTarget, bestAttemptSpoken.trim(), bestAttemptScore);
+        saveToHistory(item.mode, bestMatchedTarget, bestAttemptSpoken.trim(), bestAttemptScore);
     }
 }
 
-// 9. Pronunciation Speech Assessment logic with dynamic mode evaluation (Speak Modes)
+// 9. Pronunciation Speech Assessment logic (Voice Modes)
+// Supports Keyword Detection (gives 100% if spoken includes target) + Grammar Suggestions
 function evaluatePronunciation(spokenText) {
     const item = filteredSentences[currentIdx];
     const targets = [item.text1, item.text2, item.text3].filter(t => t && t.trim() !== "");
@@ -504,28 +643,42 @@ function evaluatePronunciation(spokenText) {
     let currentBestScore = -1;
     let currentBestHTML = "";
     let currentBestMatchedTarget = "";
+    let isBestMatchKeywordBased = false;
 
+    const spokenClean = cleanText(spokenText);
     const spokenWords = getWordsArray(spokenText);
 
     targets.forEach(target => {
+        const targetClean = cleanText(target);
         const targetWords = getWordsArray(target);
         let correctCount = 0;
+        let comparisonHTML = [];
+
+        // Check if the user spoke the target phrase anywhere in their input (Keyword Match)
+        const isKeywordMatch = spokenClean.includes(targetClean);
+
+        if (isKeywordMatch) {
+            correctCount = targetWords.length;
+            comparisonHTML = targetWords.map(word => `<span class="word-correct">${word}</span>`);
+        } else {
+            // Fallback to standard word-by-word alignment evaluation
+            comparisonHTML = targetWords.map((word, idx) => {
+                if (spokenWords[idx] === word) {
+                    correctCount++;
+                    return `<span class="word-correct">${word}</span>`;
+                } else {
+                    return `<span class="word-incorrect">${word}</span>`;
+                }
+            });
+        }
         
-        const comparisonHTML = targetWords.map((word, idx) => {
-            if (spokenWords[idx] === word) {
-                correctCount++;
-                return `<span class="word-correct">${word}</span>`;
-            } else {
-                return `<span class="word-incorrect">${word}</span>`;
-            }
-        });
-        
-        const score = Math.round((correctCount / targetWords.length) * 100);
+        const score = isKeywordMatch ? 100 : Math.round((correctCount / targetWords.length) * 100);
         
         if (score > currentBestScore) {
             currentBestScore = score;
             currentBestHTML = comparisonHTML.join(" ");
             currentBestMatchedTarget = target;
+            isBestMatchKeywordBased = isKeywordMatch;
         }
     });
 
@@ -535,6 +688,12 @@ function evaluatePronunciation(spokenText) {
     const scoreText = document.getElementById("score-text");
     const btnMic = document.getElementById("btn-mic");
     const btnRetry = document.getElementById("btn-retry");
+    const grammarTipDiv = document.getElementById("grammar-tip");
+
+    // Reset and compute client-side Grammar coaching (now using advanced morphological comparison)
+    grammarTipDiv.innerHTML = "";
+    grammarTipDiv.style.display = "none";
+    const localGrammarFeedback = analyzeGrammarHeuristics(spokenText, currentBestMatchedTarget, isBestMatchKeywordBased);
 
     // ================== Mode A: Listen and Speak Mode (3-Attempt Logic) ==================
     if (item.mode === "listen") {
@@ -554,6 +713,11 @@ function evaluatePronunciation(spokenText) {
             statusMsg.innerText = `🎉 Perfect! Excellent job! (◕‿◕)`;
             scoreText.innerText = `Score: 100%`;
             
+            if (localGrammarFeedback) {
+                grammarTipDiv.innerHTML = localGrammarFeedback;
+                grammarTipDiv.style.display = "block";
+            }
+
             btnMic.disabled = true; // Block practicing for this question since it is already perfect
             btnRetry.style.display = "inline-flex"; // Enable Retry Button for practicing again
 
@@ -561,21 +725,34 @@ function evaluatePronunciation(spokenText) {
         }
         // Case II: Under 100% and still have attempts left
         else if (attemptsCount < 3) {
-            // Hide correct answer, show current attempt score and transcript
             comparisonDiv.innerHTML = `<span style="color:#6B7280; font-size:14px;">You said: "${spokenText}"</span>`;
             statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•)`;
             scoreText.innerText = `Attempt Score: ${currentBestScore}%`;
+
+            if (localGrammarFeedback) {
+                grammarTipDiv.innerHTML = localGrammarFeedback;
+                grammarTipDiv.style.display = "block";
+            }
         }
         // Case III: Under 100% and used up all 3 attempts
         else {
-            // Reveal the correct answers now that attempts are exhausted
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
-            
-            // Display results from their best performing attempt
             comparisonDiv.innerHTML = bestAttemptHTML;
             statusMsg.innerText = `😔 Out of attempts! Here is the correct answer.`;
             scoreText.innerText = `Best Score: ${bestAttemptScore}%`;
             
+            // Build dual tips (Ground truth guidance + Grammar rule evaluation)
+            let finalGrammarFeedback = localGrammarFeedback;
+            if (currentBestMatchedTarget) {
+                const guidance = `💡 <strong>Review Tip:</strong> Practice saying: "<strong>${currentBestMatchedTarget}</strong>"`;
+                finalGrammarFeedback = finalGrammarFeedback ? `${guidance}<br>${finalGrammarFeedback}` : guidance;
+            }
+
+            if (finalGrammarFeedback) {
+                grammarTipDiv.innerHTML = finalGrammarFeedback;
+                grammarTipDiv.style.display = "block";
+            }
+
             btnMic.disabled = true; // Complete current question, block microphone until they click next or retry
             btnRetry.style.display = "inline-flex"; // Enable Retry Button for practicing again
 
@@ -584,7 +761,6 @@ function evaluatePronunciation(spokenText) {
     }
     // ================== Mode B: Read/Look Mode (Immediate Evaluation Logic) ==================
     else {
-        // Reveal target texts / answers immediately on the first speak
         if (item.mode === "image") {
             targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
         } else {
@@ -595,6 +771,17 @@ function evaluatePronunciation(spokenText) {
         statusMsg.innerText = `You said: "${spokenText}"`;
         scoreText.innerText = `Score: ${currentBestScore}%`;
         
+        let finalGrammarFeedback = localGrammarFeedback;
+        if (currentBestMatchedTarget) {
+            const guidance = `💡 <strong>Review Tip:</strong> Practice saying: "<strong>${currentBestMatchedTarget}</strong>"`;
+            finalGrammarFeedback = finalGrammarFeedback ? `${guidance}<br>${finalGrammarFeedback}` : guidance;
+        }
+
+        if (finalGrammarFeedback) {
+            grammarTipDiv.innerHTML = finalGrammarFeedback;
+            grammarTipDiv.style.display = "block";
+        }
+
         btnMic.disabled = true; // Complete current question, block microphone until they click next or retry
         btnRetry.style.display = "inline-flex"; // Enable Retry Button for practicing again
 
