@@ -155,7 +155,7 @@ function goBackToSetup() {
     document.getElementById("history-panel").style.display = "none";
 }
 
-// 4. Group data matching filter configurations (Removed difficulty filtering completely)
+// 4. Group data matching filter configurations
 function applyFilters() {
     const selectedMode = document.getElementById("filter-mode").value;
 
@@ -711,7 +711,7 @@ function evaluatePronunciation(spokenText) {
 
         // Case I: Perfect Pronunciation (100% Score) - Complete turn immediately
         if (currentBestScore === 100) {
-            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
             comparisonDiv.innerHTML = currentBestHTML;
             statusMsg.innerText = `🎉 Perfect! Excellent job! (◕‿◕)`;
             scoreText.innerText = `Score: 100%`;
@@ -739,7 +739,7 @@ function evaluatePronunciation(spokenText) {
         }
         // Case III: Under 100% and used up all 3 attempts
         else {
-            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
             comparisonDiv.innerHTML = bestAttemptHTML;
             statusMsg.innerText = `😔 Out of attempts! Here is the correct answer.`;
             scoreText.innerText = `Best Score: ${bestAttemptScore}%`;
