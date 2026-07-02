@@ -13,6 +13,12 @@ let isRecording = false;
 let voiceType = "female";
 let voiceSpeed = 1.0;
 
+// Game State variables for managing attempts (Only active on Listen and Speak mode)
+let attemptsCount = 0;
+let bestAttemptScore = -1;
+let bestAttemptHTML = "";
+let bestAttemptSpoken = "";
+
 window.onload = async () => {
     initSpeechRecognition();
     await fetchSentences();
@@ -176,12 +182,18 @@ function displayCurrentItem() {
     document.getElementById("score-text").innerText = "";
     document.getElementById("status-message").innerText = "Ready. Click 'Start Practice' to begin.";
 
+    // Reset attempt states when transitioning to a new sentence
+    attemptsCount = 0;
+    bestAttemptScore = -1;
+    bestAttemptHTML = "";
+    bestAttemptSpoken = "";
+    btnMic.disabled = false;
+
     const curNumSpan = document.getElementById("current-question-num");
     const totalNumSpan = document.getElementById("total-questions-num");
 
     if (filteredSentences.length === 0) {
         targetDiv.innerText = "No sentences found for this selection.";
-        targetDiv.classList.remove("text-blurred");
         diffBadge.innerText = "-";
         diffBadge.className = "badge";
         imgContainer.style.display = "none";
@@ -192,7 +204,6 @@ function displayCurrentItem() {
         return;
     }
 
-    btnMic.disabled = false;
     const item = filteredSentences[currentIdx];
     
     curNumSpan.innerText = currentIdx + 1;
@@ -205,13 +216,12 @@ function displayCurrentItem() {
         imgContainer.style.display = "none";
         audioContainer.style.display = "none";
         targetDiv.innerText = item.text1;
-        targetDiv.classList.remove("text-blurred");
     } 
     else if (item.mode === "listen") {
         imgContainer.style.display = "none";
         audioContainer.style.display = "block";
-        targetDiv.innerText = item.text1;
-        targetDiv.classList.add("text-blurred"); // Blur card element to challenge player listening
+        // Prompt instructs users to listen and repeat, fully hiding any text previews
+        targetDiv.innerText = "🎧 Tap the button below to listen, then repeat!";
     } 
     else if (item.mode === "image") {
         audioContainer.style.display = "none";
@@ -222,7 +232,6 @@ function displayCurrentItem() {
             imgContainer.style.display = "none";
         }
         targetDiv.innerText = "Look at the image and say what it is.";
-        targetDiv.classList.remove("text-blurred");
     }
 }
 
@@ -307,14 +316,14 @@ function toggleRecording() {
     }
 }
 
-// 8. Pronunciation Speech Assessment logic
+// 8. Pronunciation Speech Assessment logic with dynamic mode evaluation
 function evaluatePronunciation(spokenText) {
     const item = filteredSentences[currentIdx];
     const targets = [item.text1, item.text2, item.text3].filter(t => t && t.trim() !== "");
     
-    let bestScore = -1;
-    let bestResultHTML = "";
-    let bestMatchedTarget = "";
+    let currentBestScore = -1;
+    let currentBestHTML = "";
+    let currentBestMatchedTarget = "";
 
     const clean = str => str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, "").trim();
     const spokenWords = clean(spokenText).split(/\s+/);
@@ -334,27 +343,77 @@ function evaluatePronunciation(spokenText) {
         
         const score = Math.round((correctCount / targetWords.length) * 100);
         
-        if (score > bestScore) {
-            bestScore = score;
-            bestResultHTML = comparisonHTML.join(" ");
-            bestMatchedTarget = target;
+        if (score > currentBestScore) {
+            currentBestScore = score;
+            currentBestHTML = comparisonHTML.join(" ");
+            currentBestMatchedTarget = target;
         }
     });
 
     const targetDiv = document.getElementById("target-sentence");
-    targetDiv.classList.remove("text-blurred"); // Remove text blur reveal challenge targets
-    
+    const comparisonDiv = document.getElementById("comparison-result");
+    const statusMsg = document.getElementById("status-message");
+    const scoreText = document.getElementById("score-text");
+    const btnMic = document.getElementById("btn-mic");
+
+    // ================== Mode 1: Listen and Speak Mode (3-Attempt Logic) ==================
     if (item.mode === "listen") {
-        targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
-    } else if (item.mode === "image") {
-        targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
+        attemptsCount++;
+
+        // Track the overall best score and HTML across all 3 attempts
+        if (currentBestScore > bestAttemptScore) {
+            bestAttemptScore = currentBestScore;
+            bestAttemptHTML = currentBestHTML;
+            bestAttemptSpoken = spokenText;
+        }
+
+        // Case A: Perfect Pronunciation (100% Score) - Complete turn immediately
+        if (currentBestScore === 100) {
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
+            comparisonDiv.innerHTML = currentBestHTML;
+            statusMsg.innerText = `🎉 Perfect! Excellent job! (◕‿◕)`;
+            scoreText.innerText = `Score: 100%`;
+            btnMic.disabled = true; // Block practicing for this question since it is already perfect
+
+            saveToHistory(item.mode, currentBestMatchedTarget, spokenText, 100);
+        }
+        // Case B: Under 100% and still have attempts left
+        else if (attemptsCount < 3) {
+            // Hide correct answer, show current attempt score and transcript
+            comparisonDiv.innerHTML = `<span style="color:#6B7280; font-size:14px;">You said: "${spokenText}"</span>`;
+            statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•)`;
+            scoreText.innerText = `Attempt Score: ${currentBestScore}%`;
+        }
+        // Case C: Under 100% and used up all 3 attempts
+        else {
+            // Reveal the correct answers now that attempts are exhausted
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
+            
+            // Display results from their best performing attempt
+            comparisonDiv.innerHTML = bestAttemptHTML;
+            statusMsg.innerText = `😔 Out of attempts! Here is the correct answer.`;
+            scoreText.innerText = `Best Score: ${bestAttemptScore}%`;
+            btnMic.disabled = true; // Complete current question, block microphone until they click next
+
+            saveToHistory(item.mode, currentBestMatchedTarget, bestAttemptSpoken, bestAttemptScore);
+        }
     }
+    // ================== Mode 2: Read/Look Mode (Immediate Evaluation Logic) ==================
+    else {
+        // Reveal target texts / answers immediately on the first speak
+        if (item.mode === "image") {
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
+        } else {
+            targetDiv.innerText = item.text1;
+        }
 
-    document.getElementById("comparison-result").innerHTML = bestResultHTML;
-    document.getElementById("status-message").innerText = `You said: "${spokenText}"`;
-    document.getElementById("score-text").innerText = `Score: ${bestScore}%`;
+        comparisonDiv.innerHTML = currentBestHTML;
+        statusMsg.innerText = `You said: "${spokenText}"`;
+        scoreText.innerText = `Score: ${currentBestScore}%`;
+        btnMic.disabled = true; // Complete current question, block microphone until they click next
 
-    saveToHistory(item.mode, bestMatchedTarget, spokenText, bestScore);
+        saveToHistory(item.mode, currentBestMatchedTarget, spokenText, currentBestScore);
+    }
 }
 
 // 9. Process Local Session History Logs
@@ -393,6 +452,14 @@ function renderHistoryTable() {
             </tr>
         `;
     }).join("");
+}
+
+// Clear all local records with confirmation warning
+function clearPracticeHistory() {
+    if (confirm("Are you sure you want to clear all practice history? 🗑️ This action cannot be undone!")) {
+        localStorage.removeItem("practice_history");
+        renderHistoryTable();
+    }
 }
 
 // Export logs to a local CSV file
