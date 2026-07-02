@@ -316,7 +316,7 @@
         /* Action Buttons */
         .btn-group {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
             margin-top: 10px;
         }
@@ -453,6 +453,139 @@
         .score-pill-high { background-color: #D1FAE5; color: #065F46; }
         .score-pill-med { background-color: #FEF3C7; color: #92400E; }
         .score-pill-low { background-color: #FEE2E2; color: #991B1B; }
+
+        /* ==================== Responsive Queries (Desktop/Mobile optimizations) ==================== */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                border-radius: 16px;
+                margin-bottom: 15px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .subtitle {
+                font-size: 11px;
+                margin-bottom: 20px;
+            }
+
+            .setup-card {
+                padding: 15px;
+            }
+
+            select {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
+            .trainer-header {
+                margin-bottom: 15px;
+            }
+
+            .progress-indicator {
+                font-size: 11px;
+                margin-bottom: 10px;
+            }
+
+            .card {
+                padding: 20px 12px;
+                min-height: 100px;
+            }
+
+            #target-sentence {
+                font-size: 17px;
+                line-height: 1.5;
+            }
+
+            .voice-settings {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+                width: 100%;
+            }
+
+            .setting-item {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .btn-audio-play {
+                width: 100%;
+                justify-content: center;
+                font-size: 14px;
+                padding: 10px 18px;
+            }
+
+            .comparison-result {
+                font-size: 15px;
+                margin: 10px 0;
+            }
+
+            .status-text {
+                font-size: 12px;
+                margin-bottom: 10px;
+            }
+
+            .score-display {
+                font-size: 26px;
+                margin: 10px 0;
+            }
+
+            /* Stack all main buttons vertically to prevent clipping of button text on mobile */
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+                gap: 10px;
+            }
+
+            .btn-group button {
+                width: 100% !important;
+                padding: 12px;
+                font-size: 14px;
+                justify-content: center;
+            }
+
+            .history-section {
+                padding: 15px;
+                border-radius: 16px;
+            }
+
+            .history-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .history-header h3 {
+                font-size: 14px;
+            }
+
+            .history-header div {
+                width: 100%;
+                display: flex;
+                gap: 6px;
+            }
+
+            .history-header div button {
+                flex: 1;
+                font-size: 11px;
+                padding: 6px 8px;
+            }
+
+            table {
+                font-size: 11px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -545,9 +678,15 @@
         <div class="score-display" id="score-text"></div>
 
         <div class="btn-group">
-            <button class="btn-secondary" id="btn-next" onclick="loadNextSentence()">Next Challenge ➡️</button>
             <button class="btn-success btn-mic" id="btn-mic" onclick="toggleRecording()">
                 🎙️ Start Practice (•◡•)
+            </button>
+            <!-- New: Retry/Practice Again Button -->
+            <button class="btn-secondary" id="btn-retry" onclick="retryCurrentSentence()" style="display: none;">
+                🔄 Practice Again
+            </button>
+            <button class="btn-secondary" id="btn-next" onclick="loadNextSentence()">
+                Next Challenge ➡️
             </button>
         </div>
     </div>
@@ -556,7 +695,7 @@
     <div id="history-panel" class="history-section" style="display: none;">
         <div class="history-header">
             <h3>📈 Your Practice History</h3>
-            <div style="display: flex; gap: 8px;">
+            <div>
                 <button class="btn-secondary btn-sm" onclick="exportHistoryToCSV()">📤 Export CSV</button>
                 <button class="btn-danger btn-sm" onclick="clearPracticeHistory()">🗑️ Clear History</button>
             </div>
