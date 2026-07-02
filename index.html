@@ -93,7 +93,6 @@
         .filter-group {
             display: flex;
             flex-direction: column;
-            margin-bottom: 20px;
         }
 
         .filter-group label {
@@ -125,22 +124,10 @@
         /* Practice / Training Screen */
         .trainer-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
             margin-bottom: 20px;
         }
-
-        .badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 6px 14px;
-            border-radius: 50px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .badge-easy { background-color: #D1FAE5; color: #065F46; }
-        .badge-medium { background-color: #FEF3C7; color: #92400E; }
-        .badge-hard { background-color: #FEE2E2; color: #991B1B; }
 
         .progress-indicator {
             text-align: center;
@@ -663,15 +650,6 @@
                     <option value="image_type">🖼️ Look and Type (Look at image and spell)</option>
                 </select>
             </div>
-            <div class="filter-group">
-                <label for="filter-difficulty">🎯 DIFFICULTY LEVEL</label>
-                <select id="filter-difficulty">
-                    <option value="all">⭐ All Levels</option>
-                    <option value="easy">🟢 Easy</option>
-                    <option value="medium">🟡 Medium</option>
-                    <option value="hard">🔴 Hard</option>
-                </select>
-            </div>
         </div>
 
         <button class="btn-primary btn-block btn-large" id="btn-start" onclick="startTrainingSession()" disabled>
@@ -683,7 +661,6 @@
     <div id="screen-trainer" class="container screen-section">
         <div class="trainer-header">
             <button class="btn-secondary btn-sm" onclick="goBackToSetup()">⚙️ Change Mode</button>
-            <span id="difficulty-badge" class="badge">-</span>
         </div>
         
         <div class="progress-indicator">
