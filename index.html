@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Pronunciation Practice</title>
+    <title>English Pronunciation Trainer</title>
     <style>
         :root {
             --primary: #4A90E2;
@@ -32,17 +32,70 @@
             margin-bottom: 20px;
         }
         h1 { text-align: center; color: var(--primary); margin-top: 0;}
+        
+        /* แผงฟิลเตอร์ตัวกรอง */
+        .filter-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .filter-group label {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #7f8c8d;
+        }
+        select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        /* การแสดงผลหน้าหลัก */
         .card {
             background: #f1f2f6;
             padding: 20px;
             border-radius: 8px;
-            margin: 20px 0;
+            margin: 15px 0;
             text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #target-sentence {
             font-size: 20px;
             line-height: 1.5;
         }
+        #image-display {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        .btn-audio {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        /* ตกแต่งสีสันของผลลัพธ์ */
         .word-correct { color: var(--success); font-weight: bold; margin: 0 2px; }
         .word-incorrect { color: var(--danger); text-decoration: underline; margin: 0 2px; }
+        
         .btn-group {
             display: flex;
             gap: 10px;
@@ -59,16 +112,18 @@
             transition: all 0.2s;
         }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:disabled { background: #ccc; }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-success { background: var(--success); color: white; }
+        .btn-success:disabled { background: #ccc; cursor: not-allowed; }
+        
         .status-text { text-align: center; font-style: italic; color: #7f8c8d; min-height: 24px;}
         .score-display { text-align: center; font-size: 24px; font-weight: bold; margin: 15px 0; }
         
-        /* ประวัติการฝึก */
+        /* ส่วนประวัติ */
         .history-section { max-width: 600px; width: 100%; }
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; }
         th { background-color: var(--primary); color: white; }
     </style>
 </head>
@@ -76,21 +131,52 @@
 
     <div class="container">
         <h1>Pronunciation App</h1>
+        
+        <!-- ส่วนคัดกรองโหมดและความยาก -->
+        <div class="filter-panel">
+            <div class="filter-group">
+                <label for="filter-mode">MODE (โหมด)</label>
+                <select id="filter-mode" onchange="applyFilters()">
+                    <option value="read">Read and Speak (อ่านแล้วพูด)</option>
+                    <option value="listen">Listen and Speak (ฟังแล้วพูด)</option>
+                    <option value="image">Look and Speak (ดูภาพแล้วพูด)</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-difficulty">DIFFICULTY (ระดับความยาก)</label>
+                <select id="filter-difficulty" onchange="applyFilters()">
+                    <option value="all">All (ทุกระดับ)</option>
+                    <option value="easy">Easy (ง่าย)</option>
+                    <option value="medium">Medium (ปานกลาง)</option>
+                    <option value="hard">Hard (ยาก)</option>
+                </select>
+            </div>
+        </div>
+
         <div style="text-align: center;">
-            <span id="difficulty-badge" style="background: #eccc68; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold;">Loading...</span>
+            <span id="difficulty-badge" style="background: #eccc68; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold;">-</span>
         </div>
         
-        <!-- ประโยคเป้าหมาย -->
-        <div class="card" id="target-sentence">Please loading sentences...</div>
+        <!-- การแสดงผลหลักตามโหมด -->
+        <div class="card">
+            <!-- แสดงรูปภาพ (สำหรับโหมด ดูภาพแล้วพูด) -->
+            <img id="image-display" src="" alt="Look at this image">
+            
+            <!-- ปุ่มออกเสียงนำทาง (สำหรับโหมด ฟังแล้วพูด) -->
+            <button class="btn-audio" id="btn-play-audio" onclick="playTargetAudio()">🔊 Listen to Pronunciation</button>
+            
+            <!-- ข้อความเป้าหมาย -->
+            <div id="target-sentence">Loading...</div>
+        </div>
         
         <!-- ผลการเปรียบเทียบคำ -->
         <div id="comparison-result" style="text-align: center; font-size: 18px; min-height: 40px; margin-bottom: 15px;"></div>
 
-        <div class="status-text" id="status-message">Press "Start Practice" and say the sentence above.</div>
+        <div class="status-text" id="status-message">Please wait, loading data...</div>
         <div class="score-display" id="score-text"></div>
 
         <div class="btn-group">
-            <button class="btn-primary" id="btn-next" onclick="loadNextSentence()">Next Sentence</button>
+            <button class="btn-primary" id="btn-next" onclick="loadNextSentence()">Next Question</button>
             <button class="btn-success" id="btn-mic" onclick="toggleRecording()">Start Practice</button>
         </div>
     </div>
@@ -105,12 +191,13 @@
             <thead>
                 <tr>
                     <th>Time</th>
-                    <th>Sentence</th>
+                    <th>Mode</th>
+                    <th>Best Match Sentence</th>
                     <th>Score</th>
                 </tr>
             </thead>
             <tbody id="history-table-body">
-                <!-- ข้อมูลจะถูกเขียนด้วย JS -->
+                <!-- ข้อมูลประวัติรันผ่าน JS -->
             </tbody>
         </table>
     </div>
