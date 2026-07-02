@@ -13,7 +13,7 @@ let isRecording = false;
 let voiceType = "female";
 let voiceSpeed = 1.0;
 
-// Game State variables for managing attempts (Only active on Listen and Speak mode)
+// Game State variables for managing attempts (Active on Listen & Speak, Listen & Type, and Look & Type)
 let attemptsCount = 0;
 let bestAttemptScore = -1;
 let bestAttemptHTML = "";
@@ -244,7 +244,7 @@ function displayCurrentItem() {
         }
         targetDiv.innerText = "Look at the image and say what it is.";
     }
-    // New Mode: Listen and Type
+    // Mode: Listen and Type
     else if (item.mode === "listen_type") {
         imgContainer.style.display = "none";
         audioContainer.style.display = "block";
@@ -258,7 +258,7 @@ function displayCurrentItem() {
         btnSubmitType.disabled = false;
         btnMic.style.display = "none";
     }
-    // New Mode: Look and Type
+    // Mode: Look and Type
     else if (item.mode === "image_type") {
         audioContainer.style.display = "none";
         if (item.image_url) {
@@ -390,7 +390,7 @@ const getWordsArray = str => {
     return cleaned ? cleaned.split(" ") : [];
 };
 
-// 8. Evaluates Textual Input for Typing Modes (Listen and Type / Look and Type)
+// 8. Evaluates Textual Input for Typing Modes with 3-Attempt Logic
 function evaluateTyping() {
     const item = filteredSentences[currentIdx];
     const typedText = document.getElementById("type-input").value;
@@ -401,9 +401,9 @@ function evaluateTyping() {
     }
 
     const targets = [item.text1, item.text2, item.text3].filter(t => t && t.trim() !== "");
-    let bestScore = -1;
-    let bestResultHTML = "";
-    let bestMatchedTarget = "";
+    let currentBestScore = -1;
+    let currentBestHTML = "";
+    let currentBestMatchedTarget = "";
 
     const typedWords = getWordsArray(typedText);
 
@@ -422,12 +422,21 @@ function evaluateTyping() {
         
         const score = Math.round((correctCount / targetWords.length) * 100);
         
-        if (score > bestScore) {
-            bestScore = score;
-            bestResultHTML = comparisonHTML.join(" ");
-            bestMatchedTarget = target;
+        if (score > currentBestScore) {
+            currentBestScore = score;
+            currentBestHTML = comparisonHTML.join(" ");
+            currentBestMatchedTarget = target;
         }
     });
+
+    attemptsCount++;
+
+    // Track the overall best score and HTML across all 3 attempts
+    if (currentBestScore > bestAttemptScore) {
+        bestAttemptScore = currentBestScore;
+        bestAttemptHTML = currentBestHTML;
+        bestAttemptSpoken = typedText;
+    }
 
     const targetDiv = document.getElementById("target-sentence");
     const comparisonDiv = document.getElementById("comparison-result");
@@ -438,23 +447,53 @@ function evaluateTyping() {
     const btnRetry = document.getElementById("btn-retry");
     const typeInput = document.getElementById("type-input");
 
-    // Reveal Targets
-    if (item.mode === "listen_type") {
-        targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
-    } else if (item.mode === "image_type") {
-        targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
+    // Case I: Perfect Typing (100% Score) - Complete turn immediately
+    if (currentBestScore === 100) {
+        if (item.mode === "listen_type") {
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
+        } else if (item.mode === "image_type") {
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
+        }
+
+        comparisonDiv.innerHTML = currentBestHTML;
+        statusMsg.innerText = `🎉 Perfect! Excellent job! (◕‿◕)`;
+        scoreText.innerText = `Score: 100%`;
+
+        // Lock typing fields and activate practice again button
+        typeInput.disabled = true;
+        btnSubmit.style.display = "none";
+        btnRetry.style.display = "inline-flex";
+
+        saveToHistory(item.mode, currentBestMatchedTarget, typedText.trim(), 100);
     }
+    // Case II: Under 100% and still have attempts left (< 3)
+    else if (attemptsCount < 3) {
+        // Hide correct answer, show current attempt score and transcript
+        comparisonDiv.innerHTML = `<span style="color:#6B7280; font-size:14px;">You typed: "${typedText.trim()}"</span>`;
+        statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•)`;
+        scoreText.innerText = `Attempt Score: ${currentBestScore}%`;
+    }
+    // Case III: Under 100% and used up all 3 attempts
+    else {
+        // Reveal the correct answers now that attempts are exhausted
+        if (item.mode === "listen_type") {
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Target Text:</span> ${item.text1}`;
+        } else if (item.mode === "image_type") {
+            targetDiv.innerHTML = `<span style="font-size:12px; color:#6B7280; display:block; margin-bottom:5px;">Correct Answer:</span> ${targets.join(" / ")}`;
+        }
 
-    comparisonDiv.innerHTML = bestResultHTML;
-    statusMsg.innerText = `You typed: "${typedText.trim()}"`;
-    scoreText.innerText = `Score: ${bestScore}%`;
+        // Display results from their best performing attempt
+        comparisonDiv.innerHTML = bestAttemptHTML;
+        statusMsg.innerText = `😔 Out of attempts! Here is the correct answer.`;
+        scoreText.innerText = `Best Score: ${bestAttemptScore}%`;
+        
+        // Lock typing fields and activate practice again button
+        typeInput.disabled = true;
+        btnSubmit.style.display = "none";
+        btnRetry.style.display = "inline-flex";
 
-    // Lock typing fields and activate practice again button
-    typeInput.disabled = true;
-    btnSubmit.style.display = "none";
-    btnRetry.style.display = "inline-flex";
-
-    saveToHistory(item.mode, bestMatchedTarget, typedText.trim(), bestScore);
+        saveToHistory(item.mode, currentBestMatchedTarget, bestAttemptSpoken.trim(), bestAttemptScore);
+    }
 }
 
 // 9. Pronunciation Speech Assessment logic with dynamic mode evaluation (Speak Modes)
