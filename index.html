@@ -69,7 +69,7 @@
         h1 {
             text-align: center;
             color: var(--primary);
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
             margin-bottom: 8px;
         }
@@ -77,56 +77,88 @@
         .subtitle {
             text-align: center;
             color: #6B7280;
-            font-size: 14px;
+            font-size: 15px;
             margin-bottom: 30px;
         }
 
-        /* Setup Screen Controls */
+        /* Mode Selection Grid */
         .setup-card {
             background-color: var(--light);
             padding: 25px;
             border-radius: 16px;
             border: 1px solid #E5E7EB;
+            margin-bottom: 15px;
+        }
+
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
             margin-bottom: 10px;
         }
 
-        .filter-group {
+        .mode-btn {
+            background: white;
+            border: 2px solid #E5E7EB;
+            border-radius: 14px;
+            padding: 16px 12px;
             display: flex;
             flex-direction: column;
-        }
-
-        .filter-group label {
-            font-size: 12px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #4B5563;
-            letter-spacing: 0.5px;
-        }
-
-        select {
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1.5px solid #D1D5DB;
-            font-size: 15px;
-            background-color: white;
-            font-family: inherit;
-            color: var(--dark);
-            outline: none;
-            transition: var(--transition);
+            align-items: center;
+            text-align: center;
             cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
         }
 
-        select:focus {
+        .mode-btn:hover:not(:disabled) {
             border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .mode-btn.active {
+            border-color: var(--primary);
+            background-color: rgba(79, 70, 229, 0.05);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
         }
 
-        /* Practice / Training Screen */
+        .mode-btn:disabled {
+            background-color: #E5E7EB;
+            border-color: #D1D5DB;
+            color: #9CA3AF;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .mode-btn:disabled .mode-icon {
+            filter: grayscale(1);
+        }
+
+        .mode-icon {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .mode-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .mode-desc {
+            font-size: 11px;
+            color: #6B7280;
+            line-height: 1.3;
+        }
+
+        /* Practice / Training Screen Header */
         .trainer-header {
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         /* High-focus Progress indicator styles */
@@ -140,7 +172,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
             color: var(--primary);
             background-color: rgba(79, 70, 229, 0.08);
@@ -165,7 +197,7 @@
         }
 
         #target-sentence {
-            font-size: 22px;
+            font-size: 24px;
             line-height: 1.6;
             font-weight: 600;
             color: var(--dark);
@@ -329,22 +361,6 @@
             margin: 15px 0;
         }
 
-        /* Grammar Advisor Box style */
-        #grammar-tip {
-            font-size: 13px;
-            color: var(--primary);
-            background-color: rgba(79, 70, 229, 0.08);
-            padding: 10px 14px;
-            border-radius: 10px;
-            display: none;
-            margin: 12px auto;
-            max-width: 95%;
-            line-height: 1.5;
-            border: 1px solid rgba(79, 70, 229, 0.15);
-            animation: fadeIn 0.3s ease-out;
-            text-align: left;
-        }
-
         .status-text {
             text-align: center;
             font-size: 13px;
@@ -363,7 +379,91 @@
             min-height: 48px;
         }
 
-        /* Action Buttons */
+        /* Modals & Popups styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            text-align: center;
+            animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-score {
+            font-size: 58px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 12px 0;
+            text-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .modal-grammar-tip {
+            font-size: 13px;
+            color: var(--primary);
+            background-color: rgba(79, 70, 229, 0.08);
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            margin: 15px 0;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-actions button {
+            width: 100%;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 12px;
+        }
+
+        /* Distinct Colors for Buttons (Vibrant Styles) */
+        .btn-retry-style {
+            background: #8B5CF6; /* Vibrant Purple */
+            color: white;
+        }
+        .btn-retry-style:hover {
+            background: #7C3AED;
+        }
+
+        .btn-next-style {
+            background: #F59E0B; /* Vibrant Amber/Orange */
+            color: white;
+        }
+        .btn-next-style:hover {
+            background: #D97706;
+        }
+
+        /* Action Buttons on Main Screen */
         .btn-group {
             display: flex;
             gap: 12px;
@@ -431,79 +531,6 @@
             100% { background-color: var(--danger); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        /* Practice History Section */
-        .history-section {
-            max-width: 650px;
-            width: 100%;
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: var(--card-shadow);
-        }
-
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .history-header h3 {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            border-radius: 12px;
-            border: 1px solid #E5E7EB;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            font-size: 13px;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px 16px;
-            border-bottom: 1px solid #E5E7EB;
-        }
-
-        th {
-            background-color: var(--light);
-            color: #4B5563;
-            font-weight: 600;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        .history-target {
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .history-user {
-            color: #6B7280;
-            font-size: 12px;
-            margin-top: 3px;
-        }
-
-        .score-pill {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-        .score-pill-high { background-color: #D1FAE5; color: #065F46; }
-        .score-pill-med { background-color: #FEF3C7; color: #92400E; }
-        .score-pill-low { background-color: #FEE2E2; color: #991B1B; }
-
         /* ==================== Responsive Queries (Desktop/Mobile optimizations) ==================== */
         @media (max-width: 600px) {
             body {
@@ -511,26 +538,26 @@
             }
 
             .container {
-                padding: 16px 12px;
-                border-radius: 14px;
+                padding: 18px 14px;
+                border-radius: 16px;
                 margin-bottom: 12px;
             }
 
             h1 {
-                font-size: 20px;
+                font-size: 24px;
             }
 
             .subtitle {
-                font-size: 11px;
-                margin-bottom: 15px;
+                font-size: 12px;
+                margin-bottom: 20px;
             }
 
             .setup-card {
-                padding: 12px;
+                padding: 18px 12px;
             }
 
             select {
-                padding: 8px 10px;
+                padding: 10px 12px;
                 font-size: 13px;
             }
 
@@ -539,7 +566,7 @@
             }
 
             .progress-indicator-container {
-                margin-bottom: 10px;
+                margin-bottom: 12px;
             }
 
             .progress-indicator {
@@ -548,13 +575,13 @@
             }
 
             .card {
-                padding: 15px 10px;
+                padding: 18px 10px;
                 min-height: 90px;
                 margin: 10px 0;
             }
 
             #target-sentence {
-                font-size: 17px;
+                font-size: 18px;
                 line-height: 1.4;
             }
 
@@ -618,49 +645,17 @@
 
             .btn-group button {
                 width: 100% !important;
-                padding: 10px;
+                padding: 11px;
                 font-size: 13px;
                 justify-content: center;
-            }
-
-            .history-section {
-                padding: 12px;
-                border-radius: 14px;
-            }
-
-            .history-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-
-            .history-header h3 {
-                font-size: 13px;
-            }
-
-            .history-header div {
-                width: 100%;
-                display: flex;
-                gap: 4px;
-            }
-
-            .history-header div button {
-                flex: 1;
-                font-size: 10px;
-                padding: 5px 6px;
-            }
-
-            table {
-                font-size: 10px;
-            }
-
-            th, td {
-                padding: 6px 8px;
             }
         }
     </style>
 </head>
 <body>
+
+    <!-- Canvas for celebration confetti -->
+    <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10005; display: none;"></canvas>
 
     <!-- ==================== Screen 1: Study Configuration (Setup Screen) ==================== -->
     <div id="screen-setup" class="container screen-section active">
@@ -668,16 +663,34 @@
         <p class="subtitle">Train your speaking skills with native audio feedback! (◕‿◕)</p>
         
         <div class="setup-card">
-            <div class="filter-group">
-                <label for="filter-mode">🎛️ STUDY MODE</label>
-                <select id="filter-mode">
-                    <option value="read">📖 Read and Speak (See text and repeat)</option>
-                    <option value="listen">🎧 Listen and Speak (Listen and mimic voice)</option>
-                    <option value="image">🖼️ Look and Speak (Identify pictures)</option>
-                    <!-- Typing modes -->
-                    <option value="listen_type">⌨️ Listen and Type (Hear audio and spell)</option>
-                    <option value="image_type">🖼️ Look and Type (Look at image and spell)</option>
-                </select>
+            <!-- Study Mode interactive icon buttons -->
+            <label style="font-size: 12px; font-weight: 700; margin-bottom: 12px; color: #4B5563; display: block; letter-spacing: 0.5px;">🎛️ CHOOSE STUDY MODE</label>
+            <div class="mode-grid">
+                <button class="mode-btn" id="mode-read" onclick="selectMode('read')">
+                    <span class="mode-icon">📖</span>
+                    <span class="mode-title">Read & Speak</span>
+                    <span class="mode-desc">See text and repeat</span>
+                </button>
+                <button class="mode-btn" id="mode-listen" onclick="selectMode('listen')">
+                    <span class="mode-icon">🎧</span>
+                    <span class="mode-title">Listen & Speak</span>
+                    <span class="mode-desc">Mimic audio challenge</span>
+                </button>
+                <button class="mode-btn" id="mode-image" onclick="selectMode('image')">
+                    <span class="mode-icon">🖼️</span>
+                    <span class="mode-title">Look & Speak</span>
+                    <span class="mode-desc">Identify pictures</span>
+                </button>
+                <button class="mode-btn" id="mode-listen_type" onclick="selectMode('listen_type')">
+                    <span class="mode-icon">⌨️</span>
+                    <span class="mode-title">Listen & Type</span>
+                    <span class="mode-desc">Hear and spell</span>
+                </button>
+                <button class="mode-btn" id="mode-image_type" onclick="selectMode('image_type')">
+                    <span class="mode-icon">✏️</span>
+                    <span class="mode-title">Look & Type</span>
+                    <span class="mode-desc">Look and type</span>
+                </button>
             </div>
         </div>
 
@@ -745,12 +758,8 @@
             <div id="target-sentence">Loading...</div>
         </div>
         
-        <!-- Interactive evaluation and grammar tips -->
-        <div id="comparison-result" class="comparison-result"></div>
-        <div id="grammar-tip"></div>
-
+        <!-- Main page results display is cleared upon evaluation and shown inside the popup instead -->
         <div class="status-text" id="status-message">Ready. Click 'Start Practice' to begin.</div>
-        <div class="score-display" id="score-text"></div>
 
         <div class="btn-group">
             <button class="btn-success btn-mic" id="btn-mic" onclick="toggleRecording()">
@@ -770,29 +779,37 @@
         </div>
     </div>
 
-    <!-- ==================== Activity History Panel ==================== -->
-    <div id="history-panel" class="history-section" style="display: none;">
-        <div class="history-header">
-            <h3>📈 Your Practice History</h3>
-            <div>
-                <button class="btn-secondary btn-sm" onclick="exportHistoryToCSV()">📤 Export CSV</button>
-                <button class="btn-danger btn-sm" onclick="clearPracticeHistory()">🗑️ Clear History</button>
-            </div>
+    <!-- ==================== New: Standard Score and Grammar Coach Modal Window ==================== -->
+    <div id="evaluation-modal" class="container screen-section" style="display: none; max-width: 600px; padding: 25px;">
+        <h2 style="text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 15px;">📊 Performance Analysis</h2>
+        
+        <div class="card" style="min-height: auto; padding: 15px; background: var(--light); margin-bottom: 15px;">
+            <div id="modal-score" class="modal-score">0%</div>
+            <div id="modal-comparison" class="comparison-result" style="margin: 5px 0;"></div>
+            <div id="modal-grammar-tip" class="modal-grammar-tip" style="display: none;"></div>
+            <div id="modal-status" class="status-text" style="margin-bottom: 5px; font-weight: 500;"></div>
         </div>
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 25%">Time</th>
-                        <th style="width: 15%">Mode</th>
-                        <th style="width: 45%">Target Sentence & Your Speech</th>
-                        <th style="width: 15%">Score</th>
-                    </tr>
-                </thead>
-                <tbody id="history-table-body">
-                    <!-- Loaded dynamically via JavaScript -->
-                </tbody>
-            </table>
+
+        <div class="modal-actions">
+            <!-- Distinct attractive colored buttons -->
+            <button class="btn-retry-style" id="modal-btn-retry" onclick="closeModalAndRetry()">🔄 Practice Again</button>
+            <button class="btn-next-style" id="modal-btn-next" onclick="closeModalAndNext()">Next Challenge ➡️</button>
+            <button class="btn-secondary" onclick="closeModal()" style="background: #E5E7EB; color: #4B5563;">Close ❌</button>
+        </div>
+    </div>
+
+    <!-- ==================== New: Mission Accomplished Celebration Pop-up ==================== -->
+    <div id="mission-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="border: 2px solid #10B981; max-width: 480px;">
+            <h1 style="font-size: 45px; margin-bottom: 10px;">🏆</h1>
+            <h2 style="color: #10B981; font-weight: 800; font-size: 26px; margin-bottom: 12px;">Mission Completed!</h2>
+            <p style="color: #4B5563; font-size: 15px; line-height: 1.5; margin-bottom: 24px;">
+                Fabulous! You have successfully cleared all challenges in this mode with a perfect 100% score! (◕‿◕)
+            </p>
+            <div class="modal-actions">
+                <button class="btn-success btn-block" onclick="restartMission()">🔄 Restart Mode</button>
+                <button class="btn-primary btn-block" onclick="changeMissionMode()">⚙️ Change Mode</button>
+            </div>
         </div>
     </div>
 
