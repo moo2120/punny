@@ -394,6 +394,7 @@ function handleTypeEnter(event) {
 }
 
 // ================== Helper Functions for Robust Text Comparison ==================
+// Converts to lowercase, removes punctuation, normalizes duplicate spaces to single spaces, and trims
 const cleanText = str => {
     if (!str) return "";
     return str
@@ -403,9 +404,28 @@ const cleanText = str => {
         .trim();
 };
 
+// Splits cleaned text into an array of normalized words
+// Supports English (space-split) and Thai (Intl.Segmenter auto-detection) natively & offline
 const getWordsArray = str => {
     const cleaned = cleanText(str);
-    return cleaned ? cleaned.split(" ") : [];
+    if (!cleaned) return [];
+    
+    // Auto-detect if string contains Thai characters
+    const containsThai = /[\u0E00-\u0E7F]/.test(cleaned);
+    
+    if (containsThai && typeof Intl !== 'undefined' && Intl.Segmenter) {
+        try {
+            // Use built-in browser Intl.Segmenter for Thai word-segmentation (Totally Free & Offline)
+            const segmenter = new Intl.Segmenter('th', { granularity: 'word' });
+            const segments = segmenter.segment(cleaned);
+            return [...segments].filter(s => s.isWordLike).map(s => s.segment);
+        } catch (e) {
+            console.warn("Intl.Segmenter error, fallback to space-split:", e);
+        }
+    }
+    
+    // Standard English/space-separated word splitting
+    return cleaned.split(" ");
 };
 
 // Advanced Multi-Heuristic Client-Side Grammar Advisor (Totally free, zero latency, zero memory overhead)
@@ -413,7 +433,8 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
     const cleanedInput = inputText.toLowerCase().trim();
     const suggestions = [];
 
-    // Check A: Incorrect "a" before vowel sound words (e.g. "a apple")
+    // --- ENGINE 1: Standalone Indefinite Article Checks (a/an ESL mismatches) ---
+    // Rule A: Incorrect "a" before vowel sound words (e.g. "a apple")
     const aVowelPattern = /\ba\s+([aeiou][a-z]*)\b/g;
     const nonSilentU = ["university", "union", "unique", "useful", "user", "unit", "one"];
     let match;
@@ -424,7 +445,7 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
         }
     }
 
-    // Check B: Incorrect "an" before consonant sounds (e.g. "an banana")
+    // Rule B: Incorrect "an" before consonant sounds (e.g. "an banana")
     const anConsonantPattern = /\ban\s+([bcdfghjklmnpqrstvwxyz][a-z]*)\b/g;
     const silentH = ["hour", "honest", "honor", "heir"];
     while ((match = anConsonantPattern.exec(cleanedInput)) !== null) {
@@ -434,39 +455,55 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
         }
     }
 
+    // --- Engine 2: Target-Guided Structure Diagnostics (Subject-Verb agreement / Plurals / Copula) ---
     // Only perform morphological alignment diagnostics if the user didn't hit a keyword-match
     if (!isKeywordMatch && targetText) {
         const spokenWords = getWordsArray(inputText);
         const targetWords = getWordsArray(targetText);
 
+        // A. Missing Preposition / Structural Word Spotter
         const spokenSet = new Set(spokenWords);
         const prepositions = ["in", "on", "at", "to", "for", "with", "by", "of", "from", "about", "into", "through", "under", "over"];
         const missingPrepositions = targetWords.filter(w => prepositions.includes(w) && !spokenSet.has(w));
         
-        if (missingPrepositions.length > 0) {
-            suggestions.push(`💡 <strong>Preposition Tip:</strong> Did you miss the preposition? Try including: "<strong>${missingPrepositions.join(", ")}</strong>".`);
+        if (missingWords = missingWordsCheck(targetWords, spokenSet)) {
+            suggestions.push(`💡 <strong>Preposition Tip:</strong> Did you miss the preposition? Try including: "<strong>${missingWords.join(", ")}</strong>".`);
         }
 
+        // B. Morphological Alignment Check (comparing same position mismatches)
         const minLength = Math.min(spokenWords.length, targetWords.length);
         for (let i = 0; i < minLength; i++) {
             const sw = spokenWords[i];
             const tw = targetWords[i];
             if (sw !== tw) {
+                // 1. Noun Inflection Check (Singular vs Plural e.g. "apple" vs "apples")
                 if (sw + "s" === tw || sw + "es" === tw || tw + "s" === sw || tw + "es" === sw) {
                     suggestions.push(`💡 <strong>Noun Agreement Tip:</strong> You said "<strong>${sw}</strong>" but the target sentence requires plural/singular form: "<strong>${tw}</strong>".`);
                 }
+                
+                // 2. Copula/Verb Tense Agreement Mismatch (e.g. "is" vs "are", "was" vs "were", "go" vs "went")
                 const copulas = ["is", "are", "was", "were", "am", "be", "been"];
                 if (copulas.includes(sw) && copulas.includes(tw)) {
                     suggestions.push(`💡 <strong>Subject-Verb Agreement Tip:</strong> Try using the correct verb form "<strong>${tw}</strong>" instead of "${sw}".`);
                 }
+
+                // 3. Aspect / Auxiliary Mismatch (e.g. "has" vs "have", "do" vs "does")
                 const auxiliaries = ["has", "have", "had", "do", "does", "did", "can", "could", "will", "would", "should"];
                 if (auxiliaries.includes(sw) && auxiliaries.includes(tw)) {
                     suggestions.push(`💡 <strong>Auxiliary Verb Tip:</strong> Try using "<strong>${tw}</strong>" instead of "${sw}".`);
                 }
+
+                // 4. Common Irregular Verb Tense Misuse (e.g. "run/ran", "speak/spoke", "eat/ate", "write/wrote")
                 const irregulars = [
-                    ["go", "went", "gone", "going"], ["run", "ran", "running"], ["see", "saw", "seen", "seeing"],
-                    ["do", "did", "done", "doing"], ["eat", "ate", "eaten", "eating"], ["write", "wrote", "written", "writing"],
-                    ["speak", "spoke", "spoken", "speaking"], ["take", "took", "taken", "taking"], ["make", "made", "making"],
+                    ["go", "went", "gone", "going"],
+                    ["run", "ran", "running"],
+                    ["see", "saw", "seen", "seeing"],
+                    ["do", "did", "done", "doing"],
+                    ["eat", "ate", "eaten", "eating"],
+                    ["write", "wrote", "written", "writing"],
+                    ["speak", "spoke", "spoken", "speaking"],
+                    ["take", "took", "taken", "taking"],
+                    ["make", "made", "making"],
                     ["buy", "bought", "buying"]
                 ];
                 for (const group of irregulars) {
@@ -475,6 +512,8 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
                         break;
                     }
                 }
+
+                // 5. Regular Verb Tense Misuse (Inflection check e.g. "walked" vs "walking" vs "walk")
                 const cleanVerbRoot = w => w.replace(/(ing|ed|s|es)$/, "");
                 if (cleanVerbRoot(sw) === cleanVerbRoot(tw) && sw !== tw) {
                     if (tw.endsWith("ing")) {
@@ -486,7 +525,15 @@ function analyzeGrammarHeuristics(inputText, targetText, isKeywordMatch) {
             }
         }
     }
+
     return suggestions.join("<br>");
+}
+
+// Helper to filter missing target prepositions
+function missingWordsCheck(targetWords, spokenSet) {
+    const prepositions = ["in", "on", "at", "to", "for", "with", "by", "of", "from", "about", "into", "through", "under", "over"];
+    const missing = targetWords.filter(w => prepositions.includes(w) && !spokenSet.has(w));
+    return missing.length > 0 ? missing : null;
 }
 
 // 8. Evaluates Textual Input for Typing Modes with 3-Attempt Logic
@@ -530,6 +577,7 @@ function evaluateTyping() {
 
     attemptsCount++;
 
+    // Track the overall best score and HTML across all 3 attempts
     if (bestScore > bestAttemptScore) {
         bestAttemptScore = bestScore;
         bestAttemptHTML = bestResultHTML;
@@ -537,7 +585,6 @@ function evaluateTyping() {
     }
 
     const targetDiv = document.getElementById("target-sentence");
-    const statusMsg = document.getElementById("status-message");
     const btnSubmit = document.getElementById("btn-submit-type");
     const btnRetry = document.getElementById("btn-retry");
     const typeInput = document.getElementById("type-input");
@@ -557,10 +604,10 @@ function evaluateTyping() {
     }
     // Case II: Under 100% and still have attempts left (< 3)
     else if (attemptsCount < 3) {
-        // Keeps user on training screen with inline guidance, no popup modal until finished
-        const inlineComparison = document.getElementById("comparison-result");
-        inlineComparison.innerHTML = `<span style="color:#6B7280; font-size:14px;">You typed: "${typedText.trim()}"</span>`;
-        statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•). Score: ${bestScore}%`;
+        // Now, as requested, even for unfinished active attempts, we ALWAYS show the evaluation popup modal immediately!
+        // However, we do not reveal the exact targets/highlights in the comparison yet, to preserve the gamification.
+        const blindFeedback = `<span style="color:#6B7280; font-size:14px;">You typed: "${typedText.trim()}"</span>`;
+        showResultModal(bestScore, blindFeedback, localGrammarFeedback, `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•)`, item.id, true);
     }
     // Case III: Under 100% and used up all 3 attempts
     else {
@@ -581,6 +628,7 @@ function evaluateTyping() {
 }
 
 // 9. Pronunciation Speech Assessment logic (Voice Modes)
+// Supports Keyword Detection (gives 100% if spoken includes target) + Grammar Suggestions
 function evaluatePronunciation(spokenText) {
     const item = filteredSentences[currentIdx];
     const targets = [item.text1, item.text2, item.text3].filter(t => t && t.trim() !== "");
@@ -628,7 +676,6 @@ function evaluatePronunciation(spokenText) {
     });
 
     const targetDiv = document.getElementById("target-sentence");
-    const statusMsg = document.getElementById("status-message");
     const btnMic = document.getElementById("btn-mic");
     const btnRetry = document.getElementById("btn-retry");
 
@@ -655,9 +702,9 @@ function evaluatePronunciation(spokenText) {
         }
         // Case II: Under 100% and still have attempts left
         else if (attemptsCount < 3) {
-            const inlineComparison = document.getElementById("comparison-result");
-            inlineComparison.innerHTML = `<span style="color:#6B7280; font-size:14px;">You said: "${spokenText}"</span>`;
-            statusMsg.innerText = `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•). Score: ${currentBestScore}%`;
+            // As requested, ALWAYS show evaluation popup modal immediately on speech input
+            const blindFeedback = `<span style="color:#6B7280; font-size:14px;">You said: "${spokenText}"</span>`;
+            showResultModal(currentBestScore, blindFeedback, localGrammarFeedback, `❌ Not quite perfect! Try again. Attempt ${attemptsCount} of 3 (•◡•)`, item.id, true);
         }
         // Case III: Under 100% and used up all 3 attempts
         else {
@@ -696,7 +743,8 @@ function evaluatePronunciation(spokenText) {
 }
 
 // 10. Pop-up Modal System with Confetti & Ascending Fanfare Chime on 100%
-function showResultModal(score, comparisonHTML, grammarFeedback, statusText, questionId) {
+// Modified: isActiveAttempt keeps modal in "try again" mode during attempts 1 and 2
+function showResultModal(score, comparisonHTML, grammarFeedback, statusText, questionId, isActiveAttempt = false) {
     document.getElementById("modal-score").innerText = `${score}%`;
     document.getElementById("modal-comparison").innerHTML = comparisonHTML;
     document.getElementById("modal-status").innerText = statusText;
@@ -709,10 +757,23 @@ function showResultModal(score, comparisonHTML, grammarFeedback, statusText, que
         tipDiv.style.display = "none";
     }
 
-    // Launch evaluation overlay screen
-    document.getElementById("evaluation-modal").style.display = "block";
+    const modalBtnRetry = document.getElementById("modal-btn-retry");
+    const modalBtnNext = document.getElementById("modal-btn-next");
 
-    if (score === 100) {
+    if (isActiveAttempt) {
+        // User hasn't finished all attempts. Focus primary action on Practicing Again
+        modalBtnRetry.style.display = "inline-flex";
+        modalBtnNext.style.display = "inline-flex"; // Still allow them to skip if desired
+    } else {
+        // Round completed (either 100% or attempts used up)
+        modalBtnRetry.style.display = "inline-flex";
+        modalBtnNext.style.display = "inline-flex";
+    }
+
+    // Launch floating modal overlay
+    document.getElementById("evaluation-modal").style.display = "flex";
+
+    if (score === 100 && !isActiveAttempt) {
         completedChallenges.add(questionId);
         playCelebrationSound();
         startConfetti();
