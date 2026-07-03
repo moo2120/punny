@@ -197,7 +197,7 @@
         }
 
         #target-sentence {
-            font-size: 24px;
+            font-size: 22px;
             line-height: 1.6;
             font-weight: 600;
             color: var(--dark);
@@ -659,7 +659,7 @@
 
     <!-- ==================== Screen 1: Study Configuration (Setup Screen) ==================== -->
     <div id="screen-setup" class="container screen-section active">
-        <h1>Pronunciation & Typing Practices 🌟</h1>
+        <h1>Pronunciation App 🌟</h1>
         <p class="subtitle">Train your speaking skills with native audio feedback! (◕‿◕)</p>
         
         <div class="setup-card">
@@ -758,7 +758,7 @@
             <div id="target-sentence">Loading...</div>
         </div>
         
-        <!-- Main page results display is cleared upon evaluation and shown inside the popup instead -->
+        <!-- Spacing and text aligned tightly -->
         <div class="status-text" id="status-message">Ready. Click 'Start Practice' to begin.</div>
 
         <div class="btn-group">
@@ -770,31 +770,40 @@
                 ✏️ Check Answer
             </button>
             <!-- Practice Again button (Can be clicked at any completed turn) -->
-            <button class="btn-secondary" id="btn-retry" onclick="retryCurrentSentence()" style="display: none;">
+            <button class="btn-secondary btn-retry-style" id="btn-retry" onclick="retryCurrentSentence()" style="display: none;">
                 🔄 Practice Again
             </button>
-            <button class="btn-secondary" id="btn-next" onclick="loadNextSentence()">
+            <button class="btn-secondary btn-next-style" id="btn-next" onclick="loadNextSentence()">
                 Next Challenge ➡️
             </button>
         </div>
     </div>
 
-    <!-- ==================== New: Standard Score and Grammar Coach Modal Window ==================== -->
-    <div id="evaluation-modal" class="container screen-section" style="display: none; max-width: 600px; padding: 25px;">
-        <h2 style="text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 15px;">📊 Performance Analysis</h2>
-        
-        <div class="card" style="min-height: auto; padding: 15px; background: var(--light); margin-bottom: 15px;">
+    <!-- ==================== New: Floated Modal Overlays for results evaluation ==================== -->
+    <div id="evaluation-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2 style="font-weight: 800; color: var(--dark); font-size: 22px;">Analysis Result 📈</h2>
+            
             <div id="modal-score" class="modal-score">0%</div>
-            <div id="modal-comparison" class="comparison-result" style="margin: 5px 0;"></div>
+            
+            <div id="modal-comparison" class="comparison-result"></div>
+            
             <div id="modal-grammar-tip" class="modal-grammar-tip" style="display: none;"></div>
-            <div id="modal-status" class="status-text" style="margin-bottom: 5px; font-weight: 500;"></div>
-        </div>
-
-        <div class="modal-actions">
-            <!-- Distinct attractive colored buttons -->
-            <button class="btn-retry-style" id="modal-btn-retry" onclick="closeModalAndRetry()">🔄 Practice Again</button>
-            <button class="btn-next-style" id="modal-btn-next" onclick="closeModalAndNext()">Next Challenge ➡️</button>
-            <button class="btn-secondary" onclick="closeModal()" style="background: #E5E7EB; color: #4B5563;">Close ❌</button>
+            
+            <div id="modal-status" class="status-text" style="margin-bottom: 20px;"></div>
+            
+            <div class="modal-actions">
+                <!-- Brighter and attractive action buttons inside evaluation overlay -->
+                <button class="btn-retry-style" id="modal-btn-retry" onclick="closeModalAndRetry()">
+                    🔄 Practice Again
+                </button>
+                <button class="btn-next-style" id="modal-btn-next" onclick="closeModalAndNext()">
+                    Next Challenge ➡️
+                </button>
+                <button class="btn-secondary" onclick="closeModal()" style="background: #E5E7EB; color: #4B5563;">
+                    Close ❌
+                </button>
+            </div>
         </div>
     </div>
 
