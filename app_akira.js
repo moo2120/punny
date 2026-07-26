@@ -1,7 +1,7 @@
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 // Google Sheet URL representing sentence resources
-const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1hRiqV447IXq2spKWuF2nljHGG8mE-4y2Po-7UraVTGc/export?format=csv";
+const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/105Z_HICmCBMTfwgJmllU7TtrNnK3gcZo-tSyeP_73p4/export?format=csv";
 
 let recognition;
 let allSentences = [];       
