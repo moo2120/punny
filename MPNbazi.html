@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>คู่มือวิเคราะห์ตัวตนและกลยุทธ์ครอบครัว (Family Blueprint)</title>
+  
+  <!-- Google Fonts: Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-main: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      
+      /* Theme colors for each person */
+      --daughter-primary: #059669;
+      --daughter-light: #ecfdf5;
+      --daughter-border: #a7f3d0;
+      
+      --father-primary: #2563eb;
+      --father-light: #eff6ff;
+      --father-border: #bfdbfe;
+      
+      --mother-primary: #d97706;
+      --mother-light: #fffbeb;
+      --mother-border: #fde68a;
+
+      --family-primary: #7c3aed;
+      --family-light: #f5f3ff;
+      --family-border: #ddd6fe;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Prompt', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.65;
+      padding-bottom: 60px;
+    }
+
+    /* Sticky Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 100;
+      overflow-x: auto;
+      white-space: nowrap;
+      display: flex;
+      padding: 8px 12px;
+      gap: 8px;
+      scrollbar-width: none;
+    }
+    .navbar::-webkit-scrollbar {
+      display: none;
+    }
+    .nav-btn {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      color: var(--text-muted);
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+    .nav-btn:active, .nav-btn:hover {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Hero Header */
+    .hero {
+      text-align: center;
+      padding: 24px 12px;
+      background: linear-gradient(135deg, #f8fafc 0%, #ede9fe 100%);
+      border-radius: 16px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+    }
+    .hero h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+    .hero p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Section Cards */
+    .section-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed var(--border-color);
+    }
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .title-box h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .title-box span {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--text-muted);
+    }
+
+    /* Color variations */
+    .daughter-theme .avatar { background: var(--daughter-light); border: 1px solid var(--daughter-border); }
+    .daughter-theme .tag { background: var(--daughter-light); color: var(--daughter-primary); border: 1px solid var(--daughter-border); }
+    
+    .father-theme .avatar { background: var(--father-light); border: 1px solid var(--father-border); }
+    .father-theme .tag { background: var(--father-light); color: var(--father-primary); border: 1px solid var(--father-border); }
+
+    .mother-theme .avatar { background: var(--mother-light); border: 1px solid var(--mother-border); }
+    .mother-theme .tag { background: var(--mother-light); color: var(--mother-primary); border: 1px solid var(--mother-border); }
+
+    .family-theme .avatar { background: var(--family-light); border: 1px solid var(--family-border); }
+    .family-theme .tag { background: var(--family-light); color: var(--family-primary); border: 1px solid var(--family-border); }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 2px 10px;
+      border-radius: 12px;
+      margin-top: 4px;
+    }
+
+    .summary-quote {
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border-left: 4px solid;
+      margin-bottom: 16px;
+    }
+    .daughter-theme .summary-quote { border-color: var(--daughter-primary); color: #065f46; background: var(--daughter-light); }
+    .father-theme .summary-quote { border-color: var(--father-primary); color: #1e40af; background: var(--father-light); }
+    .mother-theme .summary-quote { border-color: var(--mother-primary); color: #92400e; background: var(--mother-light); }
+    .family-theme .summary-quote { border-color: var(--family-primary); color: #5b21b6; background: var(--family-light); }
+
+    /* Content Blocks */
+    .topic {
+      margin-bottom: 16px;
+    }
+    .topic h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .topic p, .topic ul {
+      font-size: 0.88rem;
+      color: #475569;
+    }
+    .topic ul {
+      padding-left: 18px;
+    }
+    .topic li {
+      margin-bottom: 4px;
+    }
+
+    /* Highlight badge box */
+    .highlight-box {
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+
+    /* Table Mobile Optimised */
+    .strategy-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.85rem;
+    }
+    .strategy-table th, .strategy-table td {
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      text-align: left;
+      vertical-align: top;
+    }
+    .strategy-table th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      padding: 20px 0;
+    }
+
+    /* Smooth Scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="#daughter" class="nav-btn">👧 ลูกสาว (2020)</a>
+    <a href="#father" class="nav-btn">👨 คุณพ่อ (1981)</a>
+    <a href="#mother" class="nav-btn">👩 คุณแม่ (1983)</a>
+    <a href="#chemistry" class="nav-btn">🔗 เคมี 3 คน</a>
+    <a href="#strategy" class="nav-btn">🎯 กลยุทธ์การเลี้ยงดู</a>
+  </nav>
+
+  <div class="container">
+
+    <!-- Header -->
+    <header class="hero">
+      <h1>Family Blueprint & Parenting Guide</h1>
+      <p>ถอดรหัสธรรมชาติและพฤติกรรม สู่แผนกลยุทธ์การเลี้ยงดูฉบับครอบครัว</p>
+    </header>
+
+    <!-- 1. ลูกสาว -->
+    <section id="daughter" class="section-card daughter-theme">
+      <div class="card-header">
+        <div class="avatar">👧</div>
+        <div class="title-box">
+          <h2>ลูกสาว (เกิด 2 ม.ค. 2020)</h2>
+          <span class="tag">นักสร้างสรรค์ · หัวการค้า · รักอิสระ</span>
+        </div>
+      </div>
+
+      <div class="summary-quote">
+        "ต้นไม้ใหญ่ที่ผลิใบรับแสงแดด ฉลาด คล่องตัว มองเห็นโอกาสและความคุ้มค่า แต่เกลียดการถูกตีกรอบ"
+      </div>
+
+      <div class="topic">
+        <h3>💡 วิธีคิดพื้นฐาน (Mindset)</h3>
+        <p>• <strong>ฉลาด ไหวพริบดี สื่อสารเก่ง:</strong> เข้าใจอะไรได้เร็ว มีชีวิตชีวา และกล้าแสดงออก<br>
+        • <strong>รักความคุ้มค่าและผลลัพธ์:</strong> มีหัวการค้าและเซนส์เรื่องมูลค่าตั้งแต่เด็ก จะทำอะไรมักคิดในหัวว่าคุ้มค่าเวลาและพลังงานหรือไม่<br>
+        • <strong>จิตใจอ่อนไหวสูง:</strong> ภายนอกดูเก่งและคล่องตัว แต่ข้างในแคร์ความรู้สึกคนอื่นมาก คิดเยอะ กลัวคนอื่นเสียใจ</p>
+      </div>
+
+      <div class="topic">
+        <h3>🚀 สไตล์การทำงาน & ความถนัด</h3>
+        <p>• <strong>แพ้ทางอำนาจนิยม:</strong> จะต่อต้านทันทีหากถูกสั่งด้วยไม้แข็งโดยไร้เหตุผล ไม่เหมาะกับระบบอนุรักษนิยมจัด<br>
+        • <strong>เหมาะกับบทบาทใช้ทักษะ + การค้า:</strong> สื่อสาร เจรจา การตลาด ศิลปะ หรืออาชีพอิสระที่วัดผลกันที่เนื้องานจริง<br>
+        • <strong>ชีพจรลงเท้า:</strong> เติบโตได้ดีกับการเดินทาง การติดต่อต่างถิ่นต่างแดน หรือสายงานที่มีการเคลื่อนไหว</p>
+      </div>
+
+      <div class="topic">
+        <h3>⚠️ จุดบอดที่ต้องระวัง</h3>
+        <p>• <strong>เก่งหลายด้านจนขาดลายเซ็น:</strong> ปรับตัวเก่งจนอาจสับสนว่าความถนัดเบอร์หนึ่งคืออะไร<br>
+        • <strong>ตัดสินใจช้าเพราะคิดเยอะ:</strong> แคร์ความรู้สึกคนรอบข้างจนลังเลในจังหวะสำคัญ</p>
+      </div>
+
+      <div class="topic">
+        <h3>📈 จังหวะชีวิตและการเติบโต</h3>
+        <p>• <strong>วัยเด็ก (ปัจจุบัน - 2030):</strong> ฉลาดรอบด้าน ระวังเรื่องทางเดินหายใจ ภูมิแพ้ หรือท้องไส้<br>
+        • <strong>วัยรุ่น (2031 - 2040 / อายุ 12-21 ปี):</strong> <em>ช่วงติดปีก</em> มั่นใจสูง ผลงานโดดเด่น เริ่มสร้างตัวได้เร็ว</p>
+      </div>
+    </section>
+
+    <!-- 2. คุณพ่อ -->
+    <section id="father" class="section-card father-theme">
+      <div class="card-header">
+        <div class="avatar">👨</div>
+        <div class="title-box">
+          <h2>คุณพ่อ (เกิด 25 ม.ค. 1981)</h2>
+          <span class="tag">จอมอดทน · เสาหลักนักแก้ปัญหา · ทศวรรษทอง</span>
+        </div>
+      </div>
+
+      <div class="summary-quote">
+        "เครื่องยนต์ดีเซลพันธุ์อึด สตาร์ตติดช้าแต่วิ่งยาวไม่หยุด ยิ่งกดดันยิ่งมีสติ ตอนนี้กำลังเข้าสู่ยุคทองที่สุดในชีวิต"
+      </div>
+
+      <div class="topic">
+        <h3>💡 วิธีคิดพื้นฐาน (Mindset)</h3>
+        <p>• <strong>ลึกซึ้ง รอบคอบ สายวางแผน:</strong> ข้อมูลไม่แน่นไม่ออกตัว คิดวิเคราะห์ความเสี่ยงล่วงหน้าเสมอ<br>
+        • <strong>แบกรับความกดดันเก่งระดับยอดเยี่ยม:</strong> ยามวิกฤตจะนิ่ง มีสติ และแก้ปัญหาเฉพาะหน้าได้ดีมาก เป็นที่พึ่งพาของทุกคน<br>
+        • <strong>เก็บความตึงเครียดไว้คนเดียว:</strong> ปากหนัก ไม่ชอบบ่น มักแบกความกังวลไว้ใต้ท่าทีที่สงบเงียบ</p>
+      </div>
+
+      <div class="topic">
+        <h3>🚀 สไตล์การทำงาน & ความถนัด</h3>
+        <p>• <strong>กระดูกสันหลังและผู้เชี่ยวชาญ:</strong> เก่งการวางระบบ การบริหารความเสี่ยง งานเทคนิค หรืองานบริหารที่มีความซับซ้อน<br>
+        • <strong>เครื่องติดช้าในอดีต:</strong> มักเสียเวลาไปกับการเตรียมตัวนาน จนบางครั้งพลาดโอกาสเพราะความลังเล</p>
+      </div>
+
+      <div class="topic">
+        <h3>⚠️ จุดบอดที่ต้องระวัง</h3>
+        <p>• <strong>รักนะแต่แสดงออกไม่เป็น:</strong> แสดงความรักด้วยการกระทำ/หาเงิน ไม่ถนัดพูดหวาน อาจทำให้คนใกล้ชิดรู้สึกห่างเหิน<br>
+        • <strong>ความเครียดสะสม:</strong> ระวังผลกระทบทางกาย เช่น ระบบทางเดินอาหาร กรดไหลย้อน หรือปวดเมื่อยเรื้อรัง</p>
+      </div>
+
+      <div class="topic">
+        <h3>🌟 จังหวะชีวิต: 2024–2033 (The Golden Decade)</h3>
+        <div class="highlight-box" style="background: #eff6ff; border-left: 4px solid var(--father-primary);">
+          <strong>ช่วงเวลาทอง 10 ปี (อายุ 44-53 ปี):</strong> หลังจากสะสมพลังมานาน ช่วงนี้เครื่องยนต์จะติดไฟอย่างสมบูรณ์ กล้าคิดกล้าลุย ประสบการณ์ทั้งชีวิตจะผลิดอกออกผลเป็น <strong>ผลงาน สถานะ และเงินทองก้อนใหญ่</strong> ให้ครอบครัว
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. คุณแม่ -->
+    <section id="mother" class="section-card mother-theme">
+      <div class="card-header">
+        <div class="avatar">👩</div>
+        <div class="title-box">
+          <h2>คุณแม่ (เกิด 18 ต.ค. 1983)</h2>
+          <span class="tag">ผู้จัดการหลังบ้าน · นักสร้างความมั่นคง · สายทุ่มเท</span>
+        </div>
+      </div>
+
+      <div class="summary-quote">
+        "ผืนดินที่อบอุ่นและอุดมสมบูรณ์ เก่งการบริหารจัดการหลังบ้าน ละเอียดรอบคอบ ทุ่มเทเพื่อครอบครัวหมดใจ"
+      </div>
+
+      <div class="topic">
+        <h3>💡 วิธีคิดพื้นฐาน (Mindset)</h3>
+        <p>• <strong>ผู้ดูแลและประคับประคอง (Nurturer):** มีสัญชาตญาณความเป็นแม่สูง เสียสละและพร้อมดูแลทุกคนในบ้าน<br>
+        • <strong>นักสร้างความมั่นคงระยะยาว:</strong> เน้นความปลอดภัย มั่นคง วินัย และผลลัพธ์ที่จับต้องได้ ไม่ชอบความเสี่ยง<br>
+        • <strong>มีความกลัวขาดแคลนลึกๆ (Scarcity Mindset):</strong> มักมีเสียงเตือนว่าต้องประหยัด ต้องคุมทุกอย่าง ทำให้ผ่อนคลายได้ยาก</p>
+      </div>
+
+      <div class="topic">
+        <h3>🚀 สไตล์การทำงาน & ความถนัด</h3>
+        <p>• <strong>ผู้คุมระบบและทรัพยากรตัวจริง:</strong> เก่งการบริหารงบประมาณ จัดสรรเวลา และตรวจเช็กความเรียบร้อยหลังบ้านได้อย่างยอดเยี่ยม<br>
+        • <strong>ขยันตลอดเวลา:</strong> อยู่นิ่งไม่เป็น มักมองหาอะไรทำให้เกิดประโยชน์ตลอดเวลา</p>
+      </div>
+
+      <div class="topic">
+        <h3>⚠️ จุดบอดที่ต้องระวัง</h3>
+        <p>• <strong>ขอบเขตทางอารมณ์บาง (Blurred Boundaries):</strong> ปฏิเสธคนไม่เก่ง เกรงใจคนอื่นจนตัวเองต้องรับภาระแทน<br>
+        • <strong>คาดหวังให้คนอื่นรู้ใจ:</strong> เวลาเหนื่อยหรือไม่พอใจมักไม่พูดตรงๆ แต่จะเงียบหรือตึงเครียดใส่<br>
+        • <strong>ตระหนี่ความสุขกับตัวเอง:</strong> ดูแลทุกคนอย่างดี แต่ละเลยที่จะให้รางวัลหรือพักผ่อนเพื่อตัวเอง</p>
+      </div>
+
+      <div class="topic">
+        <h3>📈 จังหวะชีวิต (2020–2029)</h3>
+        <p>ช่วงวัยแห่งความมั่นคงและได้รับแรงสนับสนุน ภาระหนักในอดีตเริ่มคลี่คลาย เป็นช่วงเก็บเกี่ยวและสร้างความมั่งคั่งร่วมกับคู่ครอง</p>
+      </div>
+    </section>
+
+    <!-- 4. เคมี 3 คน -->
+    <section id="chemistry" class="section-card family-theme">
+      <div class="card-header">
+        <div class="avatar">🔗</div>
+        <div class="title-box">
+          <h2>เคมีและความสัมพันธ์ของครอบครัว</h2>
+          <span class="tag">การผสานพลัง 3 สายสัมพันธ์</span>
+        </div>
+      </div>
+
+      <div class="topic">
+        <h3>🤝 คุณพ่อ ↔ คุณแม่ (คู่สร้างคู่สมในการสร้างฐานะ)</h3>
+        <p>• <strong>เข้าใจกันโดยไม่ต้องพูดเยอะ:</strong> มีรสนิยมและความคิดพื้นฐานในระดับลึกที่สอดคล้องกัน<br>
+        • <strong>หยิน-หยางที่ลงตัว:</strong> พ่อเป็นสายลุยหาเงินข้างนอก (มีวิสัยทัศน์แต่นิ่ง) ส่วนแม่เป็นสายจัดระเบียบหลังบ้าน คอยบริหารเงินและดึงสติพ่อไม่ให้ประมาท ทั้งคู่ทำงานร่วมกันเป็นทีมสร้างฐานะที่แข็งแกร่งมาก</p>
+      </div>
+
+      <div class="topic">
+        <h3>🛡️ คุณพ่อ ↔ ลูกสาว (เกราะป้องกัน & เข็มทิศชีวิต)</h3>
+        <p>• <strong>แสงแดดส่องใจพ่อ:</strong> ความสดใสของลูกสาวช่วยละลายความตึงเครียดของพ่อ ทำให้พ่อมีรอยยิ้มและอยากสร้างอนาคตไว้ให้<br>
+        • <strong>จุดปะทะ:</strong> พ่อชอบความปลอดภัยและกฎระเบียบ ส่วนลูกสาวรักอิสระและเกลียดการสั่งบังคับ หากพ่อดุหรือใช้ไม้แข็ง ลูกสาวจะดื้อเงียบทันที</p>
+      </div>
+
+      <div class="topic">
+        <h3>🌱 คุณแม่ ↔ ลูกสาว (ดินกับต้นไม้ใหญ่)</h3>
+        <p>• <strong>ความผูกพันที่แน่นแฟ้น:</strong> ลูกสาวหยั่งรากเติบโตบนดินของแม่ ทั้งคู่มีความผูกพันกันสูงมาก ลูกสาวจะรักและฟังแม่<br>
+        • <strong>จุดปะทะ:</strong> แม่ขี้เกรงใจและใจอ่อน ลูกสาวจึงอ้อนและต่อรองกับแม่เก่งมาก และแม่ต้องระวังอย่าเอา "ความกลัวเรื่องเงิน" ไปดับฝันลูกสาว</p>
+      </div>
+    </section>
+
+    <!-- 5. กลยุทธ์การเลี้ยงดู -->
+    <section id="strategy" class="section-card family-theme">
+      <div class="card-header">
+        <div class="avatar">🎯</div>
+        <div class="title-box">
+          <h2>ยุทธศาสตร์การเลี้ยงดูลูกสาว (Parenting Playbook)</h2>
+          <span class="tag">เล่นเป็นทีม · Good Cop & Life Coach</span>
+        </div>
+      </div>
+
+      <div class="summary-quote">
+        "พ่อให้ทิศทางและความเด็ดขาด — แม่ให้ความอบอุ่นและความปลอดภัย — แล้วปล่อยให้ลูกสาวใช้ความฉลาดโบยบินไปข้างหน้า"
+      </div>
+
+      <!-- Strategy Table -->
+      <table class="strategy-table">
+        <thead>
+          <tr>
+            <th>มิติ</th>
+            <th>👨 บทบาทพ่อ (Anchor)</th>
+            <th>👩 บทบาทแม่ (Sanctuary)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ตำแหน่งในใจ</strong></td>
+            <td>เข็มทิศชีวิต & เกราะป้องกัน</td>
+            <td>หลุมหลบภัย & ท่าเรือที่อบอุ่น</td>
+          </tr>
+          <tr>
+            <td><strong>หน้าที่หลัก</strong></td>
+            <td>สอนความกล้าหาญ การแก้ปัญหา และผลลัพธ์ระยะยาว</td>
+            <td>ดูแลชีวิตประจำวัน รับฟังทุกเรื่องโดยไม่ตัดสิน ซัพพอร์ตการทดลอง</td>
+          </tr>
+          <tr>
+            <td><strong>ข้อควรระวัง</strong></td>
+            <td>ห้ามสั่งด้วยอำนาจเผด็จการ</td>
+            <td>อย่าใจอ่อนจนเสียขอบเขต และอย่าส่งต่อความกลัวเรื่องเงิน</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="topic" style="margin-top: 20px;">
+        <h3>📋 3 กฎเหล็กรับมือลูกสาวในชีวิตจริง</h3>
+        <ul style="line-height: 1.8;">
+          <li><strong>1. ใช้ "กติกาแบบสองชั้น" (กันลูกเจาะหลังบ้าน):</strong> พ่อแม่ต้องตกลงกันก่อน เมื่อลูกสาววิ่งมาอ้อนขอข้อยกเว้นจากแม่ ให้แม่ตอบอย่างใจเย็นว่า <em>"เรื่องนี้แม่กับพ่อตกลงกันไว้แล้ว เราต้องทำตามนั้นนะลูก"</em></li>
+          <li><strong>2. วินัยสร้างด้วย "การเลือกและผลลัพธ์":</strong> อย่าสั่งว่าต้องทำ แต่ให้ชี้ผลลัพธ์ <em>"ถ้าหนูทำการบ้านเสร็จตอนนี้ หนูจะได้เล่น 1 ชม. เต็ม แต่ถ้าผัดวันประกันพรุ่ง คืนนี้จะงดดูการ์ตูน หนูคิดว่าแบบไหนคุ้มกว่ากัน?"</em></li>
+          <li><strong>3. สนับสนุนความสนใจที่หลากหลาย:</strong> ลูกสาวเป็นคนเก่งหลายด้าน แม่ช่วยจัดสรรงบและพื้นที่ให้ลอง พ่อช่วยเช็กความเสี่ยงและสอนวางแผนเป้าหมาย</li>
+        </ul>
+      </div>
+
+      <div class="topic">
+        <h3>🔄 สิ่งที่พ่อแม่ต้องคอย "เตือนสติกันเอง"</h3>
+        <div class="highlight-box">
+          <p><strong>👩 แม่ช่วยเตือนพ่อ:</strong><br>
+          • <em>"พ่อใจเย็นๆ นะ อย่าเพิ่งดุ ค่อยๆ ฟังเหตุผลของลูกก่อน"</em><br>
+          • <em>"พ่ออย่าลืมกอดและชมลูกนะ ลูกรอคำชมจากพ่ออยู่"</em></p>
+          <hr style="margin: 8px 0; border: none; border-top: 1px dashed #cbd5e1;">
+          <p><strong>👨 พ่อช่วยเตือนแม่:</strong><br>
+          • <em>"แม่ไม่ต้องเครียดเรื่องเงินนะ เดี๋ยวพ่อจัดการเอง ใช้ชีวิตให้สบายใจเถอะ"</em><br>
+          • <em>"แม่... เรื่องนี้ตกลงกันแล้วนะ แม่ต้องใจแข็ง อย่าเพิ่งยอมตามใจลูก"</em></p>
+        </div>
+      </div>
+
+      <div class="topic">
+        <h3>🚀 ทักษะสำคัญที่ต้องบ่มเพาะให้ลูกสาว</h3>
+        <p>• <strong>การเงินเชิงบวก:</strong> สอนการบริหาร การงอกเงย และคุณค่าของเงิน (อย่าสอนแค่ความตระหนี่ถี่เหนียว)<br>
+        • <strong>ภาษาและการสื่อสาร:</strong> ส่งเสริมการพูดในที่สาธารณะ การนำเสนอ และภาษาที่สอง/สาม<br>
+        • <strong>เปิดโลกกว้าง:</strong> พาลูกเดินทางไกล ไปเปิดหูเปิดตาต่างถิ่น จะกระตุ้นภาวะผู้นำของเธอได้ดีที่สุด</p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>© Family Blueprint Guide · สรุปและเรียบเรียงเพื่อการพัฒนาครอบครัวอย่างยั่งยืน</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>
