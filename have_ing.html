@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>เกมภาษาอังกฤษแสนสนุกสำหรับเด็ก ป.1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4A90E2;
+      --success-color: #4CAF50;
+      --error-color: #FF5252;
+      --accent-yellow: #FFD54F;
+      --bg-gradient: linear-gradient(135deg, #FFF5E4 0%, #FFE3E1 50%, #E8F9FD 100%);
+      --text-dark: #37474F;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Mali', cursive, sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 12px;
+      min-height: 100dvh;
+      background: var(--bg-gradient);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* กรอบเกมหลัก (Mobile-First) */
+    .app-container {
+      background: #ffffff;
+      border-radius: 26px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 480px;
+      padding: 20px 16px;
+      text-align: center;
+      position: relative;
+      border: 4px solid #FFE082;
+    }
+
+    /* ปุ่มหน้าหลัก/กลับ */
+    .nav-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      min-height: 40px;
+    }
+
+    .btn-home {
+      background: #ECEFF1;
+      border: 2px solid #CFD8DC;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.1s;
+    }
+
+    .btn-home:active {
+      transform: scale(0.9);
+    }
+
+    .header-badge {
+      background: #FF8A80;
+      color: white;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      display: inline-block;
+    }
+
+    /* Progress Bar */
+    .progress-bar-wrap {
+      background: #F0F0F0;
+      border-radius: 12px;
+      height: 10px;
+      overflow: hidden;
+      margin: 12px 0 16px 0;
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #66BB6A, #43A047);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* การ์ตูน Emoji เคลื่อนไหว */
+    .emoji-scene {
+      font-size: 4.5rem;
+      min-height: 85px;
+      margin: 4px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-8px) scale(1.05); }
+    }
+
+    /* กล่องคำถาม */
+    .question-card {
+      background: #F9FBE7;
+      border: 2px dashed #C0CA33;
+      border-radius: 20px;
+      padding: 16px 12px;
+      margin-bottom: 20px;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .question-prompt {
+      font-size: 1.1rem;
+      color: #689F38;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .question-text {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      line-height: 1.35;
+      word-wrap: break-word;
+    }
+
+    .subject-tag {
+      color: #E64A19;
+      border-bottom: 2px solid #FFAB91;
+    }
+
+    .blank-slot {
+      display: inline-block;
+      min-width: 70px;
+      padding: 0 4px;
+      color: #1976D2;
+      border-bottom: 3px dashed #F57C00;
+    }
+
+    /* ตัวเลือกปุ่มกด */
+    .choices-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .choices-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-choice {
+      flex: 1;
+      padding: 14px 10px;
+      font-size: 1.45rem;
+      font-weight: 800;
+      border-radius: 18px;
+      border: none;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.15);
+      transition: all 0.08s ease;
+      touch-action: manipulation;
+    }
+
+    .btn-choice:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-blue { background: #42A5F5; }
+    .btn-green { background: #66BB6A; }
+    .btn-orange { background: #FFA726; }
+    .btn-purple { background: #AB47BC; }
+
+    /* หน้าเลือกโหมด (Main Menu) */
+    .menu-title {
+      font-size: 1.8rem;
+      color: #FF5722;
+      font-weight: 800;
+      margin: 10px 0 20px 0;
+    }
+
+    .mode-card {
+      background: #FFFFFF;
+      border: 3px solid #ECEFF1;
+      border-radius: 22px;
+      padding: 18px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      text-align: left;
+    }
+
+    .mode-card:hover, .mode-card:active {
+      transform: scale(1.02);
+      border-color: #FFB74D;
+      background: #FFFDE7;
+    }
+
+    .mode-icon {
+      font-size: 3rem;
+      margin-right: 16px;
+    }
+
+    .mode-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #37474F;
+      margin: 0;
+    }
+
+    .mode-desc {
+      font-size: 0.95rem;
+      color: #78909C;
+      margin-top: 4px;
+    }
+
+    /* Popup Modal เฉลย */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 26px;
+      padding: 22px 18px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      transform: scale(0.85);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 4px solid #B2EBF2;
+    }
+
+    .modal-overlay.active .modal-box {
+      transform: scale(1);
+    }
+
+    .popup-icon {
+      font-size: 3.8rem;
+      margin-bottom: 6px;
+    }
+
+    .popup-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .popup-body {
+      font-size: 1.15rem;
+      color: #455A64;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .popup-body b {
+      color: #D81B60;
+    }
+
+    .btn-action {
+      background: #FFA000;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      border-radius: 18px;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 0 #E65100;
+    }
+
+    .btn-action:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #E65100;
+    }
+
+    /* ซ่อนส่วนที่ยังไม่ได้ใช้ */
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- 1. หน้าเลือกโหมดหลัก (Main Menu) -->
+    <div id="screen-menu">
+      <div style="font-size: 4rem; margin: 10px 0;">🎒✨</div>
+      <div class="menu-title">เลือกโหมดผจญภัย</div>
+
+      <!-- โหมด Has / Have -->
+      <div class="mode-card" onclick="startQuiz('hashave')">
+        <div class="mode-icon">🐾</div>
+        <div>
+          <h3 class="mode-title">เลือกเติม Has / Have</h3>
+          <p class="mode-desc">ฝึกสังเกตประธาน 30 ข้อ (Pronoun / คำนาม)</p>
+        </div>
+      </div>
+
+      <!-- โหมด เติม -ing -->
+      <div class="mode-card" onclick="startQuiz('ving')">
+        <div class="mode-icon">🏃‍♀️</div>
+        <div>
+          <h3 class="mode-title">เลือกสะกดคำ V-ing</h3>
+          <p class="mode-desc">ฝึกแปลงกริยาเติม -ing 20 ข้อ</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. หน้าคำถาม (Quiz Screen) -->
+    <div id="screen-quiz" class="hidden">
+      <div class="nav-top">
+        <button class="btn-home" onclick="goToMenu()" title="กลับหน้าแรก">🏠</button>
+        <span class="header-badge" id="quiz-progress-text">ข้อ 1 / 30</span>
+        <span style="font-size: 1.2rem; font-weight:800; color:#FFA000;" id="quiz-score-badge">⭐ 0</span>
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+
+      <div class="emoji-scene" id="question-emoji">🐶</div>
+
+      <div class="question-card">
+        <div class="question-prompt" id="question-prompt">เลือกคำตอบที่ถูกต้อง</div>
+        <div class="question-text" id="question-text">
+          <!-- เนื้อหาโจทย์จะถูกเรนเดอร์ตรงนี้ -->
+        </div>
+      </div>
+
+      <!-- กล่องปุ่มตัวเลือกตอบ -->
+      <div id="choices-container"></div>
+    </div>
+
+    <!-- 3. หน้าสรุปผลคะแนน (Result Screen) -->
+    <div id="screen-result" class="hidden">
+      <div style="font-size: 4.8rem; margin: 10px 0;" id="result-trophy">🏆</div>
+      <h2 style="font-size: 1.8rem; color: #2E7D32; margin: 6px 0;" id="result-title">เก่งที่สุดเลย!</h2>
+      <p style="font-size: 1.2rem; color: #546E7A; margin-bottom: 6px;">น้องทำถูกตั้งแต่ครั้งแรกไปทั้งหมด</p>
+      <div style="font-size: 2.6rem; font-weight: 800; color: #FFA000; margin-bottom: 20px;" id="result-score">⭐ 30 / 30</div>
+      
+      <button class="btn-action" style="background:#42A5F5; box-shadow:0 4px 0 #1976D2; margin-bottom: 10px;" onclick="replayCurrentQuiz()">
+        🔄 เล่นโหมดนี้อีกรอบ
+      </button>
+      <button class="btn-action" style="background:#B0BEC5; box-shadow:0 4px 0 #78909C;" onclick="goToMenu()">
+        🏠 กลับหน้าหลัก
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Popup เฉลยทันที -->
+  <div class="modal-overlay" id="popup-modal">
+    <div class="modal-box">
+      <div class="popup-icon" id="popup-icon">🎉</div>
+      <div class="popup-title" id="popup-title">ถูกต้องจ้า!</div>
+      <div class="popup-body" id="popup-body">คำอธิบาย</div>
+      <button class="btn-action" id="popup-next-btn" onclick="nextQuestion()">ข้อต่อไปเลย ➔</button>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================
+       1. ระบบเสียงสังเคราะห์ในตัว (Web Audio API)
+       (ไม่ต้องโหลดไฟล์ mp3 ไม่มีปัญหาเรื่องลิ้งก์เสียหรือเน็ตหลุด)
+       ========================================================== */
+    let audioCtx = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // เสียงตอนตอบถูก (คอร์ดระฆังสดใส C-E-G-C)
+    function playSoundCorrect() {
+      initAudio();
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, index) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + index * 0.08);
+
+        gain.gain.setValueAtTime(0, audioCtx.currentTime + index * 0.08);
+        gain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + index * 0.08 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + index * 0.08 + 0.35);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(audioCtx.currentTime + index * 0.08);
+        osc.stop(audioCtx.currentTime + index * 0.08 + 0.35);
+      });
+    }
+
+    // เสียงตอนตอบผิด (เสียงทุ้มสองจังหวะ อู้ว-โอว)
+    function playSoundWrong() {
+      initAudio();
+      const tones = [260, 195];
+      tones.forEach((freq, index) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + index * 0.15);
+
+        gain.gain.setValueAtTime(0.28, audioCtx.currentTime + index * 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + index * 0.15 + 0.22);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(audioCtx.currentTime + index * 0.15);
+        osc.stop(audioCtx.currentTime + index * 0.15 + 0.22);
+      });
+    }
+
+    /* ==========================================================
+       2. คลังข้อสอบ: Has/Have (30 ข้อ) & V-ing (20 ข้อ)
+       ========================================================== */
+    const hasHaveQuiz = [
+      // --- Pronoun (15 ข้อ) ---
+      { type: 'hashave', subject: 'He', rest: 'a red ball.', ans: 'has', emoji: '⚽', explain: 'ประธานคือ <b>"He"</b> (เขา 1 คน) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'She', rest: 'a cute doll.', ans: 'has', emoji: '🪆', explain: 'ประธานคือ <b>"She"</b> (เธอ 1 คน) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'It', rest: 'a long tail.', ans: 'has', emoji: '🐒', explain: 'ประธานคือ <b>"It"</b> (สัตว์/สิ่งของ 1 สิ่ง) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'I', rest: 'two big eyes.', ans: 'have', emoji: '👀', explain: 'ประธานคือ <b>"I"</b> เป็นคนพิเศษ ใช้ <b>have</b> เสมอนะครับ' },
+      { type: 'hashave', subject: 'You', rest: 'a green apple.', ans: 'have', emoji: '🍏', explain: 'ประธานคือ <b>"You"</b> ใช้คู่กับ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'We', rest: 'many toys.', ans: 'have', emoji: '🧸', explain: 'ประธานคือ <b>"We"</b> (พวกเรา หลายคน) ใช้ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'They', rest: 'colorful balloons.', ans: 'have', emoji: '🎈', explain: 'ประธานคือ <b>"They"</b> (พวกเขา หลายคน) ใช้ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'He', rest: 'a new bicycle.', ans: 'has', emoji: '🚲', explain: 'ประธานคือ <b>"He"</b> (ผู้ชาย 1 คน) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'She', rest: 'pink shoes.', ans: 'has', emoji: '👟', explain: 'ประธานคือ <b>"She"</b> (ผู้หญิง 1 คน) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'It', rest: 'sharp teeth.', ans: 'has', emoji: '🐊', explain: 'ประธานคือ <b>"It"</b> (จระเข้ 1 ตัว) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'I', rest: 'a yellow pencil.', ans: 'have', emoji: '✏️', explain: 'ประธานคือ <b>"I"</b> ต้องคู่กับ <b>have</b> ครับ' },
+      { type: 'hashave', subject: 'You', rest: 'a cool robot.', ans: 'have', emoji: '🤖', explain: 'ประธานคือ <b>"You"</b> ต้องคู่กับ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'We', rest: 'fun storybooks.', ans: 'have', emoji: '📚', explain: 'ประธานคือ <b>"We"</b> (พวกเรา หลายคน) ใช้ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'They', rest: 'two cute rabbits.', ans: 'have', emoji: '🐰', explain: 'ประธานคือ <b>"They"</b> (กระต่ายหลายตัว) ใช้ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'He', rest: 'a sweet ice cream.', ans: 'has', emoji: '🍦', explain: 'ประธานคือ <b>"He"</b> (เขา 1 คน) ใช้ <b>has</b> จ้า' },
+
+      // --- ขึ้นต้นด้วย My... (5 ข้อ) ---
+      { type: 'hashave', subject: 'My mom', rest: 'a nice car.', ans: 'has', emoji: '👩', explain: 'ประธานคือ <b>"My mom"</b> (คุณแม่ 1 คน) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'My friends', rest: 'many candies.', ans: 'have', emoji: '🧑‍🤝‍🧑', explain: 'ประธานคือ <b>"My friends"</b> (เพื่อน ๆ มี s หลายคน) ใช้ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'My cat', rest: 'warm milk.', ans: 'has', emoji: '🐱', explain: 'ประธานคือ <b>"My cat"</b> (แมว 1 ตัว) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'My brother', rest: 'a cool guitar.', ans: 'has', emoji: '🎸', explain: 'ประธานคือ <b>"My brother"</b> (พี่ชาย 1 คน) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'My teachers', rest: 'kind smiles.', ans: 'have', emoji: '👩‍🏫', explain: 'ประธานคือ <b>"My teachers"</b> (คุณครูหลายท่าน มี s) ใช้ <b>have</b> จ้า' },
+
+      // --- คำนามเอกพจน์ & พหูพจน์อย่างง่าย (10 ข้อ) ---
+      { type: 'hashave', subject: 'The boy', rest: 'a blue cap.', ans: 'has', emoji: '🧢', explain: 'ประธานคือ <b>"The boy"</b> (เด็กผู้ชายคนเดียว) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'The boys', rest: 'blue caps.', ans: 'have', emoji: '👦👦', explain: 'ประธานคือ <b>"The boys"</b> (เด็กหลายคน มี s) ใช้ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'A bird', rest: 'two wings.', ans: 'has', emoji: '🐦', explain: 'ประธานคือ <b>"A bird"</b> (มี A แปลว่านก 1 ตัว) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'Two birds', rest: 'little nests.', ans: 'have', emoji: '🪺', explain: 'ประธานคือ <b>"Two birds"</b> (นก 2 ตัว = หลายตัว) ใช้ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'Tom', rest: 'a skateboard.', ans: 'has', emoji: '🛹', explain: 'ประธานคือ <b>"Tom"</b> (ชื่อคน 1 คน) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'Tom and Lisa', rest: 'skates.', ans: 'have', emoji: '👫', explain: 'ประธานคือ <b>"Tom and Lisa"</b> (2 คนร่วมกัน) ใช้ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'The dog', rest: 'a big bone.', ans: 'has', emoji: '🦴', explain: 'ประธานคือ <b>"The dog"</b> (หมาตัวเดียว) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'Dogs', rest: 'four legs.', ans: 'have', emoji: '🐕🐩', explain: 'ประธานคือ <b>"Dogs"</b> (มี s แปลว่าหมาหลายตัว) ใช้ <b>have</b> จ้า' },
+      { type: 'hashave', subject: 'An elephant', rest: 'a long trunk.', ans: 'has', emoji: '🐘', explain: 'ประธานคือ <b>"An elephant"</b> (มี An แปลว่าช้าง 1 เชือก) ใช้ <b>has</b> จ้า' },
+      { type: 'hashave', subject: 'The children', rest: 'yummy pizza.', ans: 'have', emoji: '🍕', explain: 'ประธานคือ <b>"The children"</b> (แปลว่าเด็ก ๆ หลายคน) ใช้ <b>have</b> จ้า' }
+    ];
+
+    const vingQuiz = [
+      { type: 'ving', verb: 'play', thai: 'เล่น', ans: 'playing', choices: ['playing', 'playying', 'plaing'], emoji: '🎮', explain: 'คำว่า <b>play</b> เติม <b>-ing</b> ได้ทันที เป็น <b>playing</b> จ้า' },
+      { type: 'ving', verb: 'run', thai: 'วิ่ง', ans: 'running', choices: ['runing', 'running', 'runneing'], emoji: '🏃', explain: 'คำว่า <b>run</b> เสียงสั้น ตัวสะกดตัวเดียว ต้องเบิ้ล <b>n</b> อีกตัว เป็น <b>running</b>' },
+      { type: 'ving', verb: 'dance', thai: 'เต้น', ans: 'dancing', choices: ['danceing', 'dancing', 'danceying'], emoji: '💃', explain: 'คำว่า <b>dance</b> ลงท้ายด้วย <b>e</b> ให้ตัด e ทิ้งก่อนเติม ing เป็น <b>dancing</b>' },
+      { type: 'ving', verb: 'eat', thai: 'กิน', ans: 'eating', choices: ['eating', 'eatting', 'eateing'], emoji: '🍎', explain: 'คำว่า <b>eat</b> เติม <b>-ing</b> ได้เลย เป็น <b>eating</b> จ้า' },
+      { type: 'ving', verb: 'swim', thai: 'ว่ายน้ำ', ans: 'swimming', choices: ['swiming', 'swimming', 'swimmeing'], emoji: '🏊', explain: 'คำว่า <b>swim</b> สระสั้น ต้องเบิ้ล <b>m</b> อีกตัว เป็น <b>swimming</b>' },
+      { type: 'ving', verb: 'ride', thai: 'ขี่จักรยาน', ans: 'riding', choices: ['riding', 'rideing', 'rideying'], emoji: '🚲', explain: 'คำว่า <b>ride</b> ลงท้ายด้วย <b>e</b> ให้ตัด e ทิ้งก่อนเติม ing เป็น <b>riding</b>' },
+      { type: 'ving', verb: 'read', thai: 'อ่าน', ans: 'reading', choices: ['reading', 'readding', 'readeing'], emoji: '📖', explain: 'คำว่า <b>read</b> เติม <b>-ing</b> ได้ทันที เป็น <b>reading</b> จ้า' },
+      { type: 'ving', verb: 'sit', thai: 'นั่ง', ans: 'sitting', choices: ['siting', 'sitting', 'sitteing'], emoji: '🪑', explain: 'คำว่า <b>sit</b> สระสั้นตัวสะกดเดียว เบิ้ล <b>t</b> เป็น <b>sitting</b> จ้า' },
+      { type: 'ving', verb: 'make', thai: 'ทำขนม/สิ่งของ', ans: 'making', choices: ['makeing', 'making', 'makking'], emoji: '🎂', explain: 'คำว่า <b>make</b> ลงท้ายด้วย <b>e</b> ให้ตัด e ทิ้งก่อนเติม ing เป็น <b>making</b>' },
+      { type: 'ving', verb: 'jump', thai: 'กระโดด', ans: 'jumping', choices: ['jumping', 'jumpping', 'jumpeing'], emoji: '🦘', explain: 'คำว่า <b>jump</b> มีตัวสะกดสองตัว เติม <b>-ing</b> ได้ทันที เป็น <b>jumping</b>' },
+      { type: 'ving', verb: 'write', thai: 'เขียน', ans: 'writing', choices: ['writing', 'writeing', 'writting'], emoji: '✏️', explain: 'คำว่า <b>write</b> ลงท้ายด้วย <b>e</b> ให้ตัด e ทิ้ง เป็น <b>writing</b> จ้า' },
+      { type: 'ving', verb: 'cut', thai: 'ตัด', ans: 'cutting', choices: ['cuting', 'cutteing', 'cutting'], emoji: '✂️', explain: 'คำว่า <b>cut</b> คำสั้นสระเสียงสั้น เบิ้ล <b>t</b> เป็น <b>cutting</b>' },
+      { type: 'ving', verb: 'sleep', thai: 'นอนหลับ', ans: 'sleeping', choices: ['sleeping', 'sleepping', 'sleepeing'], emoji: '😴', explain: 'คำว่า <b>sleep</b> มีสระสองตัว เติม <b>-ing</b> ได้เลย เป็น <b>sleeping</b>' },
+      { type: 'ving', verb: 'come', thai: 'มา', ans: 'coming', choices: ['comeing', 'coming', 'comming'], emoji: '🚪', explain: 'คำว่า <b>come</b> ลงท้ายด้วย <b>e</b> ให้ตัด e ทิ้ง เป็น <b>coming</b> จ้า' },
+      { type: 'ving', verb: 'stop', thai: 'หยุด', ans: 'stopping', choices: ['stoping', 'stopping', 'stoppeing'], emoji: '🛑', explain: 'คำว่า <b>stop</b> คำสระสั้น เบิ้ล <b>p</b> เป็น <b>stopping</b> จ้า' },
+      { type: 'ving', verb: 'cook', thai: 'ทำอาหาร', ans: 'cooking', choices: ['cooking', 'cookking', 'cookeing'], emoji: '🍳', explain: 'คำว่า <b>cook</b> เติม <b>-ing</b> ได้เลย เป็น <b>cooking</b> จ้า' },
+      { type: 'ving', verb: 'smile', thai: 'ยิ้ม', ans: 'smiling', choices: ['smileing', 'smiling', 'smilling'], emoji: '😊', explain: 'คำว่า <b>smile</b> ลงท้ายด้วย <b>e</b> ให้ตัด e ทิ้ง เป็น <b>smiling</b> จ้า' },
+      { type: 'ving', verb: 'dig', thai: 'ขุดดิน', ans: 'digging', choices: ['diging', 'digging', 'diggeing'], emoji: '🐶', explain: 'คำว่า <b>dig</b> คำสั้นสระเสียงสั้น เบิ้ล <b>g</b> เป็น <b>digging</b>' },
+      { type: 'ving', verb: 'walk', thai: 'เดิน', ans: 'walking', choices: ['walkking', 'walking', 'walkeing'], emoji: '🚶', explain: 'คำว่า <b>walk</b> เติม <b>-ing</b> ได้เลย เป็น <b>walking</b> จ้า' },
+      { type: 'ving', verb: 'drive', thai: 'ขับรถ', ans: 'driving', choices: ['driveing', 'driving', 'drivving'], emoji: '🚗', explain: 'คำว่า <b>drive</b> ลงท้ายด้วย <b>e</b> ให้ตัด e ทิ้ง เป็น <b>driving</b>' }
+    ];
+
+    /* ==========================================================
+       3. ตัวแปรสถานะเกม (Game State)
+       ========================================================== */
+    let currentMode = 'hashave'; // 'hashave' หรือ 'ving'
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let score = 0;
+    let isAnswered = false;
+
+    // สลับหน้าจอ
+    function switchScreen(screenName) {
+      document.getElementById('screen-menu').classList.add('hidden');
+      document.getElementById('screen-quiz').classList.add('hidden');
+      document.getElementById('screen-result').classList.add('hidden');
+
+      if (screenName === 'menu') document.getElementById('screen-menu').classList.remove('hidden');
+      if (screenName === 'quiz') document.getElementById('screen-quiz').classList.remove('hidden');
+      if (screenName === 'result') document.getElementById('screen-result').classList.remove('hidden');
+    }
+
+    // เริ่มเล่นโหมดที่เลือก
+    function startQuiz(mode) {
+      initAudio();
+      currentMode = mode;
+      currentQuestions = (mode === 'hashave') ? [...hasHaveQuiz] : [...vingQuiz];
+      currentIndex = 0;
+      score = 0;
+      switchScreen('quiz');
+      renderQuestion();
+    }
+
+    // กลับหน้าเมนู
+    function goToMenu() {
+      switchScreen('menu');
+    }
+
+    // เล่นซ้ำโหมดเดิม
+    function replayCurrentQuiz() {
+      startQuiz(currentMode);
+    }
+
+    // แสดงโจทย์ตามข้อปัจจุบัน
+    function renderQuestion() {
+      isAnswered = false;
+      const q = currentQuestions[currentIndex];
+      const total = currentQuestions.length;
+
+      // ปรับ Progress & คะแนน
+      document.getElementById('quiz-progress-text').innerText = `ข้อ ${currentIndex + 1} / ${total}`;
+      document.getElementById('quiz-score-badge').innerText = `⭐ ${score}`;
+      document.getElementById('progress-bar').style.width = `${((currentIndex + 1) / total) * 100}%`;
+      document.getElementById('question-emoji').innerText = q.emoji;
+
+      const promptEl = document.getElementById('question-prompt');
+      const textEl = document.getElementById('question-text');
+      const choicesContainer = document.getElementById('choices-container');
+      choicesContainer.innerHTML = '';
+
+      if (q.type === 'hashave') {
+        promptEl.innerText = '✨ เติม has หรือ have ?';
+        textEl.innerHTML = `<span class="subject-tag">${q.subject}</span> <span class="blank-slot" id="live-blank">?</span> ${q.rest}`;
+
+        // ปุ่ม 2 ตัวเลือก: has / have
+        const row = document.createElement('div');
+        row.className = 'choices-row';
+        row.innerHTML = `
+          <button class="btn-choice btn-blue" onclick="handleSelect('has')">has</button>
+          <button class="btn-choice btn-green" onclick="handleSelect('have')">have</button>
+        `;
+        choicesContainer.appendChild(row);
+
+      } else if (q.type === 'ving') {
+        promptEl.innerText = `✨ คำว่า "${q.verb}" (${q.thai}) เติม -ing แบบไหนนะ?`;
+        textEl.innerHTML = `${q.verb} ➔ <span class="blank-slot" id="live-blank">?</span>`;
+
+        // ปุ่มตัวเลือก V-ing (3 ตัวเลือกในแนวตั้งเพื่อให้กดง่ายบนมือถือ)
+        const stack = document.createElement('div');
+        stack.className = 'choices-stack';
+        
+        const colors = ['btn-blue', 'btn-orange', 'btn-purple'];
+        q.choices.forEach((choice, idx) => {
+          const btn = document.createElement('button');
+          btn.className = `btn-choice ${colors[idx % colors.length]}`;
+          btn.innerText = choice;
+          btn.onclick = () => handleSelect(choice);
+          stack.appendChild(btn);
+        });
+        choicesContainer.appendChild(stack);
+      }
+    }
+
+    // เมื่อเด็กกดเลือกคำตอบ
+    function handleSelect(choice) {
+      if (isAnswered) return;
+      isAnswered = true;
+
+      const q = currentQuestions[currentIndex];
+      const isCorrect = (choice === q.ans);
+
+      // แทนที่เครื่องหมาย ? ในช่องว่างทันที
+      const blank = document.getElementById('live-blank');
+      if (blank) blank.innerText = choice;
+
+      // เล่นเสียง & ปรับคะแนน
+      if (isCorrect) {
+        playSoundCorrect();
+        score++;
+        showPopup(true, q);
+      } else {
+        playSoundWrong();
+        showPopup(false, q);
+      }
+    }
+
+    // แสดง Popup เฉลย
+    function showPopup(isCorrect, q) {
+      const modal = document.getElementById('popup-modal');
+      const icon = document.getElementById('popup-icon');
+      const title = document.getElementById('popup-title');
+      const body = document.getElementById('popup-body');
+
+      if (isCorrect) {
+        icon.innerText = '🌟';
+        title.innerText = 'เก่งมาก ถูกต้อง! 🎉';
+        title.style.color = 'var(--success-color)';
+        body.innerHTML = q.explain;
+      } else {
+        icon.innerText = '💪';
+        title.innerText = 'เกือบถูกแล้วนะ!';
+        title.style.color = 'var(--error-color)';
+        body.innerHTML = `ข้อนี้ที่ถูกคือ <b>"${q.ans}"</b> จ้า<br>${q.explain}`;
+      }
+
+      modal.classList.add('active');
+    }
+
+    // ปิด Popup แล้วไปข้อถัดไป
+    function nextQuestion() {
+      const modal = document.getElementById('popup-modal');
+      modal.classList.remove('active');
+
+      currentIndex++;
+      if (currentIndex < currentQuestions.length) {
+        renderQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    // แสดงหน้าสรุปคะแนนตอนจบ
+    function showResults() {
+      switchScreen('result');
+      const total = currentQuestions.length;
+      document.getElementById('result-score').innerText = `⭐ ${score} / ${total}`;
+
+      const trophy = document.getElementById('result-trophy');
+      const title = document.getElementById('result-title');
+
+      if (score >= total * 0.8) {
+        trophy.innerText = '🏆';
+        title.innerText = 'ยอดเยี่ยมที่สุดเลยคนเก่ง!';
+        title.style.color = '#2E7D32';
+      } else if (score >= total * 0.5) {
+        trophy.innerText = '🎖️';
+        title.innerText = 'เก่งมากเลย ฝึกฝนอีกนิดนะ!';
+        title.style.color = '#1565C0';
+      } else {
+        trophy.innerText = '🌱';
+        title.innerText = 'พยายามได้ดีมาก มาลองอีกรอบกัน!';
+        title.style.color = '#E65100';
+      }
+    }
+  </script>
+</body>
+</html>
