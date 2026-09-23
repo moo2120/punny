@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบทดสอบภาษาไทย ป.1 (การอ่านรู้เรื่องและจับใจความ) เทอม 1</title>
+  <!-- Google Fonts: Sarabun & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'sans-serif'],
+            display: ['Prompt', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f8fafc;
+    }
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Prompt', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white;
+        color: black;
+      }
+      .question-card {
+        page-break-inside: avoid;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        margin-bottom: 1.25rem !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-emerald-600 via-teal-700 to-cyan-800 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-3 text-center sm:text-left">
+        <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shadow-inner">
+          🇹🇭
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold font-display tracking-tight">ภาษาไทย ป.1 (การอ่านรู้เรื่องและจับใจความ)</h1>
+          <p class="text-xs text-emerald-100">แนวข้อสอบ RT ป.1 • อ่านประโยค นิทานสั้น ป้ายสัญลักษณ์ และตอบคำถาม</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="no-print text-xs bg-white/10 hover:bg-white/20 border border-white/30 text-white px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+          🖨️ พิมพ์แบบทดสอบ
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-3 sm:px-4 py-6 flex-1 w-full">
+
+    <!-- Pedagogical Banner -->
+    <div class="no-print mb-6 bg-white border border-emerald-100 rounded-2xl p-4 sm:p-5 shadow-sm">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl mt-0.5">📚</span>
+        <div>
+          <h2 class="font-bold text-emerald-950 font-display text-base sm:text-lg">จุดเน้นการประเมินการอ่านรู้เรื่อง (ป.1 เทอม 1)</h2>
+          <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+            วัดทักษะ 3 มิติ: <strong>1) การอ่านรู้เรื่องคำและประโยค</strong> (ความหมายของคำ โครงสร้างประธาน-กริยา-กรรม) <strong>2) การอ่านข้อความสั้น/นิทาน</strong> (ใคร ทำอะไร ที่ไหน อย่างไร ผลเป็นอย่างไร) และ <strong>3) การอ่านป้ายเตือนและสัญลักษณ์ในชีวิตประจำวัน</strong> เพื่อเตรียมความพร้อมสู่สนามสอบจริง
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Set Selector Tabs -->
+    <div class="no-print flex space-x-2 border-b border-slate-200 pb-2 mb-6 overflow-x-auto custom-scroll">
+      <button onclick="switchSet('set1')" id="tab-set1" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap bg-emerald-600 text-white shadow-sm shadow-emerald-200">
+        <span>📗</span> ชุดที่ 1: รู้เรื่องคำ ประโยค และข้อความสั้น (20 ข้อ)
+      </button>
+      <button onclick="switchSet('set2')" id="tab-set2" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">
+        <span>📙</span> ชุดที่ 2: นิทานจับใจความ ป้ายเตือน และข้อคิด (20 ข้อ)
+      </button>
+    </div>
+
+    <!-- Status & Tool Bar -->
+    <div class="no-print bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-700">
+        <span>ทำไปแล้ว:</span>
+        <span id="answered-count" class="font-bold text-emerald-600 font-display text-base">0</span>
+        <span class="text-slate-400">/ 20 ข้อ</span>
+        <div class="w-24 sm:w-32 bg-slate-100 rounded-full h-2.5 ml-2 overflow-hidden border border-slate-200">
+          <div id="progress-bar" class="bg-emerald-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="instant-mode" class="sr-only peer" onchange="toggleInstantMode()">
+          <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+          <span class="ml-2 text-xs text-slate-700 select-none">โหมดเฉลยทันที</span>
+        </label>
+        <button onclick="resetCurrentSet()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition font-medium">
+          🔄 ล้างคำตอบ
+        </button>
+      </div>
+    </div>
+
+    <!-- Score Summary Modal Banner -->
+    <div id="score-card" class="hidden no-print mb-6 p-5 rounded-2xl border transition-all text-center"></div>
+
+    <!-- Question Container -->
+    <div id="questions-container" class="space-y-4 sm:space-y-5">
+      <!-- Generated via JavaScript -->
+    </div>
+
+    <!-- Action Bottom Bar -->
+    <div class="no-print mt-8 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-slate-500 text-center sm:text-left">
+        💡 คำแนะนำ: ให้นักเรียนฝึกใช้นิ้วชี้ทีละคำ อ่านออกเสียงให้ฟัง แล้วเลือกคำตอบด้วยความเข้าใจ
+      </p>
+      <button onclick="submitExam()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold font-display px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+        <span>✅ ตรวจคำตอบชุดนี้</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-12 no-print">
+    <div class="max-w-4xl mx-auto px-4">
+      <p class="font-medium text-slate-700">แบบฝึกพัฒนาทักษะความเข้าใจในการอ่านภาษาไทย ชั้นประถมศึกษาปีที่ 1 (ภาคเรียนที่ 1)</p>
+      <p class="mt-1">สอดคล้องตามหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน (ฉบับปรับปรุง 2560) • กลุ่มสาระการเรียนรู้ภาษาไทย</p>
+    </div>
+  </footer>
+
+  <!-- Question Data & Core Scripts -->
+  <script>
+    const examData = {
+      set1: [
+        {
+          q: "คำว่า 'งวง' หมายถึงอวัยวะส่วนใดของช้าง?",
+          context: null,
+          options: ["จมูกของช้างที่ยื่นยาว", "หูของช้างที่โบกไปมา", "หางของช้างที่อยู่ข้างหลัง"],
+          a: 0,
+          exp: "งวง คือ จมูกของช้างที่ยื่นยาวออกมา ใช้สำหรับดมกลิ่น หายใจ และหยิบจับสิ่งของ"
+        },
+        {
+          q: "'ภูผาพาใบโบกใบบัวไปลำธาร' จากประโยคนี้ ใครเป็นคนพาเพื่อนไป?",
+          context: null,
+          options: ["ใบโบก", "ใบบัว", "ภูผา"],
+          a: 2,
+          exp: "ภูผาทำหน้าที่เป็นประธานของประโยค และเป็นผู้พาใบโบกกับใบบัวไป"
+        },
+        {
+          q: "เลือกคำเติมในช่องว่างให้ได้ใจความ: 'คุณแม่ต้มไข่ใน ________'",
+          context: null,
+          options: ["หม้อ", "ตะกร้า", "กระเป๋า"],
+          a: 0,
+          exp: "การต้มอาหารต้องใช้ 'หม้อ' วางบนเตาไฟ ส่วนตะกร้าและกระเป๋าใช้ต้มน้ำไม่ได้"
+        },
+        {
+          q: "ข้อความใดมีความหมายตรงกับภาพ 'เด็กกำลังดื่มนมกล่อง'?",
+          context: null,
+          options: ["พี่กินข้าวต้ม", "น้องดื่มนมรสจืด", "แม่ล้างจานในครัว"],
+          a: 1,
+          exp: "ประโยค 'น้องดื่มนมรสจืด' มีความหมายสอดคล้องกับการดื่มนมมากที่สุด"
+        },
+        {
+          q: "'ใบบัวใช้หางแกว่งไปมาอย่างมีความสุข' ข้อความนี้บอกว่าใบบัวกำลังทำอะไร?",
+          context: null,
+          options: ["กินกล้วย", "แกว่งหาง", "วิ่งหนี"],
+          a: 1,
+          exp: "สิ่งที่ใบบัวกำลังทำ (กริยา) คือ 'ใช้หางแกว่งไปมา'"
+        },
+        {
+          q: "'ลูกช้างตัวน้อยเดินตามแม่ช้างเข้าป่า' ใครเป็นผู้เดินนำหน้า?",
+          context: null,
+          options: ["ลูกช้าง", "แม่ช้าง", "ภูผา"],
+          a: 1,
+          exp: "ลูกช้างเดินตาม แปลว่า 'แม่ช้าง' เป็นผู้เดินอยู่ข้างหน้า"
+        },
+        {
+          q: "'นกเอี้ยงเกาะอยู่บนหลังควายเพื่อกินแมลง' นกเอี้ยงเกาะอยู่ที่ไหน?",
+          context: null,
+          options: ["บนกิ่งไม้", "บนหลังควาย", "ในสระบัว"],
+          a: 1,
+          exp: "ข้อความระบุชัดเจนว่านกเอี้ยงเกาะอยู่ 'บนหลังควาย'"
+        },
+        {
+          q: "เลือกคำเติมในช่องว่าง: 'คุณครูสอนให้นักเรียนรู้จัก ________ หนังสืออย่างตั้งใจ'",
+          context: null,
+          options: ["วิ่ง", "อ่าน", "นอน"],
+          a: 1,
+          exp: "หนังสือมีไว้สำหรับ 'อ่าน' จึงเลือกคำว่า อ่าน เพื่อให้ประโยคได้ใจความถูกต้อง"
+        },
+        {
+          q: "'พ่อปลูกต้นมะม่วงไว้ที่สวนหลังบ้าน' พ่อปลูกต้นไม้อะไร?",
+          context: null,
+          options: ["ต้นมะพร้าว", "ต้นมะม่วง", "ต้นกล้วย"],
+          a: 1,
+          exp: "จากข้อความระบุตรงตัวว่าพ่อปลูก 'ต้นมะม่วง'"
+        },
+        {
+          q: "'มาลีลืมร่มไว้ที่โรงเรียน เมื่อฝนตกหนักเธอจึงตัวเปียก' เพราะเหตุใดมาลีจึงตัวเปียก?",
+          context: null,
+          options: ["เพราะเล่นน้ำคลอง", "เพราะไม่มีร่มเนื่องจากลืมไว้ที่โรงเรียน", "เพราะน้ำหวานหกรดเสื้อ"],
+          a: 1,
+          exp: "สาเหตุที่ทำให้มาลีตัวเปียกฝน คือ 'ลืมร่มไว้ที่โรงเรียน'"
+        },
+        {
+          q: "ประโยคใดแสดงถึงความรู้สึก 'ดีใจ'?",
+          context: null,
+          options: ["ใบโบกโบกหูส่งเสียงร้องอย่างดีใจ", "ภูผานั่งก้มหน้าร้องไห้", "แมวดุวิ่งไล่ลูกหนู"],
+          a: 0,
+          exp: "ประโยคมีคำว่า 'ร้องอย่างดีใจ' แสดงอารมณ์มีความสุขและดีใจอย่างชัดเจน"
+        },
+        {
+          q: "'เจ้าด่างเป็นสุนัขสีขาวแต้มดำ มันชอบวิ่งไล่ลูกบอล' เจ้าด่างคือสัตว์ชนิดใด?",
+          context: null,
+          options: ["แมว", "สุนัข", "กระต่าย"],
+          a: 1,
+          exp: "ข้อความบอกชัดเจนว่า 'เจ้าด่างเป็นสุนัข'"
+        },
+        {
+          q: "เลือกคำเติมในช่องว่าง: 'กระต่ายมีหูยาว และมีหาง ________'",
+          context: null,
+          options: ["สั้น", "ยาว", "กว้าง"],
+          a: 0,
+          exp: "ตามธรรมชาติ กระต่ายจะมีหูยาวแต่มีหางกลมสั้น"
+        },
+        {
+          q: "'พี่ช่วยคุณแม่กวาดบ้านจนสะอาดเรียบร้อย' ใครเป็นคนกวาดบ้าน?",
+          context: null,
+          options: ["พี่", "คุณแม่", "คุณพ่อ"],
+          a: 0,
+          exp: "พี่เป็นผู้ลงมือกวาดบ้านเพื่อช่วยเหลือคุณแม่"
+        },
+        {
+          q: "'ปลาทองว่ายน้ำอยู่ในตู้กระจกอย่างเพลิดเพลิน' ปลาทองอาศัยอยู่ที่ไหน?",
+          context: null,
+          options: ["ในกรงไม้", "ในตู้กระจก", "บนต้นไม้"],
+          a: 1,
+          exp: "ข้อความระบุว่าปลาทองว่ายน้ำอยู่ใน 'ตู้กระจก'"
+        },
+        {
+          q: "'น้องโบว์แปรงฟันทุกเช้าและก่อนนอน ฟันของเธอจึงขาวสะอาด' การแปรงฟันส่งผลดีอย่างไร?",
+          context: null,
+          options: ["ทำให้ฟันผุและปวดฟัน", "ทำให้ฟันขาวสะอาดแข็งแรง", "ทำให้ง่วงนอน"],
+          a: 1,
+          exp: "ผลลัพธ์ของการแปรงฟันสม่ำเสมอคือทำให้ 'ฟันขาวสะอาด'"
+        },
+        {
+          q: "เลือกคำเติมในช่องว่าง: 'ช้างชอบกินอ้อยและ ________ เป็นอาหาร'",
+          context: null,
+          options: ["กล้วย", "เนื้อปลา", "ไก่ย่าง"],
+          a: 0,
+          exp: "ช้างเป็นสัตว์กินพืช กล้วยและอ้อยจึงเป็นอาหารโปรดของช้าง"
+        },
+        {
+          q: "'คุณตาถือไม้เท้าเดินช้าๆ ไปทำบุญที่วัด' คุณตาเดินทางไปที่ใด?",
+          context: null,
+          options: ["ตลาดสด", "วัด", "โรงพยาบาล"],
+          a: 1,
+          exp: "ข้อความบอกจุดหมายปลายทางของคุณตาว่า 'ไปทำบุญที่วัด'"
+        },
+        {
+          q: "'ฝนตกหนักจนน้ำท่วมถนน รถยนต์จึงแล่นผ่านไม่ได้' ทำไมรถยนต์จึงแล่นไม่ได้?",
+          context: null,
+          options: ["เพราะรถยางแตก", "เพราะน้ำท่วมถนน", "เพราะคนขับหลับใน"],
+          a: 1,
+          exp: "สาเหตุคือ 'ฝนตกหนักจนน้ำท่วมถนน' ทำให้รถแล่นไม่ได้"
+        },
+        {
+          q: "สถานการณ์ใดควรกล่าวคำว่า 'ขอบคุณ'?",
+          context: null,
+          options: ["เมื่อเพื่อนแบ่งขนมและให้ยืมดินสอ", "เมื่อเดินไปชนเพื่อนโดยไม่ได้ตั้งใจ", "เมื่อทำแก้วน้ำหล่นแตก"],
+          a: 0,
+          exp: "เมื่อได้รับความช่วยเหลือหรือสิ่งของจากผู้อื่น ควรกล่าวคำว่า 'ขอบคุณ' เสมอ"
+        }
+      ],
+      set2: [
+        {
+          q: "จากเรื่องที่อ่าน: ลูกแมวของกานต์มีขนสีอะไร?",
+          context: "เรื่องสั้น: 'กานต์มีลูกแมวตัวหนึ่งชื่อเจ้าเหมียว มันมีขนสีส้ม ตาโตน่ารัก กานต์ชอบเทนมสดให้เจ้าเหมียวดื่มทุกเช้า'",
+          options: ["สีขาว", "สีส้ม", "สีดำ"],
+          a: 1,
+          exp: "จากเนื้อเรื่องระบุชัดเจนว่า 'มันมีขนสีส้ม'"
+        },
+        {
+          q: "จากเรื่องเดิม: กานต์ให้อะไรเจ้าเหมียวกินในตอนเช้า?",
+          context: "เรื่องสั้น: 'กานต์มีลูกแมวตัวหนึ่งชื่อเจ้าเหมียว มันมีขนสีส้ม ตาโตน่ารัก กานต์ชอบเทนมสดให้เจ้าเหมียวดื่มทุกเช้า'",
+          options: ["นมสด", "ปลาย่าง", "ข้าวผัด"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'กานต์ชอบเทนมสดให้เจ้าเหมียวดื่มทุกเช้า'"
+        },
+        {
+          q: "จากเรื่องที่อ่าน: พ่อพาภูผาและใบโบกไปเที่ยวในวันใด?",
+          context: "เรื่องสั้น: 'วันเสาร์ พ่อพาภูผาและใบโบกไปเที่ยวทุ่งหญ้า ช้างน้อยและเด็กๆ วิ่งเล่นกันอย่างสนุกสนาน พอถึงเวลาเย็นทุกคนจึงพากันกลับบ้าน'",
+          options: ["วันจันทร์", "วันเสาร์", "วันอาทิตย์"],
+          a: 1,
+          exp: "ประโยคแรกระบุเวลาว่า 'วันเสาร์ พ่อพาภูผาและใบโบกไปเที่ยว'"
+        },
+        {
+          q: "จากเรื่องเดิม: ทุกคนพากันกลับบ้านในเวลาใด?",
+          context: "เรื่องสั้น: 'วันเสาร์ พ่อพาภูผาและใบโบกไปเที่ยวทุ่งหญ้า ช้างน้อยและเด็กๆ วิ่งเล่นกันอย่างสนุกสนาน พอถึงเวลาเย็นทุกคนจึงพากันกลับบ้าน'",
+          options: ["เวลาเที่ยง", "เวลาเย็น", "เวลาเช้าตรู่"],
+          a: 1,
+          exp: "จากเนื้อเรื่อง: 'พอถึงเวลาเย็นทุกคนจึงพากันกลับบ้าน'"
+        },
+        {
+          q: "ถ้าเห็นป้ายเตือนเขียนว่า 'ระวังพื้นลื่น' นักเรียนควรปฏิบัติตนอย่างไรจึงจะปลอดภัย?",
+          context: null,
+          options: ["วิ่งแข่งกันให้เร็วที่สุด", "ค่อยๆ เดินด้วยความระมัดระวัง", "กระโดดข้ามไปมา"],
+          a: 1,
+          exp: "ป้ายเตือนพื้นลื่น หมายถึงพื้นอาจเปียกน้ำ จึงต้องค่อยๆ เดินระวังไม่ให้ลื่นหกล้ม"
+        },
+        {
+          q: "ป้ายข้อความ 'ห้ามส่งเสียงดัง' นักเรียนมักพบเห็นในสถานที่ใดมากที่สุด?",
+          context: null,
+          options: ["ห้องสมุด", "สนามเด็กเล่น", "ตลาดนัด"],
+          a: 0,
+          exp: "ห้องสมุดเป็นสถานที่ต้องการความสงบเพื่อให้ผู้อื่นมีสมาธิอ่านหนังสือ จึงมีป้ายห้ามส่งเสียงดัง"
+        },
+        {
+          q: "นิทานเรื่องนี้ให้ข้อคิดในเรื่องใดมากที่สุด?",
+          context: "นิทานสั้น: 'มดแดงตัวน้อยช่วยกันขนก้อนน้ำตาลชิ้นใหญ่เข้าสู่รังใต้ต้นไม้ แม้น้ำตาลจะหนักมาก แต่มดแดงสามัคคีช่วยกันจึงขนได้สำเร็จ'",
+          options: ["ความสามัคคีร่วมมือกัน", "ความกตัญญูต่อพ่อแม่", "ความซื่อสัตย์"],
+          a: 0,
+          exp: "มดแดงช่วยกันทำงานใหญ่จนสำเร็จ แสดงถึงพลังของความสามัคคี"
+        },
+        {
+          q: "จากนิทานเรื่องเดิม: รังของมดแดงอยู่ที่ใด?",
+          context: "นิทานสั้น: 'มดแดงตัวน้อยช่วยกันขนก้อนน้ำตาลชิ้นใหญ่เข้าสู่รังใต้ต้นไม้ แม้น้ำตาลจะหนักมาก แต่มดแดงสามัคคีช่วยกันจึงขนได้สำเร็จ'",
+          options: ["ในสระน้ำ", "ใต้ต้นไม้", "บนหลังคาบ้าน"],
+          a: 1,
+          exp: "จากเนื้อเรื่องระบุว่า 'ขนก้อนน้ำตาลชิ้นใหญ่เข้าสู่รังใต้ต้นไม้'"
+        },
+        {
+          q: "เรียงลำดับเหตุการณ์ให้ถูกต้อง: [1. กวินล้างมือให้สะอาด] [2. กวินรับประทานข้าว] [3. กวินนำจานไปเก็บ]",
+          context: null,
+          options: ["1 -> 2 -> 3", "2 -> 1 -> 3", "3 -> 2 -> 1"],
+          a: 0,
+          exp: "ลำดับสุขอนามัยที่ถูกต้องคือ ล้างมือก่อนกินข้าว กินเสร็จแล้วนำจานไปเก็บ"
+        },
+        {
+          q: "จากเรื่องที่อ่าน: ช้างตัวใดชอบกินสับปะรด?",
+          context: "เรื่องสั้น: 'ใบบัวชอบกินสับปะรด ส่วนใบโบกชอบกินอ้อย เมื่อกินอิ่มแล้ว ช้างทั้งสองก็ใช้งวงพ่นน้ำใส่กันอย่างเบิกบานใจ'",
+          options: ["ใบโบก", "ใบบัว", "ภูผา"],
+          a: 1,
+          exp: "จากเนื้อเรื่อง: 'ใบบัวชอบกินสับปะรด ส่วนใบโบกชอบกินอ้อย'"
+        },
+        {
+          q: "จากเรื่องเดิม: เมื่อกินอิ่มแล้ว ลูกช้างทั้งสองทำสิ่งใดร่วมกัน?",
+          context: "เรื่องสั้น: 'ใบบัวชอบกินสับปะรด ส่วนใบโบกชอบกินอ้อย เมื่อกินอิ่มแล้ว ช้างทั้งสองก็ใช้งวงพ่นน้ำใส่กันอย่างเบิกบานใจ'",
+          options: ["นอนหลับใต้ต้นไม้", "ใช้งวงพ่นน้ำใส่กัน", "วิ่งหนีเข้าป่า"],
+          a: 1,
+          exp: "จากเนื้อเรื่อง: 'ช้างทั้งสองก็ใช้งวงพ่นน้ำใส่กันอย่างเบิกบานใจ'"
+        },
+        {
+          q: "'น้องเดินสะดุดรากไม้จนหกล้ม หัวเข่าถลอก จึงร้องไห้โฮ' อะไรคือสาเหตุที่ทำให้น้องร้องไห้?",
+          context: null,
+          options: ["เจ็บแผลเพราะหกล้ม", "หิวขนม", "ถูกคุณแม่ดุ"],
+          a: 0,
+          exp: "สาเหตุที่แท้จริงของการร้องไห้คือ ได้รับบาดเจ็บหกล้มจนหัวเข่าถลอก"
+        },
+        {
+          q: "ถังขยะเขียนป้ายว่า 'ขยะรีไซเคิล (ขวดพลาสติก กระดาษ)' สิ่งใดควรทิ้งลงในถังนี้?",
+          context: null,
+          options: ["เปลือกกล้วย", "ขวดน้ำพลาสติกเปล่า", "ก้างปลาทู"],
+          a: 1,
+          exp: "ขวดน้ำพลาสติกเป็นขยะที่นำกลับมารีไซเคิลได้ ตรงตามป้ายที่ระบุไว้"
+        },
+        {
+          q: "จากเรื่องที่อ่าน: การกระทำของต้นกล้าส่งผลดีอย่างไร?",
+          context: "เรื่องสั้น: 'ต้นกล้าชอบอ่านหนังสือนิทานก่อนนอนทุกคืน ทำให้ต้นกล้ามีความรู้รอบตัวมากมายและนอนหลับฝันดี'",
+          options: ["มีความรู้รอบตัวและนอนหลับฝันดี", "ทำให้ตื่นสายไปโรงเรียนไม่ทัน", "ทำให้ฟันผุ"],
+          a: 0,
+          exp: "จากเนื้อเรื่องระบุว่า 'ทำให้ต้นกล้ามีความรู้รอบตัวมากมายและนอนหลับฝันดี'"
+        },
+        {
+          q: "จากเรื่องเดิม: ต้นกล้าชอบทำสิ่งใดก่อนเข้านอน?",
+          context: "เรื่องสั้น: 'ต้นกล้าชอบอ่านหนังสือนิทานก่อนนอนทุกคืน ทำให้ต้นกล้ามีความรู้รอบตัวมากมายและนอนหลับฝันดี'",
+          options: ["อ่านหนังสือนิทาน", "ดูโทรทัศน์เสียงดัง", "เล่นเกมมือถือ"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'ต้นกล้าชอบอ่านหนังสือนิทานก่อนนอนทุกคืน'"
+        },
+        {
+          q: "คำในข้อใด มีเสียงสระคล้องจองกับคำว่า 'ไปดู'?",
+          context: null,
+          options: ["ปูนา", "ปลาทู", "ดอกไม้"],
+          a: 0,
+          exp: "คำว่า 'ดู' ผสมด้วยสระ -ู คล้องจองกับคำว่า 'ปู' ในคำว่า 'ปูนา'"
+        },
+        {
+          q: "'เด็กชายธันวาสวมเสื้อกันหนาวหนาๆ สวมหมวกไหมพรม และนั่งผิงไฟ' อากาศในขณะนั้นเป็นอย่างไร?",
+          context: null,
+          options: ["อากาศร้อนจัด แดดแรง", "อากาศหนาวเย็นมาก", "ฝนกำลังตกหนัก"],
+          a: 1,
+          exp: "การใส่เสื้อกันหนาว หมวกไหมพรม และผิงไฟ เป็นพฤติกรรมคลายความหนาวในวันที่อากาศหนาวเย็น"
+        },
+        {
+          q: "จากเรื่องที่อ่าน: กบใช้อวัยวะใดในการจับแมลงวันกิน?",
+          context: "เรื่องสั้น: 'กบตัวหนึ่งนั่งอยู่บนใบบัวริมสระน้ำ มันเห็นแมลงวันบินผ่านมา จึงแลบลิ้นยาวตวัดจับแมลงวันกินเป็นอาหาร'",
+          options: ["ขาหน้า", "ลิ้นยาว", "ปีก"],
+          a: 1,
+          exp: "จากเนื้อเรื่อง: 'จึงแลบลิ้นยาวตวัดจับแมลงวันกินเป็นอาหาร'"
+        },
+        {
+          q: "ข้อใดคือการปฏิบัติตนที่ถูกต้องและมีมารยาทในการอ่านหนังสือในห้องสมุด?",
+          context: null,
+          options: ["นั่งอ่านเงียบๆ ไม่ส่งเสียงรบกวนผู้อื่น", "ฉีกรูปภาพสวยๆ ในหนังสือกลับบ้าน", "วิ่งเล่นไล่จับกับเพื่อน"],
+          a: 0,
+          exp: "มารยาทสำคัญที่สุดในห้องสมุดคือ การรักษาความสงบและอ่านหนังสืออย่างเงียบๆ"
+        },
+        {
+          q: "จากนิทานเรื่องนี้: นกกาตัวนี้มีนิสัยอย่างไร?",
+          context: "นิทานสั้น: 'กาตัวหนึ่งกระหายน้ำมาก มันพบเหยือกที่มีน้ำอยู่ก้นเหยือก จึงบินไปคาบก้อนหินมาหย่อนลงในเหยือกทีละก้อน จนระดับน้ำสูงขึ้นถึงปากเหยือก แล้วกาจึงได้ดื่มน้ำจนอิ่ม'",
+          options: ["มีความฉลาดและพยายามแก้ปัญหา", "มีความโลภอยากได้ของผู้อื่น", "เป็นสัตว์ขี้เกียจ"],
+          a: 0,
+          exp: "การรู้จักใช้ก้อนหินช่วยให้น้ำลอยสูงขึ้น แสดงถึงความฉลาดและมีความเพียรพยายาม"
+        }
+      ]
+    };
+
+    // State
+    let currentSet = 'set1';
+    let userAnswers = { set1: {}, set2: {} };
+    let instantCheck = false;
+    let submitted = { set1: false, set2: false };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderQuestions();
+      updateProgress();
+    });
+
+    function switchSet(setName) {
+      currentSet = setName;
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-sm', 'shadow-emerald-200');
+        btn.classList.add('bg-slate-100', 'text-slate-600');
+      });
+      const activeBtn = document.getElementById(`tab-${setName}`);
+      activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+      activeBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-sm', 'shadow-emerald-200');
+
+      document.getElementById('score-card').classList.add('hidden');
+      renderQuestions();
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById('questions-container');
+      const questions = examData[currentSet];
+      const answers = userAnswers[currentSet];
+      const isSub = submitted[currentSet];
+      const choices = ['ก', 'ข', 'ค'];
+
+      container.innerHTML = questions.map((item, idx) => {
+        const selected = answers[idx];
+        const isAnswered = selected !== undefined;
+        let cardBorder = "border-slate-200";
+
+        if (isSub || (instantCheck && isAnswered)) {
+          cardBorder = selected === item.a ? "border-emerald-300 bg-emerald-50/25" : "border-rose-300 bg-rose-50/25";
+        }
+
+        return `
+          <div class="question-card bg-white p-4 sm:p-5 rounded-2xl border ${cardBorder} shadow-sm transition-all" id="q-card-${idx}">
+            <div class="flex items-start gap-2.5">
+              <span class="flex-shrink-0 w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 font-bold font-display text-sm flex items-center justify-center mt-0.5">
+                ${idx + 1}
+              </span>
+              <div class="flex-1">
+                ${item.context ? `
+                  <div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl mb-3 text-slate-900 text-sm sm:text-base leading-relaxed">
+                    ${item.context}
+                  </div>
+                ` : ''}
+                <h3 class="text-slate-900 font-medium text-base sm:text-lg leading-snug">
+                  ${item.q}
+                </h3>
+              </div>
+            </div>
+
+            <!-- Options Grid -->
+            <div class="grid grid-cols-1 gap-2.5 mt-4 sm:ml-9">
+              ${item.options.map((opt, optIdx) => {
+                const isThisSelected = selected === optIdx;
+                let optStyle = "bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800";
+                let badgeStyle = "bg-white border-slate-300 text-slate-600";
+
+                if (isSub || (instantCheck && isAnswered)) {
+                  if (optIdx === item.a) {
+                    optStyle = "bg-emerald-100/70 border-emerald-400 text-emerald-950 font-semibold";
+                    badgeStyle = "bg-emerald-600 text-white border-emerald-600";
+                  } else if (isThisSelected && optIdx !== item.a) {
+                    optStyle = "bg-rose-100/70 border-rose-300 text-rose-950 line-through opacity-80";
+                    badgeStyle = "bg-rose-600 text-white border-rose-600";
+                  }
+                } else if (isThisSelected) {
+                  optStyle = "bg-emerald-50 border-emerald-500 text-emerald-950 font-medium ring-1 ring-emerald-500";
+                  badgeStyle = "bg-emerald-600 text-white border-emerald-600";
+                }
+
+                return `
+                  <button type="button" 
+                          onclick="selectOption(${idx}, ${optIdx})"
+                          class="w-full text-left p-3 rounded-xl border ${optStyle} transition flex items-center gap-3 cursor-pointer">
+                    <span class="w-6 h-6 rounded-full border ${badgeStyle} text-xs font-bold font-display flex items-center justify-center flex-shrink-0">
+                      ${choices[optIdx]}
+                    </span>
+                    <span class="text-sm sm:text-base">${opt}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Explanation Feedback -->
+            ${(isSub || (instantCheck && isAnswered)) ? `
+              <div class="mt-4 sm:ml-9 p-3 rounded-xl text-xs sm:text-sm ${selected === item.a ? 'bg-emerald-100/60 text-emerald-900 border border-emerald-200' : 'bg-rose-100/60 text-rose-900 border border-rose-200'}">
+                <div class="font-bold font-display flex items-center gap-1.5 mb-1">
+                  <span>${selected === item.a ? '🎉 เก่งมาก ตอบถูกต้อง!' : '💡 คำตอบที่ถูกต้องคือ: ข้อ ' + choices[item.a]}</span>
+                </div>
+                <p class="text-slate-700 leading-relaxed font-normal">${item.exp}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectOption(qIdx, optIdx) {
+      if (submitted[currentSet]) return;
+
+      userAnswers[currentSet][qIdx] = optIdx;
+      updateProgress();
+
+      if (instantCheck) {
+        renderQuestions();
+      } else {
+        const card = document.getElementById(`q-card-${qIdx}`);
+        const buttons = card.querySelectorAll('button');
+        buttons.forEach((btn, i) => {
+          const badge = btn.querySelector('span:first-child');
+          if (i === optIdx) {
+            btn.className = "w-full text-left p-3 rounded-xl border bg-emerald-50 border-emerald-500 text-emerald-950 font-medium ring-1 ring-emerald-500 transition flex items-center gap-3 cursor-pointer";
+            badge.className = "w-6 h-6 rounded-full border bg-emerald-600 text-white border-emerald-600 text-xs font-bold font-display flex items-center justify-center flex-shrink-0";
+          } else {
+            btn.className = "w-full text-left p-3 rounded-xl border bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800 transition flex items-center gap-3 cursor-pointer";
+            badge.className = "w-6 h-6 rounded-full border bg-white border-slate-300 text-slate-600 text-xs font-bold font-display flex items-center justify-center flex-shrink-0";
+          }
+        });
+      }
+    }
+
+    function updateProgress() {
+      const answered = Object.keys(userAnswers[currentSet]).length;
+      document.getElementById('answered-count').innerText = answered;
+      const pct = (answered / 20) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+
+    function toggleInstantMode() {
+      instantCheck = document.getElementById('instant-mode').checked;
+      renderQuestions();
+    }
+
+    function resetCurrentSet() {
+      if (confirm("ต้องการล้างคำตอบในชุดนี้เพื่อเริ่มฝึกทำใหม่ใช่หรือไม่?")) {
+        userAnswers[currentSet] = {};
+        submitted[currentSet] = false;
+        document.getElementById('score-card').classList.add('hidden');
+        renderQuestions();
+        updateProgress();
+      }
+    }
+
+    function submitExam() {
+      const answers = userAnswers[currentSet];
+      const totalAnswered = Object.keys(answers).length;
+
+      if (totalAnswered < 20) {
+        if (!confirm(`นักเรียนยังตอบไม่ครบ 20 ข้อ (ทำไปแล้ว ${totalAnswered} ข้อ) ต้องการตรวจคำตอบเลยหรือไม่?`)) {
+          return;
+        }
+      }
+
+      submitted[currentSet] = true;
+      const questions = examData[currentSet];
+      let score = 0;
+
+      questions.forEach((q, idx) => {
+        if (answers[idx] === q.a) score++;
+      });
+
+      const pct = Math.round((score / 20) * 100);
+      let remark = "";
+      let bgGrad = "";
+
+      if (pct >= 85) {
+        remark = "ยอดเยี่ยมที่สุดเลยครับ! อ่านหนังสือได้คล่องแคล่วและจับใจความได้แม่นยำมาก 🌟";
+        bgGrad = "from-emerald-500 to-teal-600";
+      } else if (pct >= 70) {
+        remark = "เก่งมากครับ! อ่านเข้าใจเรื่องราวได้ดี ลองอ่านทบทวนข้อที่ตอบผิดอีกนิดเดียว คะแนนเต็มแน่นอน 👏";
+        bgGrad = "from-teal-600 to-cyan-700";
+      } else {
+        remark = "พยายามได้ดีแล้วครับ! ฝึกใช้นิ้วชี้อ่านทีละประโยค แล้วกด 'ล้างคำตอบ' เพื่อลองทำใหม่อีกรอบนะครับ ✌️";
+        bgGrad = "from-amber-500 to-orange-600";
+      }
+
+      const scoreCard = document.getElementById('score-card');
+      scoreCard.className = `no-print mb-6 p-6 rounded-2xl bg-gradient-to-r ${bgGrad} text-white shadow-lg text-center transition-all`;
+      scoreCard.innerHTML = `
+        <div class="text-sm font-semibold uppercase tracking-wider text-white/80 font-display">ผลการทดสอบการอ่านภาษาไทย ป.1</div>
+        <div class="text-4xl sm:text-5xl font-extrabold font-display my-2">${score} <span class="text-2xl font-normal opacity-80">/ 20 คะแนน</span></div>
+        <div class="text-base sm:text-lg font-medium text-white/95 max-w-lg mx-auto leading-relaxed">${remark}</div>
+        <div class="mt-4 flex items-center justify-center gap-3">
+          <button onclick="window.scrollTo({top: 450, behavior: 'smooth'})" class="bg-white text-slate-800 hover:bg-slate-100 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm transition shadow">
+            🔍 ดูเฉลยและเหตุผลด้านล่าง
+          </button>
+        </div>
+      `;
+      scoreCard.classList.remove('hidden');
+
+      renderQuestions();
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
