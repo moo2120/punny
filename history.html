@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบทดสอบประวัติศาสตร์ ป.1 เทอม 1</title>
+  <!-- Google Fonts: Sarabun & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'sans-serif'],
+            display: ['Prompt', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #faf8f5;
+    }
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Prompt', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f5f0e8;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #d6c7b2;
+      border-radius: 4px;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white;
+        color: black;
+      }
+      .question-card {
+        page-break-inside: avoid;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        margin-bottom: 1.25rem !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-amber-800 via-amber-700 to-stone-800 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-3 text-center sm:text-left">
+        <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shadow-inner">
+          ⏳
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold font-display tracking-tight">ประวัติศาสตร์ ป.1 (เทอม 1)</h1>
+          <p class="text-xs text-amber-100">ทบทวนเตรียมสอบปลายภาค • เวลาและปฏิทิน ประวัติครอบครัว และอดีตกับปัจจุบัน</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="no-print text-xs bg-white/10 hover:bg-white/20 border border-white/30 text-white px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+          🖨️ พิมพ์แบบทดสอบ
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-3 sm:px-4 py-6 flex-1 w-full">
+
+    <!-- Overview Banner -->
+    <div class="no-print mb-6 bg-white border border-amber-200/70 rounded-2xl p-4 sm:p-5 shadow-sm">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl mt-0.5">📜</span>
+        <div>
+          <h2 class="font-bold text-amber-950 font-display text-base sm:text-lg">จุดเน้นข้อสอบประวัติศาสตร์ ป.1 (เทอม 1)</h2>
+          <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+            ครอบคลุม: <strong>1) เวลาและปฏิทิน</strong> (การดูวัน-เดือน-ปี คำบอกช่วงเวลาอดีต ปัจจุบัน อนาคต) <strong>2) ประวัติครอบครัว</strong> (ลำดับเครือญาติฝั่งพ่อ/แม่ หลักฐานสูติบัตร ทะเบียนบ้าน) และ <strong>3) วิถีชีวิตอดีตกับปัจจุบัน</strong> (การเปรียบเทียบสิ่งของเครื่องใช้ การเดินทาง และที่อยู่อาศัย)
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Set Selector Tabs -->
+    <div class="no-print flex space-x-2 border-b border-slate-200 pb-2 mb-6 overflow-x-auto custom-scroll">
+      <button onclick="switchSet('set1')" id="tab-set1" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap bg-amber-700 text-white shadow-sm shadow-amber-200">
+        <span>📅</span> ชุดที่ 1: เวลา ปฏิทิน และการเรียงลำดับเหตุการณ์ (20 ข้อ)
+      </button>
+      <button onclick="switchSet('set2')" id="tab-set2" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">
+        <span>🏡</span> ชุดที่ 2: ครอบครัว เครือญาติ และอดีตกับปัจจุบัน (20 ข้อ)
+      </button>
+    </div>
+
+    <!-- Status & Tool Bar -->
+    <div class="no-print bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-700">
+        <span>ทำไปแล้ว:</span>
+        <span id="answered-count" class="font-bold text-amber-700 font-display text-base">0</span>
+        <span class="text-slate-400">/ 20 ข้อ</span>
+        <div class="w-24 sm:w-32 bg-slate-100 rounded-full h-2.5 ml-2 overflow-hidden border border-slate-200">
+          <div id="progress-bar" class="bg-amber-700 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="instant-mode" class="sr-only peer" onchange="toggleInstantMode()">
+          <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-700"></div>
+          <span class="ml-2 text-xs text-slate-700 select-none">โหมดเฉลยทันที</span>
+        </label>
+        <button onclick="resetCurrentSet()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition font-medium">
+          🔄 ล้างคำตอบ
+        </button>
+      </div>
+    </div>
+
+    <!-- Score Summary Modal Banner -->
+    <div id="score-card" class="hidden no-print mb-6 p-5 rounded-2xl border transition-all text-center"></div>
+
+    <!-- Question Container -->
+    <div id="questions-container" class="space-y-4 sm:space-y-5">
+      <!-- Generated via JavaScript -->
+    </div>
+
+    <!-- Action Bottom Bar -->
+    <div class="no-print mt-8 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-slate-500 text-center sm:text-left">
+        💡 คำแนะนำ: ให้นักเรียนฝึกอ่านโจทย์ออกเสียง ชี้ตามตัวหนังสือ และเชื่อมโยงกับปฏิทินจริงในบ้าน
+      </p>
+      <button onclick="submitExam()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold font-display px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+        <span>✅ ตรวจคำตอบชุดนี้</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-12 no-print">
+    <div class="max-w-4xl mx-auto px-4">
+      <p class="font-medium text-slate-700">แบบฝึกทบทวนและประเมินผล กลุ่มสาระการเรียนรู้สังคมศึกษา ศาสนา และวัฒนธรรม (ประวัติศาสตร์ ป.1)</p>
+      <p class="mt-1">สอดคล้องตามหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน (ฉบับปรับปรุง 2560) • กระทรวงศึกษาธิการ</p>
+    </div>
+  </footer>
+
+  <!-- Question Data & Core Scripts -->
+  <script>
+    const examData = {
+      set1: [
+        {
+          q: "สิ่งของเครื่องใช้ในข้อใด ใช้สำหรับดูวัน วันที่ เดือน และปี ได้อย่างชัดเจนที่สุด?",
+          options: ["นาฬิกาแขวนผนัง", "ปฏิทิน", "สมุดจดการบ้าน"],
+          a: 1,
+          exp: "ปฏิทินเป็นเครื่องมือบอกวัน วันที่ เดือน และปี พ.ศ./ค.ศ. ส่วนนาฬิกาใช้บอกเวลาเป็นชั่วโมงและนาที"
+        },
+        {
+          q: "ใน 1 สัปดาห์ มีทั้งหมดกี่วัน และวันแรกของสัปดาห์คือวันใด?",
+          options: ["มี 7 วัน และวันแรกคือ วันอาทิตย์", "มี 7 วัน และวันแรกคือ วันจันทร์", "มี 5 วัน และวันแรกคือ วันพุธ"],
+          a: 0,
+          exp: "1 สัปดาห์มี 7 วัน โดยวันแรกของสัปดาห์ตามหลักสากลคือ วันอาทิตย์ (สีแดง) และวันสุดท้ายคือ วันเสาร์"
+        },
+        {
+          q: "วันอังคาร มีสีประจำวันตรงกับสีใด?",
+          options: ["สีเหลือง", "สีชมพู", "สีเขียว"],
+          a: 1,
+          exp: "วันอังคารตรงกับสีชมพู (วันจันทร์สีเหลือง วันพุธสีเขียว)"
+        },
+        {
+          q: "ถ้าวันนี้ตรงกับ 'วันพุธ' อยากทราบว่า 'เมื่อวานนี้' คือวันใด?",
+          options: ["วันอังคาร", "วันพฤหัสบดี", "วันศุกร์"],
+          a: 0,
+          exp: "'เมื่อวานนี้' คือวันที่ผ่านมาก่อนวันนี้ 1 วัน ดังนั้นก่อนวันพุธจึงเป็น 'วันอังคาร'"
+        },
+        {
+          q: "ถ้าวันนี้ตรงกับ 'วันศุกร์' อยากทราบว่า 'พรุ่งนี้' จะเป็นวันใด?",
+          options: ["วันพฤหัสบดี", "วันเสาร์", "วันอาทิตย์"],
+          a: 1,
+          exp: "'พรุ่งนี้' คือวันถัดไปจากวันนี้ ดังนั้นต่อจากวันศุกร์จึงเป็น 'วันเสาร์'"
+        },
+        {
+          q: "เดือนที่ลงท้ายด้วยคำว่า 'คม' เช่น มกราคม มีนาคม จะมีจำนวนทั้งหมดกี่วัน?",
+          options: ["28 วัน", "30 วัน", "31 วัน"],
+          a: 2,
+          exp: "เดือนที่ลงท้ายด้วย 'คม' มี 31 วัน ส่วนเดือนที่ลงท้ายด้วย 'ยน' มี 30 วัน"
+        },
+        {
+          q: "เดือนใดในรอบปี ที่มีจำนวนวันน้อยที่สุด (มี 28 หรือ 29 วัน)?",
+          options: ["เดือนกุมภาพันธ์", "เดือนเมษายน", "เดือนธันวาคม"],
+          a: 0,
+          exp: "เดือนกุมภาพันธ์ลงท้ายด้วย 'พันธ์' มี 28 หรือ 29 วัน ซึ่งเป็นเดือนที่มีจำนวนวันน้อยที่สุด"
+        },
+        {
+          q: "เดือนแรกของปี (เดือนที่ 1) คือเดือนใด?",
+          options: ["เดือนมกราคม", "เดือนกุมภาพันธ์", "เดือนธันวาคม"],
+          a: 0,
+          exp: "เดือนมกราคมเป็นเดือนเริ่มต้นของปี (เดือนที่ 1) และเดือนธันวาคมเป็นเดือนสุดท้าย (เดือนที่ 12)"
+        },
+        {
+          q: "ถ้าเดือนนี้คือเดือน 'กันยายน' เดือนนี้จะมีจำนวนวันทั้งหมดกี่วัน?",
+          options: ["29 วัน", "30 วัน", "31 วัน"],
+          a: 1,
+          exp: "เดือนกันยายนลงท้ายด้วยคำว่า 'ยน' จึงมี 30 วัน"
+        },
+        {
+          q: "คำบอกช่วงเวลาในข้อใด หมายถึงเหตุการณ์ใน 'อดีต' (สิ่งที่เกิดขึ้นและผ่านพ้นไปแล้ว)?",
+          options: ["เมื่อวานนี้", "วันนี้", "พรุ่งนี้"],
+          a: 0,
+          exp: "'เมื่อวานนี้' เป็นคำบอกช่วงเวลาในอดีต ส่วน 'วันนี้' คือปัจจุบัน และ 'พรุ่งนี้' คืออนาคต"
+        },
+        {
+          q: "ประโยค: 'พรุ่งนี้คุณแม่จะพาไปสวนสัตว์' คำว่า 'พรุ่งนี้' เป็นช่วงเวลาใด?",
+          options: ["อดีต", "ปัจจุบัน", "อนาคต"],
+          a: 2,
+          exp: "'พรุ่งนี้' คือเหตุการณ์ที่ยังมาไม่ถึง จัดเป็นช่วงเวลาในอนาคต"
+        },
+        {
+          q: "ข้อใดเรียงลำดับช่วงเวลาใน 1 วัน จากเช้าไปสู่ค่ำได้ถูกต้องเป็นลำดับ?",
+          options: ["เช้า -> เที่ยง -> บ่าย -> เย็น -> ค่ำ", "ค่ำ -> บ่าย -> เที่ยง -> เช้า -> เย็น", "เที่ยง -> เช้า -> บ่าย -> ค่ำ -> เย็น"],
+          a: 0,
+          exp: "ลำดับเวลาใน 1 วัน เริ่มต้นจาก เช้า -> สาย -> เที่ยง -> บ่าย -> เย็น -> ค่ำ"
+        },
+        {
+          q: "กิจวัตรประจำวันในข้อใด นักเรียนมักปฏิบัติในช่วงเวลา 'เช้า' ก่อนไปโรงเรียน?",
+          options: ["ตื่นนอน แปรงฟัน และรับประทานอาหารเช้า", "เข้านอนและปิดไฟ", "ทำการบ้านตอนพลบค่ำ"],
+          a: 0,
+          exp: "การตื่นนอน แปรงฟัน อาบน้ำ และกินข้าวเช้า เป็นกิจกรรมหลักในเวลาเช้า"
+        },
+        {
+          q: "เมื่อนาฬิกาชี้เวลา 12:00 น. ซึ่งเป็นเวลาพักรับประทานอาหารกลางวัน ตรงกับช่วงเวลาใด?",
+          options: ["เวลาเช้า", "เวลาเที่ยง", "เวลาค่ำ"],
+          a: 1,
+          exp: "เวลา 12:00 น. คือช่วงเวลาเที่ยงวัน ซึ่งเป็นเวลาพักรับประทานอาหารกลางวันของนักเรียน"
+        },
+        {
+          q: "เรียงลำดับเหตุการณ์: [1. กลับบ้านตอนเย็น] [2. ตื่นนอนตอนเช้า] [3. นั่งเรียนหนังสือตอนสาย] ข้อใดถูกต้อง?",
+          options: ["2 -> 3 -> 1", "1 -> 2 -> 3", "3 -> 1 -> 2"],
+          a: 0,
+          exp: "ลำดับที่ถูกต้องตามเวลาคือ ตื่นนอนตอนเช้า (2) -> นั่งเรียนหนังสือ (3) -> กลับบ้านตอนเย็น (1)"
+        },
+        {
+          q: "คำบอกเวลาในข้อใด แสดงถึงช่วงเวลา 'ปัจจุบัน' (สิ่งที่กำลังเกิดขึ้นอยู่ในขณะนี้)?",
+          options: ["ปีที่แล้ว", "วันนี้", "สัปดาห์หน้า"],
+          a: 1,
+          exp: "'วันนี้' และ 'ตอนนี้' แสดงถึงช่วงเวลาปัจจุบัน ส่วนปีที่แล้วคืออดีต และสัปดาห์หน้าคืออนาคต"
+        },
+        {
+          q: "ถ้าเมื่อวานนี้เป็น 'วันเสาร์' อยากทราบว่า 'วันนี้' เป็นวันใด?",
+          options: ["วันศุกร์", "วันอาทิตย์", "วันจันทร์"],
+          a: 1,
+          exp: "เมื่อวานเสาร์ วันนี้จึงต้องเป็น 'วันอาทิตย์' และพรุ่งนี้จะเป็นวันจันทร์"
+        },
+        {
+          q: "ตัวย่อคำว่า 'พ.ศ.' บนปฏิทิน ย่อมาจากคำเต็มว่าอะไร?",
+          options: ["พระพุทธเจ้า", "พุทธศักราช", "เพื่อนสนิท"],
+          a: 1,
+          exp: "พ.ศ. ย่อมาจาก 'พุทธศักราช' ซึ่งเป็นการนับปีทางศาสนาพุทธที่ประเทศไทยนิยมใช้"
+        },
+        {
+          q: "เหตุการณ์ในข้อใด จัดเป็นเหตุการณ์ใน 'อดีต' ของตัวนักเรียนเอง?",
+          options: ["ตอนที่กำลังนั่งทำข้อสอบตอนนี้", "ตอนที่ยังเป็นเด็กทารกนอนในเบาะ", "ตอนที่จะเรียนจบชั้น ป.6 ในอีกหลายปี"],
+          a: 1,
+          exp: "ตอนเป็นเด็กทารกเป็นช่วงเวลาที่ผ่านพ้นไปแล้ว จึงเป็นเรื่องราวในอดีตของตนเอง"
+        },
+        {
+          q: "การจดบันทึกหรือวงกลมวันที่สำคัญลงบนปฏิทิน มีประโยชน์ต่อนักเรียนอย่างไร?",
+          options: ["ช่วยเตือนความจำถึงวันสำคัญหรือกำหนดการต่างๆ", "ทำให้ปฏิทินสวยงามขึ้นอย่างเดียว", "ทำให้วันหยุดเพิ่มขึ้น"],
+          a: 0,
+          exp: "การทำสัญลักษณ์บนปฏิทินช่วยเตือนความจำ เช่น วันสอบ วันเกิด หรือวันเปิดเทอม"
+        }
+      ],
+      set2: [
+        {
+          q: "บุคคลที่เป็น 'คุณพ่อของคุณพ่อ' นักเรียนจะต้องเรียกลำดับญาติว่าอะไร?",
+          options: ["คุณตา", "คุณปู่", "คุณลุง"],
+          a: 1,
+          exp: "พ่อของพ่อ เรียกว่า 'ปู่' ส่วนพ่อของแม่ เรียกว่า 'ตา'"
+        },
+        {
+          q: "บุคคลที่เป็น 'คุณแม่ของคุณแม่' นักเรียนจะต้องเรียกลำดับญาติว่าอะไร?",
+          options: ["คุณยาย", "คุณย่า", "คุณป้า"],
+          a: 0,
+          exp: "แม่ของแม่ เรียกว่า 'ยาย' ส่วนแม่ของพ่อ เรียกว่า 'ย่า'"
+        },
+        {
+          q: "บุคคลที่เป็น 'น้องชายหรือน้องสาวของคุณพ่อ' นักเรียนต้องเรียกว่าอะไร?",
+          options: ["คุณอา", "คุณน้า", "คุณลุง"],
+          a: 0,
+          exp: "น้องของพ่อ เรียกว่า 'อา' ส่วนน้องของแม่ เรียกว่า 'น้า'"
+        },
+        {
+          q: "บุคคลที่เป็น 'น้องชายหรือน้องสาวของคุณแม่' นักเรียนต้องเรียกว่าอะไร?",
+          options: ["คุณอา", "คุณน้า", "คุณป้า"],
+          a: 1,
+          exp: "น้องของแม่ เรียกว่า 'น้า' (จำง่ายๆ: น้องแม่คือน้า น้องพ่อคืออา)"
+        },
+        {
+          q: "บุคคลที่เป็น 'พี่ชายของคุณพ่อ หรือ พี่ชายของคุณแม่' นักเรียนต้องเรียกว่าอะไร?",
+          options: ["คุณลุง", "คุณตา", "คุณอา"],
+          a: 0,
+          exp: "พี่ชายของทั้งพ่อและแม่ เรียกว่า 'ลุง' (และพี่สาวของพ่อแม่ เรียกว่า 'ป้า')"
+        },
+        {
+          q: "เอกสารทางราชการข้อใด ที่ระบุข้อมูล 'วันเดือนปีเกิด เวลาเกิด น้ำหนักแรกเกิด และชื่อพ่อแม่' ของนักเรียน?",
+          options: ["สูติบัตร (ใบเกิด)", "สมุดการบ้าน", "บัตรประชาชนเพื่อน"],
+          a: 0,
+          exp: "สูติบัตรหรือใบเกิด เป็นเอกสารแรกในชีวิตที่บันทึกข้อมูลการเกิดและบิดามารดา"
+        },
+        {
+          q: "หากต้องการทราบประวัติความเป็นมาของครอบครัวสมัยคุณปู่ยังเป็นเด็ก นักเรียนควรทำอย่างไรดีที่สุด?",
+          options: ["สอบถามและพูดคุยกับคุณปู่โดยตรง", "เปิดดูการ์ตูนในโทรทัศน์", "ถามเพื่อนสนิทที่โรงเรียน"],
+          a: 0,
+          exp: "การสอบถามผู้ใหญ่ในบ้าน เช่น ปู่ ย่า ตา ยาย เป็นวิธีสืบค้นประวัติครอบครัวที่ดีและถูกต้องที่สุด"
+        },
+        {
+          q: "เอกสารสำคัญใด ที่ระบุว่าบ้านของนักเรียนตั้งอยู่ที่ไหน มีรหัสประจำบ้าน และมีใครอาศัยอยู่บ้าง?",
+          options: ["สำเนาทะเบียนบ้าน", "ใบเสร็จค่าขนม", "สมุดวาดภาพ"],
+          a: 0,
+          exp: "สำเนาทะเบียนบ้านเป็นเอกสารราชการที่บอกรายละเอียดของบ้านและสมาชิกในบ้านทุกคน"
+        },
+        {
+          q: "สิ่งใดช่วยให้เรามองเห็นภาพบรรยากาศ การแต่งกาย และบ้านเรือนของครอบครัวในอดีตได้ชัดเจนที่สุด?",
+          options: ["ภาพถ่ายเก่าของครอบครัว", "นาฬิกาปลุก", "ไม้บรรทัด"],
+          a: 0,
+          exp: "ภาพถ่ายเก่าเป็นหลักฐานเชิงรูปธรรมที่บันทึกภาพเหตุการณ์และสภาพแวดล้อมในอดีตไว้"
+        },
+        {
+          q: "ในอดีต คนไทยนิยมสร้างบ้านเรือนด้วยวัสดุใดและมีลักษณะอย่างไรเป็นส่วนใหญ่?",
+          options: ["สร้างด้วยไม้และยกใต้ถุนสูงริมแม่น้ำ", "สร้างด้วยตึกคอนโดมิเนียมสูง 20 ชั้น", "สร้างด้วยน้ำแข็ง"],
+          a: 0,
+          exp: "ในอดีตมีป่าไม้มากและมักตั้งถิ่นฐานริมน้ำ จึงสร้างบ้านไม้ใต้ถุนสูงเพื่อป้องกันน้ำท่วมและสัตว์มีพิษ"
+        },
+        {
+          q: "ในอดีตก่อนที่จะมีไฟฟ้าใช้ ผู้คนใช้สิ่งใดเพื่อให้แสงสว่างในบ้านเวลากลางคืน?",
+          options: ["ตะเกียงน้ำมันหรือเทียนไข", "ไฟฉายพลังงานแสงอาทิตย์", "หลอดไฟนีออน"],
+          a: 0,
+          exp: "สมัยก่อนยังไม่มีไฟฟ้า จึงต้องจุดตะเกียงน้ำมันหรือเทียนไขเพื่อให้แสงสว่าง"
+        },
+        {
+          q: "สิ่งของเครื่องใช้ในอดีตข้อใด ที่ต้องใช้ 'ถ่านไฟร้อนๆ' ใส่ไว้ข้างในเพื่อรีดผ้าให้เรียบ?",
+          options: ["เตารีดถ่าน", "เตาอั้งโล่", "กระติกน้ำร้อน"],
+          a: 0,
+          exp: "เตารีดถ่านทำจากโลหะหนัก ต้องใส่ถ่านไม้ที่ติดไฟร้อนข้างในเพื่อให้ความร้อนรีดผ้า"
+        },
+        {
+          q: "ในปัจจุบัน สิ่งของใดที่นำมาใช้หุงข้าวแทน 'หม้อดินเผา' ทำให้ข้าวสุกเร็วและสะดวกขึ้น?",
+          options: ["หม้อหุงข้าวไฟฟ้า", "กาน้ำร้อนโบราณ", "กระทะทองเหลือง"],
+          a: 0,
+          exp: "หม้อหุงข้าวไฟฟ้าทำงานด้วยระบบตัดไฟอัตโนมัติ ใช้งานสะดวกและรวดเร็วกว่าหม้อดินเผา"
+        },
+        {
+          q: "การเดินทางในอดีตที่นิยมใช้แม่น้ำลำคลองเป็นเส้นทางหลัก มักใช้ยานพาหนะใด?",
+          options: ["เรือพายหรือเรือแจว", "รถไฟฟ้าบีทีเอส", "เครื่องบินโดยสาร"],
+          a: 0,
+          exp: "ในอดีตมีคลองเชื่อมต่อกันมากมาย ผู้คนจึงนิยมสัญจรด้วยเรือพายและเรือแจว"
+        },
+        {
+          q: "ในปัจจุบัน การเดินทางมีความสะดวกรวดเร็วขึ้นมากเพราะมียานพาหนะใดบนถนน?",
+          options: ["เกวียนเทียมวัว", "รถยนต์และรถโดยสารประจำทาง", "ม้าและช้าง"],
+          a: 1,
+          exp: "ปัจจุบันมีถนนลาดยาง มีรถยนต์ รถเมล์ รถไฟฟ้า ทำให้เดินทางได้รวดเร็วขึ้นมาก"
+        },
+        {
+          q: "สิ่งของในอดีตข้อใด ในปัจจุบันถูกแทนที่ด้วย 'พัดลมและเครื่องปรับอากาศ' เพื่อคลายร้อน?",
+          options: ["พัดสานใบลาน", "ครกหิน", "เขียงไม้"],
+          a: 0,
+          exp: "สมัยก่อนใช้พัดสานด้วยมือ ปัจจุบันใช้พัดลมและเครื่องปรับอากาศที่ให้ความเย็นอัตโนมัติ"
+        },
+        {
+          q: "ข้อใดคือ 'ข้อดี' ของการเปลี่ยนแปลงจากอดีตมาสู่ปัจจุบัน?",
+          options: ["การดำเนินชีวิตมีความสะดวกรวดเร็วและรักษาโรคได้ดีขึ้น", "มีต้นไม้ในเมืองมากขึ้นกว่าเดิม", "แม่น้ำลำคลองใสสะอาดกว่าเดิม"],
+          a: 0,
+          exp: "เทคโนโลยีในปัจจุบันช่วยให้การคมนาคม การสื่อสาร และการแพทย์สะดวกรวดเร็วขึ้นมาก"
+        },
+        {
+          q: "ข้อใดคือ 'ปัญหาหรือผลกระทบด้านลบ' ที่เกิดขึ้นในปัจจุบันจากการมีรถยนต์และโรงงานจำนวนมาก?",
+          options: ["เกิดมลพิษทางอากาศ ฝุ่นควัน และรถติด", "ไม่มีไฟฟ้าใช้", "ผู้คนเดินทางช้าลงกว่าเดิม"],
+          a: 0,
+          exp: "การเพิ่มขึ้นของรถยนต์และโรงงานทำให้เกิดปัญหาฝุ่นควัน (PM 2.5) มลพิษทางอากาศ และการจราจรติดขัด"
+        },
+        {
+          q: "ในอดีต คนไทยส่วนใหญ่มักประกอบอาชีพใดเป็นหลัก เนื่องจากต้องพึ่งพาธรรมชาติ?",
+          options: ["เกษตรกรรม เช่น ทำนา ทำไร่ ทำสวน", "โปรแกรมเมอร์เขียนคอมพิวเตอร์", "นักบินอวกาศ"],
+          a: 0,
+          exp: "วิถีชีวิตคนไทยผูกพันกับธรรมชาติและแหล่งน้ำ จึงประกอบอาชีพทำนาและทำเกษตรกรรมเป็นหลัก"
+        },
+        {
+          q: "ประโยชน์ที่สำคัญที่สุดของการเรียนรู้วิชาประวัติศาสตร์คือข้อใด?",
+          options: ["ทำให้รู้เรื่องราวในอดีต เข้าใจที่มาของตนเองและครอบครัว", "ทำให้วิ่งได้เร็วขึ้น", "ทำให้วาดภาพระบายสีสวยขึ้น"],
+          a: 0,
+          exp: "ประวัติศาสตร์ช่วยให้เรารู้ความเป็นมาของตนเอง ครอบครัว และชุมชนเพื่อนำบทเรียนมาปรับใช้ในชีวิต"
+        }
+      ]
+    };
+
+    // State Management
+    let currentSet = 'set1';
+    let userAnswers = { set1: {}, set2: {} };
+    let instantCheck = false;
+    let submitted = { set1: false, set2: false };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderQuestions();
+      updateProgress();
+    });
+
+    function switchSet(setName) {
+      currentSet = setName;
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-amber-700', 'text-white', 'shadow-sm', 'shadow-amber-200');
+        btn.classList.add('bg-slate-100', 'text-slate-600');
+      });
+      const activeBtn = document.getElementById(`tab-${setName}`);
+      activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+      activeBtn.classList.add('bg-amber-700', 'text-white', 'shadow-sm', 'shadow-amber-200');
+
+      document.getElementById('score-card').classList.add('hidden');
+      renderQuestions();
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById('questions-container');
+      const questions = examData[currentSet];
+      const answers = userAnswers[currentSet];
+      const isSub = submitted[currentSet];
+      const choices = ['ก', 'ข', 'ค'];
+
+      container.innerHTML = questions.map((item, idx) => {
+        const selected = answers[idx];
+        const isAnswered = selected !== undefined;
+        let cardBorder = "border-slate-200";
+
+        if (isSub || (instantCheck && isAnswered)) {
+          cardBorder = selected === item.a ? "border-emerald-300 bg-emerald-50/25" : "border-rose-300 bg-rose-50/25";
+        }
+
+        return `
+          <div class="question-card bg-white p-4 sm:p-5 rounded-2xl border ${cardBorder} shadow-sm transition-all" id="q-card-${idx}">
+            <div class="flex items-start gap-2.5">
+              <span class="flex-shrink-0 w-7 h-7 rounded-lg bg-amber-100 text-amber-900 font-bold font-display text-sm flex items-center justify-center mt-0.5">
+                ${idx + 1}
+              </span>
+              <div class="flex-1">
+                <h3 class="text-slate-900 font-medium text-base sm:text-lg leading-snug">
+                  ${item.q}
+                </h3>
+              </div>
+            </div>
+
+            <!-- Options Grid -->
+            <div class="grid grid-cols-1 gap-2.5 mt-4 sm:ml-9">
+              ${item.options.map((opt, optIdx) => {
+                const isThisSelected = selected === optIdx;
+                let optStyle = "bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800";
+                let badgeStyle = "bg-white border-slate-300 text-slate-600";
+
+                if (isSub || (instantCheck && isAnswered)) {
+                  if (optIdx === item.a) {
+                    optStyle = "bg-emerald-100/70 border-emerald-400 text-emerald-950 font-semibold";
+                    badgeStyle = "bg-emerald-600 text-white border-emerald-600";
+                  } else if (isThisSelected && optIdx !== item.a) {
+                    optStyle = "bg-rose-100/70 border-rose-300 text-rose-950 line-through opacity-80";
+                    badgeStyle = "bg-rose-600 text-white border-rose-600";
+                  }
+                } else if (isThisSelected) {
+                  optStyle = "bg-amber-50 border-amber-600 text-amber-950 font-medium ring-1 ring-amber-600";
+                  badgeStyle = "bg-amber-700 text-white border-amber-700";
+                }
+
+                return `
+                  <button type="button" 
+                          onclick="selectOption(${idx}, ${optIdx})"
+                          class="w-full text-left p-3 rounded-xl border ${optStyle} transition flex items-center gap-3 cursor-pointer">
+                    <span class="w-6 h-6 rounded-full border ${badgeStyle} text-xs font-bold font-display flex items-center justify-center flex-shrink-0">
+                      ${choices[optIdx]}
+                    </span>
+                    <span class="text-sm sm:text-base">${opt}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Explanation Feedback -->
+            ${(isSub || (instantCheck && isAnswered)) ? `
+              <div class="mt-4 sm:ml-9 p-3 rounded-xl text-xs sm:text-sm ${selected === item.a ? 'bg-emerald-100/60 text-emerald-900 border border-emerald-200' : 'bg-rose-100/60 text-rose-900 border border-rose-200'}">
+                <div class="font-bold font-display flex items-center gap-1.5 mb-1">
+                  <span>${selected === item.a ? '🎉 ถูกต้อง เก่งมาก!' : '💡 คำตอบที่ถูกต้องคือ: ข้อ ' + choices[item.a]}</span>
+                </div>
+                <p class="text-slate-700 leading-relaxed font-normal">${item.exp}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectOption(qIdx, optIdx) {
+      if (submitted[currentSet]) return;
+
+      userAnswers[currentSet][qIdx] = optIdx;
+      updateProgress();
+
+      if (instantCheck) {
+        renderQuestions();
+      } else {
+        const card = document.getElementById(`q-card-${qIdx}`);
+        const buttons = card.querySelectorAll('button');
+        buttons.forEach((btn, i) => {
+          const badge = btn.querySelector('span:first-child');
+          if (i === optIdx) {
+            btn.className = "w-full text-left p-3 rounded-xl border bg-amber-50 border-amber-600 text-amber-950 font-medium ring-1 ring-amber-600 transition flex items-center gap-3 cursor-pointer";
+            badge.className = "w-6 h-6 rounded-full border bg-amber-700 text-white border-amber-700 text-xs font-bold font-display flex items-center justify-center flex-shrink-0";
+          } else {
+            btn.className = "w-full text-left p-3 rounded-xl border bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800 transition flex items-center gap-3 cursor-pointer";
+            badge.className = "w-6 h-6 rounded-full border bg-white border-slate-300 text-slate-600 text-xs font-bold font-display flex items-center justify-center flex-shrink-0";
+          }
+        });
+      }
+    }
+
+    function updateProgress() {
+      const answered = Object.keys(userAnswers[currentSet]).length;
+      document.getElementById('answered-count').innerText = answered;
+      const pct = (answered / 20) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+
+    function toggleInstantMode() {
+      instantCheck = document.getElementById('instant-mode').checked;
+      renderQuestions();
+    }
+
+    function resetCurrentSet() {
+      if (confirm("ต้องการล้างคำตอบในชุดนี้เพื่อเริ่มฝึกทำใหม่ใช่หรือไม่?")) {
+        userAnswers[currentSet] = {};
+        submitted[currentSet] = false;
+        document.getElementById('score-card').classList.add('hidden');
+        renderQuestions();
+        updateProgress();
+      }
+    }
+
+    function submitExam() {
+      const answers = userAnswers[currentSet];
+      const totalAnswered = Object.keys(answers).length;
+
+      if (totalAnswered < 20) {
+        if (!confirm(`นักเรียนยังตอบไม่ครบ 20 ข้อ (ทำไปแล้ว ${totalAnswered} ข้อ) ต้องการตรวจคำตอบเลยหรือไม่?`)) {
+          return;
+        }
+      }
+
+      submitted[currentSet] = true;
+      const questions = examData[currentSet];
+      let score = 0;
+
+      questions.forEach((q, idx) => {
+        if (answers[idx] === q.a) score++;
+      });
+
+      const pct = Math.round((score / 20) * 100);
+      let remark = "";
+      let bgGrad = "";
+
+      if (pct >= 85) {
+        remark = "ยอดเยี่ยมมากครับ! มีความเข้าใจเรื่องวันเวลาและประวัติศาสตร์อย่างแม่นยำมาก 🌟";
+        bgGrad = "from-emerald-600 to-teal-700";
+      } else if (pct >= 70) {
+        remark = "เก่งมากครับ! ทบทวนเรื่องลำดับญาติและจำนวนวันในเดือนอีกนิดเดียว ได้คะแนนเต็มแน่นอน 👏";
+        bgGrad = "from-amber-700 to-amber-800";
+      } else {
+        remark = "ทำได้ดีแล้วครับ! ลองอ่านคำอธิบายในข้อที่ตอบผิด แล้วกด 'ล้างคำตอบ' เพื่อฝึกทำใหม่อีกรอบนะครับ ✌️";
+        bgGrad = "from-orange-600 to-amber-700";
+      }
+
+      const scoreCard = document.getElementById('score-card');
+      scoreCard.className = `no-print mb-6 p-6 rounded-2xl bg-gradient-to-r ${bgGrad} text-white shadow-lg text-center transition-all`;
+      scoreCard.innerHTML = `
+        <div class="text-sm font-semibold uppercase tracking-wider text-white/80 font-display">ผลการทดสอบวิชาประวัติศาสตร์ ป.1</div>
+        <div class="text-4xl sm:text-5xl font-extrabold font-display my-2">${score} <span class="text-2xl font-normal opacity-80">/ 20 คะแนน</span></div>
+        <div class="text-base sm:text-lg font-medium text-white/95 max-w-lg mx-auto leading-relaxed">${remark}</div>
+        <div class="mt-4 flex items-center justify-center gap-3">
+          <button onclick="window.scrollTo({top: 450, behavior: 'smooth'})" class="bg-white text-slate-800 hover:bg-slate-100 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm transition shadow">
+            🔍 ดูเฉลยละเอียดด้านล่าง
+          </button>
+        </div>
+      `;
+      scoreCard.classList.remove('hidden');
+
+      renderQuestions();
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
