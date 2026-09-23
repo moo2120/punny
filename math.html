@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบทดสอบคณิตศาสตร์ ป.1 (ความเข้าใจ & โจทย์ปัญหา)</title>
+  <!-- Google Fonts: Sarabun & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'sans-serif'],
+            display: ['Prompt', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f8fafc;
+    }
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Prompt', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white;
+        color: black;
+      }
+      .question-card {
+        page-break-inside: avoid;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        margin-bottom: 1.25rem !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-amber-500 via-orange-600 to-rose-600 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-3 text-center sm:text-left">
+        <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shadow-inner">
+          🔢
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold font-display tracking-tight">คณิตศาสตร์ ป.1 (ความเข้าใจ & โจทย์ปัญหา)</h1>
+          <p class="text-xs text-orange-100">ฝึกคิดวิเคราะห์ • รู้ที่มาของตัวเลข • แก้โจทย์ปัญหาอย่างมีเหตุผล</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="no-print text-xs bg-white/10 hover:bg-white/20 border border-white/30 text-white px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+          🖨️ พิมพ์ใบงาน
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-3 sm:px-4 py-6 flex-1 w-full">
+
+    <!-- Pedagogical Concept Banner -->
+    <div class="no-print mb-6 bg-white border border-amber-100 rounded-2xl p-4 sm:p-5 shadow-sm">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl mt-0.5">💡</span>
+        <div>
+          <h2 class="font-bold text-amber-950 font-display text-base sm:text-lg">จุดเน้นเพื่อพิชิตข้อสอบคณิตศาสตร์ ป.1</h2>
+          <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+            ข้อสอบชุดนี้มุ่งเน้น <strong>1) ความเข้าใจส่วนย่อย-ส่วนรวม (Part-Whole)</strong> <strong>2) การแปลสถานการณ์เป็นประโยคสัญลักษณ์</strong> และ <strong>3) โจทย์ปัญหาเปรียบเทียบ (มากกว่า/น้อยกว่า)</strong> เพื่อป้องกันไม่ให้เด็กจำคีย์เวิร์ดไปบวกลบผิดพลาด แต่เข้าใจความหมายที่แท้จริง
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Set Selector Tabs -->
+    <div class="no-print flex space-x-2 border-b border-slate-200 pb-2 mb-6 overflow-x-auto custom-scroll">
+      <button onclick="switchSet('set1')" id="tab-set1" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap bg-orange-600 text-white shadow-sm shadow-orange-200">
+        <span>📘</span> ชุดที่ 1: รากฐานจำนวนและโจทย์ปัญหาเบื้องต้น (20 ข้อ)
+      </button>
+      <button onclick="switchSet('set2')" id="tab-set2" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">
+        <span>📙</span> ชุดที่ 2: วิเคราะห์โจทย์เปรียบเทียบและตัวไม่ทราบค่า (20 ข้อ)
+      </button>
+    </div>
+
+    <!-- Status & Tool Bar -->
+    <div class="no-print bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-700">
+        <span>ทำไปแล้ว:</span>
+        <span id="answered-count" class="font-bold text-orange-600 font-display text-base">0</span>
+        <span class="text-slate-400">/ 20 ข้อ</span>
+        <div class="w-24 sm:w-32 bg-slate-100 rounded-full h-2.5 ml-2 overflow-hidden border border-slate-200">
+          <div id="progress-bar" class="bg-orange-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="instant-mode" class="sr-only peer" onchange="toggleInstantMode()">
+          <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-600"></div>
+          <span class="ml-2 text-xs text-slate-700 select-none">โหมดเฉลยทันที</span>
+        </label>
+        <button onclick="resetCurrentSet()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition font-medium">
+          🔄 ล้างคำตอบ
+        </button>
+      </div>
+    </div>
+
+    <!-- Score Summary Modal Banner -->
+    <div id="score-card" class="hidden no-print mb-6 p-5 rounded-2xl border transition-all text-center"></div>
+
+    <!-- Question Container -->
+    <div id="questions-container" class="space-y-4 sm:space-y-5">
+      <!-- Generated via JavaScript -->
+    </div>
+
+    <!-- Action Bottom Bar -->
+    <div class="no-print mt-8 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-slate-500 text-center sm:text-left">
+        📝 คำแนะนำ: ให้เด็กอ่านโจทย์ออกเสียง หรือผู้ปกครองช่วยอ่านให้ฟัง แล้วให้นักเรียนเล่าเรื่องกลับมาด้วยความเข้าใจก่อนเลือกคำตอบ
+      </p>
+      <button onclick="submitExam()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold font-display px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+        <span>✅ ตรวจคำตอบชุดนี้</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-12 no-print">
+    <div class="max-w-4xl mx-auto px-4">
+      <p class="font-medium text-slate-700">แบบฝึกทบทวนทักษะกระบวนการคิดทางคณิตศาสตร์ ชั้นประถมศึกษาปีที่ 1</p>
+      <p class="mt-1">สอดคล้องตามหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน (ฉบับปรับปรุง 2560) • สสวท.</p>
+    </div>
+  </footer>
+
+  <!-- Data & Logic -->
+  <script>
+    const examData = {
+      set1: [
+        {
+          q: "ความสัมพันธ์แบบส่วนย่อย-ส่วนรวม: ถ้า 'ส่วนรวม' คือ 8 และมีส่วนย่อยหนึ่งคือ 5 อีกส่วนย่อยหนึ่งต้องเป็นจำนวนใด?",
+          options: ["2", "3", "4"],
+          a: 1,
+          exp: "จำนวน 8 แยกออกเป็น 5 กับ 3 (เพราะ 5 + 3 = 8) หรือคิดจาก 8 - 5 = 3"
+        },
+        {
+          q: "มีดินสอ 7 แท่ง ต้องการแบ่งใส่กล่อง 2 กล่อง ข้อใดคือการแบ่งแบบส่วนย่อย-ส่วนรวมที่เป็นไปได้ทั้งหมด?",
+          options: ["กล่องแรก 4 แท่ง และกล่องที่สอง 3 แท่ง", "กล่องแรก 5 แท่ง และกล่องที่สอง 4 แท่ง", "กล่องแรก 3 แท่ง และกล่องที่สอง 2 แท่ง"],
+          a: 0,
+          exp: "4 รวมกับ 3 ได้เท่ากับ 7 พอดี ส่วนข้ออื่นรวมกันแล้วได้ 9 และ 5 ซึ่งไม่ตรงกับจำนวนดินสอที่มี"
+        },
+        {
+          q: "สถานการณ์ในข้อใด ตรงกับความหมายของการบวก (รวมกันหรือเพิ่มขึ้น)?",
+          options: ["มีลูกอม 6 เม็ด กินไป 2 เม็ด", "มีลูกโป่ง 4 ลูก เพื่อนให้อีก 3 ลูก", "มีขนม 5 ชิ้น ทำหล่นหาย 1 ชิ้น"],
+          a: 1,
+          exp: "การได้รับของมาเพิ่มทำให้จำนวนมากขึ้น เป็นความหมายของการบวก (4 + 3 = 7)"
+        },
+        {
+          q: "สถานการณ์ในข้อใด ตรงกับประโยคสัญลักษณ์ 9 - 4 = 5?",
+          options: ["มีคุกกี้ 9 ชิ้น ซื้อมาเพิ่มอีก 4 ชิ้น", "มีคุกกี้ 9 ชิ้น แบ่งให้น้องกินไป 4 ชิ้น เหลือกี่ชิ้น", "มีคุกกี้รสเนย 5 ชิ้น คุกกี้รสกล้วย 4 ชิ้น รวมมีกี่ชิ้น"],
+          a: 1,
+          exp: "การแบ่งหรือกินออกไปทำให้ของเดิมลดลง จึงตรงกับความหมายของการลบ 9 - 4 = 5"
+        },
+        {
+          q: "ถ้าเรารู้ว่า 6 + 3 = 9 ความสัมพันธ์ระหว่างการบวกและการลบจะบอกเราได้ทันทีว่า 9 - 3 มีค่าเท่ากับเท่าใด?",
+          options: ["3", "6", "12"],
+          a: 1,
+          exp: "จากส่วนรวม 9 เมื่อหักส่วนย่อย 3 ออกไป จะเหลือส่วนย่อยอีกส่วนหนึ่งคือ 6 เสมอ"
+        },
+        {
+          q: "ในการคิดหาผลบวกของ 8 + 4 โดยใช้วิธี 'ทำให้ครบสิบ' (Make 10) เราควรแยกเลข 4 ออกเป็นจำนวนใดบ้าง?",
+          options: ["1 กับ 3", "2 กับ 2", "0 กับ 4"],
+          a: 1,
+          exp: "แยก 4 เป็น 2 กับ 2 เพื่อเอา 2 ตัวแรกไปรวมกับ 8 ได้ครบ 10 แล้วบวกกับ 2 ที่เหลือ จะได้ 12 พอดี"
+        },
+        {
+          q: "พิจารณาโจทย์: 'ใบบัวมีส้ม 5 ผล แม่ให้อีก 3 ผล ใบบัวมีส้มทั้งหมดกี่ผล' สิ่งที่โจทย์ถามคือข้อใด?",
+          options: ["ใบบัวมีส้ม 5 ผล", "แม่ให้อีก 3 ผล", "ใบบัวมีส้มทั้งหมดกี่ผล"],
+          a: 2,
+          exp: "สิ่งที่โจทย์ถามคือเป้าหมายที่ต้องการหาคำตอบ ซึ่งมักอยู่ท้ายประโยค คือ 'ใบบัวมีส้มทั้งหมดกี่ผล'"
+        },
+        {
+          q: "จากโจทย์ข้อเดิม สิ่งที่ 'โจทย์บอก' (ข้อมูลที่เรารู้แล้ว) คือข้อใด?",
+          options: ["ใบบัวมีส้ม 5 ผล และแม่ให้อีก 3 ผล", "ใบบัวชอบกินส้มมาก", "ส้มมีรสชาติหวานอมเปรี้ยว"],
+          a: 0,
+          exp: "สิ่งที่โจทย์บอกคือข้อเท็จจริงและตัวเลขที่ให้มาเพื่อนำไปคิดคำนวณ"
+        },
+        {
+          q: "ต้นกล้ามีหนังสือนิทาน 6 เล่ม ซื้อมาเพิ่มอีก 2 เล่ม เขียนเป็นประโยคสัญลักษณ์ได้อย่างไร?",
+          options: ["6 - 2 = ▢", "6 + 2 = ▢", "2 + 8 = ▢"],
+          a: 1,
+          exp: "ซื้อมาเพิ่มทำให้หนังสือมีจำนวนมากขึ้น จึงเขียนแทนด้วยการบวก 6 + 2 = ▢"
+        },
+        {
+          q: "ขุนมีลูกแก้วสีแดง 7 ลูก และมีลูกแก้วสีเขียว 5 ลูก ขุนมีลูกแก้วรวมทั้งหมดกี่ลูก?",
+          options: ["11 ลูก", "12 ลูก", "13 ลูก"],
+          a: 1,
+          exp: "ประโยคสัญลักษณ์คือ 7 + 5 = ▢ คิดโดยเอา 7 ไว้ในใจแล้วนับต่ออีก 5 หรือ (7 + 3) + 2 = 12 ลูก"
+        },
+        {
+          q: "มีนมกล่องวางอยู่ 10 กล่อง เด็กๆ ดื่มไปแล้ว 4 กล่อง ตอนนี้เหลือนมที่ยังไม่ได้ดื่มกี่กล่อง?",
+          options: ["6 กล่อง", "7 กล่อง", "14 กล่อง"],
+          a: 0,
+          exp: "ประโยคสัญลักษณ์คือ 10 - 4 = ▢ คิดจากส่วนย่อยของ 10 คือ 4 กับ 6 ดังนั้นเหลือนม 6 กล่อง"
+        },
+        {
+          q: "แก้วตามีโบผูกผม 8 เส้น ก้อยมีโบผูกผม 5 เส้น แก้วตามีโบผูกผมมากกว่าก้อยกี่เส้น?",
+          options: ["3 เส้น", "4 เส้น", "13 เส้น"],
+          a: 0,
+          exp: "เป็นการเปรียบเทียบหาความต่างระหว่างสองจำนวน ประโยคสัญลักษณ์คือ 8 - 5 = 3 เส้น"
+        },
+        {
+          q: "บนโต๊ะอาหารมีจาน 9 ใบ มีช้อน 6 คัน มีช้อน 'น้อยกว่า' จานกี่คัน?",
+          options: ["2 คัน", "3 คัน", "15 คัน"],
+          a: 1,
+          exp: "การหาว่าน้อยกว่าอยู่เท่าไร คือการเปรียบเทียบส่วนต่าง ประโยคสัญลักษณ์คือ 9 - 6 = 3 คัน"
+        },
+        {
+          q: "หาตัวเลขเติมในช่องว่างให้ประโยคสัญลักษณ์เป็นจริง: 7 + ▢ = 10",
+          options: ["2", "3", "4"],
+          a: 1,
+          exp: "คิดจาก 7 บวกกับอะไรได้ 10 หรือนำ 10 - 7 = 3 ดังนั้น ▢ คือ 3"
+        },
+        {
+          q: "หาตัวเลขเติมในช่องว่างให้ประโยคสัญลักษณ์เป็นจริง: ▢ - 5 = 4",
+          options: ["1", "8", "9"],
+          a: 2,
+          exp: "หาตัวตั้งที่เป็นส่วนรวม โดยนำส่วนย่อย 5 รวมกับ 4 จะได้ 9 (เพราะ 9 - 5 = 4)"
+        },
+        {
+          q: "โจทย์: 'พ่อมีเงิน 10 บาท ซื้อขนมไป 4 บาท พ่อเหลือเงินเท่าไร' คำตอบในข้อใดที่ไม่สมเหตุสมผลแน่นอน?",
+          options: ["6 บาท", "5 บาท", "14 บาท"],
+          a: 2,
+          exp: "14 บาทไม่สมเหตุสมผลอย่างยิ่ง เพราะซื้อขนมไปแล้ว เงินที่มีอยู่เดิม 10 บาทจะต้องลดลง จะมากกว่า 10 บาทไม่ได้"
+        },
+        {
+          q: "จำนวนนับในข้อใด มีค่า 'มากกว่า 13 แต่น้อยกว่า 16'?",
+          options: ["12", "15", "17"],
+          a: 1,
+          exp: "เรียงลำดับจำนวน 13, 14, 15, 16 ดังนั้น 15 จึงอยู่ระหว่าง 13 กับ 16"
+        },
+        {
+          q: "จำนวน 15 ประกอบด้วยค่าประจำหลักในข้อใดถูกต้องที่สุด?",
+          options: ["1 สิบ กับ 5 หน่วย", "5 สิบ กับ 1 หน่วย", "15 สิบ กับ 0 หน่วย"],
+          a: 0,
+          exp: "เลข 1 อยู่ในหลักสิบ มีค่า 10 และเลข 5 อยู่ในหลักหน่วย มีค่า 5 รวมเป็น 1 สิบ กับ 5 หน่วย"
+        },
+        {
+          q: "สังเกตแบบรูปของจำนวน: 2, 4, 6, 8, ▢ จำนวนถัดไปควรเป็นจำนวนใด?",
+          options: ["9", "10", "12"],
+          a: 1,
+          exp: "เป็นแบบรูปที่เพิ่มขึ้นทีละ 2 (นับเพิ่มทีละ 2) ดังนั้น 8 เพิ่มอีก 2 จึงเป็น 10"
+        },
+        {
+          q: "กล่องนมหรือตู้เย็น มีลักษณะรูปทรงเรขาคณิตสามมิติตรงกับข้อใด?",
+          options: ["ทรงกลม", "ทรงกระบอก", "ทรงสี่เหลี่ยมมุมฉาก"],
+          a: 2,
+          exp: "กล่องนมและตู้เย็นมีหน้าตัดเป็นรูปสี่เหลี่ยมและมีความหนาความลึก จึงเป็นทรงสี่เหลี่ยมมุมฉาก"
+        }
+      ],
+      set2: [
+        {
+          q: "จำนวน 10 สามารถแยกออกเป็น 'ส่วนย่อย 3 จำนวน' ในข้อใดได้ถูกต้องพอดี?",
+          options: ["2, 3 และ 5", "4, 4 และ 4", "1, 2 และ 6"],
+          a: 0,
+          exp: "2 + 3 + 5 = 10 พอดี ส่วนข้ออื่นรวมได้ 12 และ 9 ตามลำดับ"
+        },
+        {
+          q: "[ระวังตัวหลอก!] 'ใบหม่อนมีเงิน 8 บาท ซึ่งมากกว่าเงินของน้องอยู่ 3 บาท' ถามว่าน้องมีเงินกี่บาท?",
+          options: ["11 บาท", "5 บาท", "3 บาท"],
+          a: 1,
+          exp: "โจทย์บอกว่าใบหม่อนมี 'มากกว่า' แสดงว่าน้องต้องมี 'น้อยกว่า' ใบหม่อน คิดเป็น 8 - 3 = 5 บาท (อย่าจำแค่คำว่ามากกว่าแล้วเอาไปบวก)"
+        },
+        {
+          q: "[ระวังตัวหลอก!] 'กานต์มีดินสอ 6 แท่ง ซึ่งน้อยกว่าวินอยู่ 2 แท่ง' ถามว่าวินมีดินสอกี่แท่ง?",
+          options: ["4 แท่ง", "8 แท่ง", "12 แท่ง"],
+          a: 1,
+          exp: "กานต์มีน้อยกว่าวิน แปลว่าวินต้องมีดินสอ 'มากกว่า' กานต์ คิดเป็น 6 + 2 = 8 แท่ง"
+        },
+        {
+          q: "คุณครูต้องการดินสอทั้งหมด 12 แท่ง ตอนนี้มีอยู่แล้ว 8 แท่ง ครูต้องหามาเพิ่มอีกกี่แท่งจึงจะครบ?",
+          options: ["4 แท่ง", "5 แท่ง", "20 แท่ง"],
+          a: 0,
+          exp: "ประโยคสัญลักษณ์คือ 8 + ▢ = 12 หรือ 12 - 8 = ▢ ซึ่งคำตอบคือ 4 แท่ง"
+        },
+        {
+          q: "ประโยคสัญลักษณ์การบวกในข้อใด มีความสัมพันธ์กับ 14 - 6 = 8?",
+          options: ["14 + 6 = 20", "8 + 6 = 14", "8 + 14 = 22"],
+          a: 1,
+          exp: "ส่วนย่อย 8 รวมกับส่วนย่อย 6 จะได้ส่วนรวมคือ 14 ดังนั้น 8 + 6 = 14 จึงเป็นประโยคที่สัมพันธ์กัน"
+        },
+        {
+          q: "ในจานมีขนมคุกกี้ 15 ชิ้น เป็นรสเนย 9 ชิ้น ที่เหลือเป็นรสช็อกโกแลต มีคุกกี้รสช็อกโกแลตกี่ชิ้น?",
+          options: ["5 ชิ้น", "6 ชิ้น", "7 ชิ้น"],
+          a: 1,
+          exp: "หาขนมส่วนที่เหลือโดยนำจำนวนทั้งหมดลบส่วนที่เป็นรสเนย: 15 - 9 = 6 ชิ้น"
+        },
+        {
+          q: "ข้อใดแสดงการคิดคำนวณ 9 + 7 โดยใช้เทคนิค 'กลุ่มละ 10' ได้ถูกต้องที่สุด?",
+          options: ["(9 + 1) + 6 = 10 + 6 = 16", "(9 + 2) + 5 = 11 + 5 = 16", "(9 + 7) - 0 = 16"],
+          a: 0,
+          exp: "แยก 7 เป็น 1 กับ 6 นำ 1 ไปให้ 9 รวมเป็น 10 แล้วบวกกับ 6 ที่เหลือ จะได้ 16 ทันที"
+        },
+        {
+          q: "บนรถโดยสารมีคนนั่งอยู่ 7 คน เมื่อถึงป้ายมีคนขึ้นมาอีก 4 คน และไม่มีใครลง ตอนนี้บนรถมีคนทั้งหมดกี่คน?",
+          options: ["10 คน", "11 คน", "12 คน"],
+          a: 1,
+          exp: "มีคนขึ้นมาเพิ่มทำให้จำนวนคนเพิ่มขึ้น: 7 + 4 = 11 คน"
+        },
+        {
+          q: "ลุงเลี้ยงไก่ 14 ตัว เลี้ยงเป็ด 9 ตัว ลุงเลี้ยงเป็ด 'น้อยกว่า' เลี้ยงไก่อยู่กี่ตัว?",
+          options: ["5 ตัว", "6 ตัว", "23 ตัว"],
+          a: 0,
+          exp: "เปรียบเทียบหาผลต่างระหว่างไก่กับเป็ด: 14 - 9 = 5 ตัว"
+        },
+        {
+          q: "จากประโยคสัญลักษณ์ 11 - 4 = ▢ ตรงกับสถานการณ์ปัญหาในข้อใด?",
+          options: ["มีไข่ไก่ 11 ฟอง ซื้อมาเพิ่มอีก 4 ฟอง รวมมีกี่ฟอง", "มีไข่ไก่ 11 ฟอง ทำแตกไป 4 ฟอง เหลือไข่ไก่กี่ฟอง", "มีไข่ไก่ 11 ฟอง มีไข่เป็ด 4 ฟอง รวมมีไข่กี่ฟอง"],
+          a: 1,
+          exp: "การทำแตกไปคือการเอาออก ทำให้ไข่ลดลง จึงตรงกับประโยคสัญลักษณ์การลบ 11 - 4 = ▢"
+        },
+        {
+          q: "หาตัวเลขเติมในช่องว่าง: 12 - ▢ = 7",
+          options: ["4", "5", "6"],
+          a: 1,
+          exp: "คิดจาก 12 ลบออกไปเท่าไรจึงจะเหลือ 7 หรือนำ 12 - 7 = 5 ดังนั้น ▢ คือ 5"
+        },
+        {
+          q: "ประโยคสัญลักษณ์ในข้อใด มีผลลัพธ์ 'เท่ากับ' ผลลัพธ์ของ 7 + 6?",
+          options: ["8 + 5", "9 + 3", "10 + 4"],
+          a: 0,
+          exp: "7 + 6 = 13 และ 8 + 5 = 13 มีผลลัพธ์เท่ากัน"
+        },
+        {
+          q: "พิจารณาข้อความ: 'แม่มีมะม่วง 6 ผล ซื้อมาเพิ่มอีก 7 ผล' ข้อใดอธิบายความสมเหตุสมผลของคำตอบได้ถูกต้อง?",
+          options: ["คำตอบต้องน้อยกว่า 6 ผล", "คำตอบต้องมากกว่า 7 ผลแน่นอน", "คำตอบต้องเท่ากับ 1 ผล"],
+          a: 1,
+          exp: "เนื่องจากแม่มีอยู่แล้ว 6 และซื้อมาเพิ่มอีก 7 ผลรวมย่อมต้องมากกว่าจำนวนที่นำมาบวกเสมอ (มากกว่า 7)"
+        },
+        {
+          q: "ดินสอยาว 8 เซนติเมตร วางต่อกับยางลบที่ยาว 3 เซนติเมตร ความยาวรวมทั้งหมดเป็นกี่เซนติเมตร?",
+          options: ["10 เซนติเมตร", "11 เซนติเมตร", "12 เซนติเมตร"],
+          a: 1,
+          exp: "การวางต่อกันคือการรวมความยาว: 8 + 3 = 11 เซนติเมตร"
+        },
+        {
+          q: "ต้นไม้สูง 10 เมตร เสาธงสูง 14 เมตร เสาธงสูงกว่าต้นไม้อยู่กี่เมตร?",
+          options: ["3 เมตร", "4 เมตร", "24 เมตร"],
+          a: 1,
+          exp: "เปรียบเทียบความสูงโดยหาผลต่าง: 14 - 10 = 4 เมตร"
+        },
+        {
+          q: "ตาชั่งสองแขน ด้านซ้ายวางส้ม 3 ผล ด้านขวาวางแอปเปิล 1 ผล แล้วด้านซ้าย 'เอียงต่ำลง' แสดงว่าอะไร?",
+          options: ["ส้ม 3 ผล หนักกว่า แอปเปิล 1 ผล", "แอปเปิล 1 ผล หนักกว่า ส้ม 3 ผล", "ผลไม้ทั้งสองข้างหนักเท่ากัน"],
+          a: 0,
+          exp: "ด้านที่เอียงต่ำลงแสดงว่ามีน้ำหนักมากกว่า ดังนั้นส้ม 3 ผลจึงหนักกว่าแอปเปิล 1 ผล"
+        },
+        {
+          q: "จำนวนนับที่มีเลข 1 อยู่ในหลักสิบ และเลข 7 อยู่ในหลักหน่วย คือจำนวนใด?",
+          options: ["71", "17", "70"],
+          a: 1,
+          exp: "1 สิบ รวมกับ 7 หน่วย เขียนเป็นตัวเลขฮินดูอารบิกได้คือ 17"
+        },
+        {
+          q: "สังเกตแบบรูปของจำนวน: 18, 16, 14, 12, ▢ จำนวนในช่องว่างคือจำนวนใด?",
+          options: ["10", "11", "13"],
+          a: 0,
+          exp: "เป็นแบบรูปที่ลดลงทีละ 2 (นับถอยหลังทีละ 2) จาก 12 ลดลง 2 จะได้ 10"
+        },
+        {
+          q: "โต๊ะอาหารตัวหนึ่งมีเก้าอี้ 8 ตัว มีเด็กๆ มานั่งแล้ว 5 ตัว ยังเหลือเก้าอี้ที่ยังว่างอยู่อีกกี่ตัว?",
+          options: ["2 ตัว", "3 ตัว", "13 ตัว"],
+          a: 1,
+          exp: "หาเก้าอี้ส่วนที่ยังว่าง: 8 - 5 = 3 ตัว"
+        },
+        {
+          q: "ป้ามีดอกบัวสีขาว 9 ดอก และมีดอกบัวสีชมพู 'เท่ากับ' ดอกบัวสีขาว ป้ามีดอกบัวทั้งหมดกี่ดอก?",
+          options: ["9 ดอก", "18 ดอก", "19 ดอก"],
+          a: 1,
+          exp: "สีชมพูเท่ากับสีขาว แสดงว่ามีสีชมพู 9 ดอก รวมกันคือ 9 + 9 = 18 ดอก"
+        }
+      ]
+    };
+
+    // State
+    let currentSet = 'set1';
+    let userAnswers = { set1: {}, set2: {} };
+    let instantCheck = false;
+    let submitted = { set1: false, set2: false };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderQuestions();
+      updateProgress();
+    });
+
+    function switchSet(setName) {
+      currentSet = setName;
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-orange-600', 'text-white', 'shadow-sm', 'shadow-orange-200');
+        btn.classList.add('bg-slate-100', 'text-slate-600');
+      });
+      const activeBtn = document.getElementById(`tab-${setName}`);
+      activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+      activeBtn.classList.add('bg-orange-600', 'text-white', 'shadow-sm', 'shadow-orange-200');
+
+      document.getElementById('score-card').classList.add('hidden');
+      renderQuestions();
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById('questions-container');
+      const questions = examData[currentSet];
+      const answers = userAnswers[currentSet];
+      const isSub = submitted[currentSet];
+      const choices = ['ก', 'ข', 'ค'];
+
+      container.innerHTML = questions.map((item, idx) => {
+        const selected = answers[idx];
+        const isAnswered = selected !== undefined;
+        let cardBorder = "border-slate-200";
+
+        if (isSub || (instantCheck && isAnswered)) {
+          cardBorder = selected === item.a ? "border-emerald-300 bg-emerald-50/25" : "border-rose-300 bg-rose-50/25";
+        }
+
+        return `
+          <div class="question-card bg-white p-4 sm:p-5 rounded-2xl border ${cardBorder} shadow-sm transition-all" id="q-card-${idx}">
+            <div class="flex items-start gap-2.5">
+              <span class="flex-shrink-0 w-7 h-7 rounded-lg bg-orange-100 text-orange-800 font-bold font-display text-sm flex items-center justify-center mt-0.5">
+                ${idx + 1}
+              </span>
+              <div class="flex-1">
+                <h3 class="text-slate-900 font-medium text-base sm:text-lg leading-snug">
+                  ${item.q}
+                </h3>
+              </div>
+            </div>
+
+            <!-- Options -->
+            <div class="grid grid-cols-1 gap-2.5 mt-4 sm:ml-9">
+              ${item.options.map((opt, optIdx) => {
+                const isThisSelected = selected === optIdx;
+                let optStyle = "bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800";
+                let badgeStyle = "bg-white border-slate-300 text-slate-600";
+
+                if (isSub || (instantCheck && isAnswered)) {
+                  if (optIdx === item.a) {
+                    optStyle = "bg-emerald-100/70 border-emerald-400 text-emerald-950 font-semibold";
+                    badgeStyle = "bg-emerald-600 text-white border-emerald-600";
+                  } else if (isThisSelected && optIdx !== item.a) {
+                    optStyle = "bg-rose-100/70 border-rose-300 text-rose-950 line-through opacity-80";
+                    badgeStyle = "bg-rose-600 text-white border-rose-600";
+                  }
+                } else if (isThisSelected) {
+                  optStyle = "bg-orange-50 border-orange-500 text-orange-950 font-medium ring-1 ring-orange-500";
+                  badgeStyle = "bg-orange-600 text-white border-orange-600";
+                }
+
+                return `
+                  <button type="button" 
+                          onclick="selectOption(${idx}, ${optIdx})"
+                          class="w-full text-left p-3 rounded-xl border ${optStyle} transition flex items-center gap-3 cursor-pointer">
+                    <span class="w-6 h-6 rounded-full border ${badgeStyle} text-xs font-bold font-display flex items-center justify-center flex-shrink-0">
+                      ${choices[optIdx]}
+                    </span>
+                    <span class="text-sm sm:text-base">${opt}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Explanation Feedback -->
+            ${(isSub || (instantCheck && isAnswered)) ? `
+              <div class="mt-4 sm:ml-9 p-3 rounded-xl text-xs sm:text-sm ${selected === item.a ? 'bg-emerald-100/60 text-emerald-900 border border-emerald-200' : 'bg-rose-100/60 text-rose-900 border border-rose-200'}">
+                <div class="font-bold font-display flex items-center gap-1.5 mb-1">
+                  <span>${selected === item.a ? '🎉 เก่งมาก ตอบถูกต้อง!' : '💡 เฉลยที่ถูกต้องคือ: ข้อ ' + choices[item.a]}</span>
+                </div>
+                <p class="text-slate-700 leading-relaxed font-normal">${item.exp}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectOption(qIdx, optIdx) {
+      if (submitted[currentSet]) return;
+
+      userAnswers[currentSet][qIdx] = optIdx;
+      updateProgress();
+
+      if (instantCheck) {
+        renderQuestions();
+      } else {
+        const card = document.getElementById(`q-card-${qIdx}`);
+        const buttons = card.querySelectorAll('button');
+        buttons.forEach((btn, i) => {
+          const badge = btn.querySelector('span:first-child');
+          if (i === optIdx) {
+            btn.className = "w-full text-left p-3 rounded-xl border bg-orange-50 border-orange-500 text-orange-950 font-medium ring-1 ring-orange-500 transition flex items-center gap-3 cursor-pointer";
+            badge.className = "w-6 h-6 rounded-full border bg-orange-600 text-white border-orange-600 text-xs font-bold font-display flex items-center justify-center flex-shrink-0";
+          } else {
+            btn.className = "w-full text-left p-3 rounded-xl border bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800 transition flex items-center gap-3 cursor-pointer";
+            badge.className = "w-6 h-6 rounded-full border bg-white border-slate-300 text-slate-600 text-xs font-bold font-display flex items-center justify-center flex-shrink-0";
+          }
+        });
+      }
+    }
+
+    function updateProgress() {
+      const answered = Object.keys(userAnswers[currentSet]).length;
+      document.getElementById('answered-count').innerText = answered;
+      const pct = (answered / 20) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+
+    function toggleInstantMode() {
+      instantCheck = document.getElementById('instant-mode').checked;
+      renderQuestions();
+    }
+
+    function resetCurrentSet() {
+      if (confirm("ต้องการล้างคำตอบในชุดนี้เพื่อฝึกทำใหม่อีกครั้งใช่หรือไม่?")) {
+        userAnswers[currentSet] = {};
+        submitted[currentSet] = false;
+        document.getElementById('score-card').classList.add('hidden');
+        renderQuestions();
+        updateProgress();
+      }
+    }
+
+    function submitExam() {
+      const answers = userAnswers[currentSet];
+      const totalAnswered = Object.keys(answers).length;
+
+      if (totalAnswered < 20) {
+        if (!confirm(`นักเรียนยังทำไม่ครบ 20 ข้อ (ทำไปแล้ว ${totalAnswered} ข้อ) ต้องการตรวจคำตอบเลยหรือไม่?`)) {
+          return;
+        }
+      }
+
+      submitted[currentSet] = true;
+      const questions = examData[currentSet];
+      let score = 0;
+
+      questions.forEach((q, idx) => {
+        if (answers[idx] === q.a) score++;
+      });
+
+      const pct = Math.round((score / 20) * 100);
+      let remark = "";
+      let bgGrad = "";
+
+      if (pct >= 85) {
+        remark = "ยอดเยี่ยมมากครับ! เข้าใจความสัมพันธ์ของตัวเลขและแก้โจทย์ปัญหาได้อย่างแม่นยำ 🌟";
+        bgGrad = "from-emerald-500 to-teal-600";
+      } else if (pct >= 70) {
+        remark = "ทำได้ดีมากครับ! ลองอ่านคำอธิบายในข้อที่ตอบผิด เพื่อเสริมความเข้าใจเรื่องโจทย์เปรียบเทียบอีกนิดนะ 👏";
+        bgGrad = "from-orange-500 to-amber-600";
+      } else {
+        remark = "เก่งมากที่ตั้งใจทำจนครบ! ลองชวนคุณพ่อคุณแม่วาดรูปตามคำอธิบายเฉลย แล้วกดทำใหม่อีกครั้งนะครับ ✌️";
+        bgGrad = "from-rose-500 to-orange-500";
+      }
+
+      const scoreCard = document.getElementById('score-card');
+      scoreCard.className = `no-print mb-6 p-6 rounded-2xl bg-gradient-to-r ${bgGrad} text-white shadow-lg text-center transition-all`;
+      scoreCard.innerHTML = `
+        <div class="text-sm font-semibold uppercase tracking-wider text-white/80 font-display">ผลการประเมินวิชาคณิตศาสตร์ ป.1</div>
+        <div class="text-4xl sm:text-5xl font-extrabold font-display my-2">${score} <span class="text-2xl font-normal opacity-80">/ 20 คะแนน</span></div>
+        <div class="text-base sm:text-lg font-medium text-white/95 max-w-lg mx-auto leading-relaxed">${remark}</div>
+        <div class="mt-4 flex items-center justify-center gap-3">
+          <button onclick="window.scrollTo({top: 450, behavior: 'smooth'})" class="bg-white text-slate-800 hover:bg-slate-100 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm transition shadow">
+            🔍 ดูเฉลยและวิธีคิดละเอียดด้านล่าง
+          </button>
+        </div>
+      `;
+      scoreCard.classList.remove('hidden');
+
+      renderQuestions();
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
