@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบทดสอบสุขศึกษาและพลศึกษา ป.1 เทอม 1</title>
+  <!-- Google Fonts: Sarabun & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'sans-serif'],
+            display: ['Prompt', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #fffafb;
+    }
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Prompt', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white;
+        color: black;
+      }
+      .question-card {
+        page-break-inside: avoid;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        margin-bottom: 1.25rem !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-rose-600 via-pink-600 to-amber-600 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-3 text-center sm:text-left">
+        <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shadow-inner">
+          🏃‍♂️
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold font-display tracking-tight">สุขศึกษาและพลศึกษา ป.1 (เทอม 1)</h1>
+          <p class="text-xs text-rose-100">ทบทวนเตรียมสอบปลายภาค • การดูแลอวัยวะ สุขอนามัย และการเคลื่อนไหวพื้นฐาน</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="no-print text-xs bg-white/10 hover:bg-white/20 border border-white/30 text-white px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+          🖨️ พิมพ์แบบทดสอบ
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-3 sm:px-4 py-6 flex-1 w-full">
+
+    <!-- Concept Overview Banner -->
+    <div class="no-print mb-6 bg-white border border-rose-100 rounded-2xl p-4 sm:p-5 shadow-sm">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl mt-0.5">🩺</span>
+        <div>
+          <h2 class="font-bold text-rose-950 font-display text-base sm:text-lg">สาระสำคัญในการสอบปลายภาค (เทอม 1)</h2>
+          <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+            ครอบคลุม: <strong>1) สุขศึกษา</strong> (หน้าที่และการดูแลรักษา ตา หู จมูก ปาก ฟัน มือ เท้า สุขนิสัยที่ดี) และ <strong>2) พลศึกษา</strong> (รูปแบบการเคลื่อนไหว 3 ประเภท: อยู่กับที่, เคลื่อนที่, ใช้อุปกรณ์ประกอบ กฎความปลอดภัย และน้ำใจนักกีฬา)
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Set Selector Tabs -->
+    <div class="no-print flex space-x-2 border-b border-slate-200 pb-2 mb-6 overflow-x-auto custom-scroll">
+      <button onclick="switchSet('set1')" id="tab-set1" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap bg-rose-600 text-white shadow-sm shadow-rose-200">
+        <span>🧼</span> ชุดที่ 1: อวัยวะและการดูแลสุขอนามัย (20 ข้อ)
+      </button>
+      <button onclick="switchSet('set2')" id="tab-set2" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">
+        <span>⚽</span> ชุดที่ 2: การเคลื่อนไหว ความปลอดภัย และสุขภาพ (20 ข้อ)
+      </button>
+    </div>
+
+    <!-- Status & Tool Bar -->
+    <div class="no-print bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-700">
+        <span>ทำไปแล้ว:</span>
+        <span id="answered-count" class="font-bold text-rose-600 font-display text-base">0</span>
+        <span class="text-slate-400">/ 20 ข้อ</span>
+        <div class="w-24 sm:w-32 bg-slate-100 rounded-full h-2.5 ml-2 overflow-hidden border border-slate-200">
+          <div id="progress-bar" class="bg-rose-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="instant-mode" class="sr-only peer" onchange="toggleInstantMode()">
+          <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-600"></div>
+          <span class="ml-2 text-xs text-slate-700 select-none">โหมดเฉลยทันที</span>
+        </label>
+        <button onclick="resetCurrentSet()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition font-medium">
+          🔄 ล้างคำตอบ
+        </button>
+      </div>
+    </div>
+
+    <!-- Score Summary Modal Banner -->
+    <div id="score-card" class="hidden no-print mb-6 p-5 rounded-2xl border transition-all text-center"></div>
+
+    <!-- Question Container -->
+    <div id="questions-container" class="space-y-4 sm:space-y-5">
+      <!-- Generated via JavaScript -->
+    </div>
+
+    <!-- Action Bottom Bar -->
+    <div class="no-print mt-8 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-slate-500 text-center sm:text-left">
+        💡 คำแนะนำ: ชวนนักเรียนอ่านโจทย์ ชี้ตามข้อความ และวิเคราะห์สถานการณ์ตามหลักสุขอนามัยในชีวิตจริง
+      </p>
+      <button onclick="submitExam()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold font-display px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+        <span>✅ ตรวจคำตอบชุดนี้</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-12 no-print">
+    <div class="max-w-4xl mx-auto px-4">
+      <p class="font-medium text-slate-700">แบบฝึกทบทวนและประเมินผล กลุ่มสาระการเรียนรู้สุขศึกษาและพลศึกษา ชั้นประถมศึกษาปีที่ 1</p>
+      <p class="mt-1">สอดคล้องตามหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน (ฉบับปรับปรุง 2560) • กระทรวงศึกษาธิการ</p>
+    </div>
+  </footer>
+
+  <!-- Question Data & Logic -->
+  <script>
+    const examData = {
+      set1: [
+        {
+          q: "อวัยวะภายนอกส่วนใด ทำหน้าที่ในการมองเห็นสิ่งต่าง ๆ รอบตัว แยกแยะสีและรูปร่าง?",
+          options: ["หู", "ตา", "จมูก"],
+          a: 1,
+          exp: "ตาทำหน้าที่รับแสง ช่วยให้มองเห็นภาพ สีสัน และระวังอันตรายรอบตัว"
+        },
+        {
+          q: "ขณะอยู่ในโรงเรียน หากนักเรียนได้ยินเสียงนกหวีดของคุณครู แสดงว่านักเรียนใช้อวัยวะใดรับรู้?",
+          options: ["หู", "จมูก", "ตา"],
+          a: 0,
+          exp: "หูทำหน้าที่รับฟังคลื่นเสียงรอบตัว"
+        },
+        {
+          q: "ขณะรับประทานอาหาร อวัยวะใดที่อยู่ในช่องปากทำหน้าที่ 'บดเคี้ยวอาหาร' ให้ละเอียดก่อนกลืน?",
+          options: ["ลิ้น", "ฟัน", "ริมฝีปาก"],
+          a: 1,
+          exp: "ฟันทำหน้าที่กัด ตัด และบดเคี้ยวอาหาร ส่วนลิ้นช่วยคลุกเคล้าและรับรสชาติ"
+        },
+        {
+          q: "อวัยวะใดที่ปกคลุมห่อหุ้มอยู่ทั่วร่างกาย ทำหน้าที่รับความรู้สึกร้อนเย็นและป้องกันเชื้อโรค?",
+          options: ["ผิวหนัง", "กล้ามเนื้อ", "กระดูก"],
+          a: 0,
+          exp: "ผิวหนังเป็นเกราะป้องกันด่านแรกของร่างกาย และมีประสาทสัมผัสรับรู้ความรู้สึก"
+        },
+        {
+          q: "เมื่อมีฝุ่นละอองหรือผงปลิวเข้าตา นักเรียนควรปฏิบัติตนอย่างไรจึงจะถูกต้องและปลอดภัยที่สุด?",
+          options: ["ใช้มือขยี้ตาแรงๆ ทันที", "ลืมตาและกะพริบตาในน้ำสะอาด", "ใช้ปลายดินสอเขี่ยฝุ่นออก"],
+          a: 1,
+          exp: "การกะพริบตาในน้ำสะอาดจะช่วยให้น้ำพัดพาฝุ่นออกอย่างนุ่มนวล การขยี้ตาอาจทำให้กระจกตาเป็นแผลถลอก"
+        },
+        {
+          q: "พฤติกรรมในข้อใด เสี่ยงต่อการทำให้ 'เยื่อแก้วหูทะลุหรืออักเสบ' จนอาจทำให้หูหนวกได้?",
+          options: ["ใช้ไม้แคะหูหรือกิ๊บดำแยงเข้าไปในรูหู", "ใช้ผ้าสะอาดเช็ดใบหูเบาๆ หลังอาบน้ำ", "ฟังเสียงคุณครูสอนหนังสือ"],
+          a: 0,
+          exp: "ห้ามใช้ของแข็งแคะรูหูเด็ดขาด เพราะเยื่อแก้วหูบางมาก อาจฉีกขาดและติดเชื้อได้"
+        },
+        {
+          q: "วิธีการดูแลรักษา 'จมูก' ที่ถูกต้องและปลอดภัยคือข้อใด?",
+          options: ["สั่งน้ำมูกแรงๆ เมื่อเป็นหวัด", "นำเมล็ดผลไม้หรือยางลบใส่ในรูจมูกเล่น", "ใช้ผ้านุ่มสะอาดเช็ดทำความสะอาดรอบนอก"],
+          a: 2,
+          exp: "ควรใช้ผ้านุ่มเช็ดเบาๆ ไม่สั่งน้ำมูกแรง และห้ามนำสิ่งแปลกปลอมใส่เข้าไปในรูจมูกเด็ดขาด"
+        },
+        {
+          q: "เพื่อสุขภาพช่องปากและฟันที่ดี นักเรียนควรแปรงฟันอย่างน้อยวันละกี่ครั้ง?",
+          options: ["อย่างน้อยวันละ 2 ครั้ง (ตอนเช้าและก่อนนอน)", "สัปดาห์ละ 1 ครั้ง", "แปรงเฉพาะวันหยุด"],
+          a: 0,
+          exp: "ควรแปรงฟันอย่างน้อยวันละ 2 ครั้ง เช้าและก่อนนอน เพื่อกำจัดคราบเศษอาหารและป้องกันฟันผุ"
+        },
+        {
+          q: "อาหารหรือขนมชนิดใด หากรับประทานเป็นประจำแล้วไม่ยอมแปรงฟัน จะทำให้ 'ฟันผุ' ได้ง่ายที่สุด?",
+          options: ["ฝรั่งและแอปเปิล", "ลูกอม ทอฟฟี่ และน้ำอัดลม", "ไข่ต้มและนมจืด"],
+          a: 1,
+          exp: "ลูกอมและน้ำอัดลมมีน้ำตาลสูง แบคทีเรียในปากจะย่อยน้ำตาลกลายเป็นกรดกัดกร่อนเคลือบฟันจนผุ"
+        },
+        {
+          q: "ทำไมผู้ปกครองจึงต้องตัดเล็บมือและเล็บเท้าของนักเรียนให้สั้นและสะอาดอยู่เสมอ?",
+          options: ["เพื่อป้องกันสิ่งสกปรกและเชื้อโรคสะสมใต้ซอกเล็บ", "เพื่อให้เล็บทาสีได้สวยขึ้น", "เพื่อให้หยิบของได้ยากขึ้น"],
+          a: 0,
+          exp: "ซอกเล็บยาวเป็นแหล่งสะสมของเชื้อโรค หากใช้มือหยิบอาหารเข้าปาก เชื้อโรคจะเข้าสู่ร่างกายทำให้ท้องร่วงได้"
+        },
+        {
+          q: "ช่วงเวลาใดสำคัญที่สุดที่จำเป็นต้อง 'ล้างมือด้วยน้ำและสบู่' เพื่อสุขอนามัย?",
+          options: ["ก่อนรับประทานอาหาร และ หลังขับถ่ายในห้องน้ำ", "ก่อนเข้านอนเท่านั้น", "หลังจากอาบน้ำเสร็จ"],
+          a: 0,
+          exp: "ต้องล้างมือก่อนกินอาหารเพื่อป้องกันเชื้อโรคเข้าปาก และล้างหลังเข้าห้องน้ำเพื่อชำระสิ่งสกปรก"
+        },
+        {
+          q: "ขณะที่นักเรียนกำลัง 'เขียนหนังสือ' อวัยวะส่วนใดทำงานประสานกันเด่นชัดที่สุด?",
+          options: ["ตา แขน และมือ", "หู ขา และเท้า", "จมูก ปาก และลิ้น"],
+          a: 0,
+          exp: "ตามองตัวหนังสือ แขนและมือออกแรงจับดินสอบังคับทิศทางการเขียน"
+        },
+        {
+          q: "พฤติกรรมใดช่วย 'ถนอมสายตา' ได้ถูกต้องที่สุด?",
+          options: ["นอนเล่นโทรศัพท์มือถือในห้องมืด", "อ่านหนังสือในที่ที่มีแสงสว่างเพียงพอและวางห่างตาพอเหมาะ", "ขยี้ตาทันทีที่รู้สึกคัน"],
+          a: 1,
+          exp: "การอ่านหนังสือในที่มีแสงสว่างพอเหมาะช่วยไม่ให้กล้ามเนื้อตาทำงานหนักเกินไป"
+        },
+        {
+          q: "การสวมรองเท้าก่อนออกจากบ้าน มีประโยชน์ต่อสุขภาพของเท้าอย่างไร?",
+          options: ["ช่วยป้องกันเชื้อโรค ของมีคมบาด และสิ่งสกปรกเปื้อนเท้า", "ทำให้เดินช้าลง", "ทำให้เท้ามีเหงื่อออกมาก"],
+          a: 0,
+          exp: "รองเท้าเป็นเกราะป้องกันเท้าจากเศษแก้ว หินคม หนาม และเชื้อโรคพยาธิบนพื้นดิน"
+        },
+        {
+          q: "ในฐานะสมาชิกคนหนึ่งในบ้าน นักเรียนชั้น ป.1 สามารถช่วยเหลืองานบ้านข้อใดได้อย่างเหมาะสมและปลอดภัย?",
+          options: ["ใช้มีดทำครัวหั่นเนื้อสัตว์", "เก็บของเล่นเข้ากล่องให้เป็นระเบียบหลังเล่นเสร็จ", "ปีนขึ้นไปซ่อมหลังคาบ้าน"],
+          a: 1,
+          exp: "การเก็บของเล่นของตนเองเป็นหน้าที่ง่าย ๆ ที่ปลอดภัยและช่วยแบ่งเบาภาระของพ่อแม่ได้ดี"
+        },
+        {
+          q: "การปฏิบัติตนเป็น 'ลูกที่ดี' ในครอบครัว ควรยึดถือพฤติกรรมในข้อใด?",
+          options: ["เชื่อฟังคำสั่งสอนของพ่อแม่ และพูดจาไพเราะ", "แอบเอาของเล่นเพื่อนกลับมาบ้าน", "ไม่ยอมรับประทานข้าวถ้าไม่ได้ดูการ์ตูน"],
+          a: 0,
+          exp: "การเชื่อฟังคำสอน พูดจาสุภาพ และช่วยเหลือตนเอง เป็นลักษณะของลูกที่ดี"
+        },
+        {
+          q: "เมื่อเกิดอุบัติเหตุหกล้มมีแผลเลือดไหลในโรงเรียน นักเรียนควรบอกใครเป็นคนแรก?",
+          options: ["เพื่อนสนิท", "คุณครูประจำชั้นหรือครูห้องพยาบาล", "ภารโรง"],
+          a: 1,
+          exp: "ควรแจ้งคุณครูทันทีเพื่อให้ช่วยปฐมพยาบาล ทำแผล และดูแลความปลอดภัยอย่างถูกวิธี"
+        },
+        {
+          q: "สุขบัญญัติแห่งชาติข้อที่ 1 แนะนำให้เด็ก ๆ ดูแลสุขอนามัยประจำวันอย่างไร?",
+          options: ["อาบน้ำชำระร่างกายทุกวัน และสวมใส่เสื้อผ้าที่สะอาด", "รับประทานขนมหวานเป็นอาหารเช้า", "นอนดึกเพื่อดูการ์ตูน"],
+          a: 0,
+          exp: "สุขบัญญัติข้อ 1 คือ การดูแลรักษาร่างกายและของใช้ให้สะอาด อาบน้ำทุกวันอย่างน้อยวันละ 2 ครั้ง"
+        },
+        {
+          q: "หลังจากสัมผัสสัตว์เลี้ยง เช่น แมวหรือสุนัข นักเรียนควรทำสิ่งใดก่อนไปหยิบขนมกิน?",
+          options: ["เช็ดมือกับกางเกง", "ล้างมือด้วยสบู่และน้ำสะอาดให้ทั่ว", "เป่าลมใส่มือ"],
+          a: 1,
+          exp: "ขนสัตว์อาจมีเชื้อโรค ฝุ่น และไข่พยาธิติดอยู่ ต้องล้างมือด้วยสบู่ให้สะอาดก่อนหยิบอาหาร"
+        },
+        {
+          q: "ข้อใดเป็นพฤติกรรมที่ไม่ถูกต้องและอาจทำให้ฟันหักหรือบิ่นได้?",
+          options: ["เคี้ยวผลไม้เนื้อนิ่ม", "ใช้ฟันกัดเปิดฝาขวดน้ำอัดลมหรือฉีกซองขนมเหนียวๆ", "แปรงฟันด้วยแปรงขนนุ่ม"],
+          a: 1,
+          exp: "ฟันไม่ได้ออกแบบมาเพื่อเปิดขวด การใช้ฟันกัดของแข็งอาจทำให้ฟันแท้แตกหักถาวรได้"
+        }
+      ],
+      set2: [
+        {
+          q: "การเคลื่อนไหวร่างกายแบบ 'อยู่กับที่' มีลักษณะตรงกับข้อใด?",
+          options: ["การเคลื่อนไหวโดยที่เท้าไม่ได้เคลื่อนย้ายจุดยืนไปไหน", "การวิ่งจากหน้าห้องไปหลังห้อง", "การเตะลูกฟุตบอล"],
+          a: 0,
+          exp: "การเคลื่อนไหวอยู่กับที่ คือการขยับส่วนต่างๆ ของร่างกายโดยตำแหน่งเท้าวางอยู่ที่เดิม"
+        },
+        {
+          q: "กิจกรรมในข้อใด จัดเป็นการเคลื่อนไหวร่างกายแบบ 'อยู่กับที่' ทั้งหมด?",
+          options: ["การก้มแตะปลายเท้า และ การยืนบิดลำตัว", "การวิ่งผลัด และ การเดินแถว", "การกระโดดเชือก และ การโยนบอล"],
+          a: 0,
+          exp: "ก้มแตะปลายเท้าและยืนบิดตัว เท้าอยู่กับที่ ไม่มีการย้ายตำแหน่ง"
+        },
+        {
+          q: "ข้อใดเป็นการเคลื่อนไหวร่างกายแบบ 'เคลื่อนที่' (Locomotor)?",
+          options: ["ยืนเขย่งปลายเท้า", "วิ่งซิกแซกหลบสิ่งกีดขวาง", "นั่งก้มหน้า"],
+          a: 1,
+          exp: "การวิ่งทำให้ร่างกายเคลื่อนย้ายจากตำแหน่งหนึ่งไปยังอีกตำแหน่งหนึ่ง จึงเป็นการเคลื่อนที่"
+        },
+        {
+          q: "เด็กหญิงพลอย 'กระโดดเขย่งสองขาไปข้างหน้า' จัดเป็นการเคลื่อนไหวประเภทใด?",
+          options: ["การเคลื่อนไหวแบบเคลื่อนที่", "การเคลื่อนไหวแบบอยู่กับที่", "การเคลื่อนไหวโดยใช้อุปกรณ์"],
+          a: 0,
+          exp: "การกระโดดไปข้างหน้าทำให้ตำแหน่งของร่างกายเปลี่ยนไป เป็นการเคลื่อนไหวแบบเคลื่อนที่"
+        },
+        {
+          q: "กิจกรรมในข้อใด จัดเป็นการเคลื่อนไหวร่างกายโดย 'ใช้อุปกรณ์ประกอบ'?",
+          options: ["การโยนและรับลูกบอลกับเพื่อน", "การวิ่งแข่ง 50 เมตร", "การยืนเอียงตัวซ้ายขวา"],
+          a: 0,
+          exp: "มีลูกบอลเป็นอุปกรณ์ที่ร่างกายต้องบังคับควบคุม"
+        },
+        {
+          q: "การเตะลูกฟุตบอลเข้าประตู จัดเป็นการเคลื่อนไหวร่างกายประเภทใด?",
+          options: ["การเคลื่อนไหวแบบอยู่กับที่", "การเคลื่อนไหวแบบเคลื่อนที่", "การเคลื่อนไหวโดยใช้อุปกรณ์ประกอบ"],
+          a: 2,
+          exp: "ลูกฟุตบอลเป็นอุปกรณ์กีฬาที่ใช้เท้าเตะและควบคุมทิศทาง"
+        },
+        {
+          q: "ท่ากายบริหาร 'ยืนกางแขนแล้วบิดเอวไปทางซ้ายสลับขวา' เป็นการเคลื่อนไหวประเภทใด?",
+          options: ["การเคลื่อนไหวแบบอยู่กับที่", "การเคลื่อนไหวแบบเคลื่อนที่", "การเคลื่อนไหวโดยใช้อุปกรณ์ประกอบ"],
+          a: 0,
+          exp: "เท้ายืนอยู่กับจุดเดิม มีเพียงลำตัวท่อนบนที่หมุนบิดไปมา"
+        },
+        {
+          q: "ก่อนเริ่มเล่นกีฬาหรือออกกำลังกายทุกครั้ง นักเรียนควรทำสิ่งใดเป็นลำดับแรกเพื่อป้องกันการบาดเจ็บ?",
+          options: ["อบอุ่นร่างกาย (Warm-up) ยืดเหยียดกล้ามเนื้อ", "ดื่มน้ำอัดลมให้สดชื่น", "นั่งหลับพักผ่อน"],
+          a: 0,
+          exp: "การอบอุ่นร่างกายช่วยเตรียมความพร้อมของหัวใจ กล้ามเนื้อ และเส้นเอ็น ช่วยป้องกันตะคริวและการบาดเจ็บ"
+        },
+        {
+          q: "การเล่นเกมเบ็ดเตล็ดร่วมกับเพื่อนๆ ในวิชาพลศึกษา สิ่งที่สำคัญที่สุดคือข้อใด?",
+          options: ["ต้องเอาชนะให้ได้โดยไม่ต้องสนกฎเกณฑ์", "ปฏิบัติตามกฎกติกาและระมัดระวังความปลอดภัย", "แกล้งผลักเพื่อนให้ล้ม"],
+          a: 1,
+          exp: "การเคารพกติกาและการระวังความปลอดภัยช่วยให้เล่นเกมได้อย่างสนุกสนานและไม่มีใครบาดเจ็บ"
+        },
+        {
+          q: "การแสดงออกในข้อใด แสดงถึงการมี 'น้ำใจนักกีฬา' อย่างแท้จริง?",
+          options: ["โกรธและร้องไห้เมื่อเล่นแพ้", "แสดงความยินดีกับเพื่อนที่ชนะ และไม่เยาะเย้ยผู้แพ้", "หัวเราะเยาะเพื่อนเมื่อเพื่อนทำลูกบอลหลุดมือ"],
+          a: 1,
+          exp: "น้ำใจนักกีฬาคือ รู้แพ้ รู้ชนะ รู้อภัย ให้เกียรติซึ่งกันและกัน"
+        },
+        {
+          q: "ประโยชน์ที่สำคัญที่สุดของการออกกำลังกายเป็นประจำสม่ำเสมอคือข้อใด?",
+          options: ["ทำให้ร่างกายเจริญเติบโตแข็งแรงและมีภูมิต้านทานโรค", "ทำให้เหนื่อยจนไม่อยากทำการบ้าน", "ทำให้ไม่ต้องรับประทานอาหาร"],
+          a: 0,
+          exp: "การออกกำลังกายช่วยให้กระดูก กล้ามเนื้อแข็งแรง รูปร่างสมส่วน และไม่เจ็บป่วยง่าย"
+        },
+        {
+          q: "ขณะวิ่งเล่นในสนาม หากเห็นเพื่อนสะดุดล้มจนเข่าถลอก นักเรียนควรทำอย่างไรเป็นอันดับแรก?",
+          options: ["วิ่งหนีไปเล่นที่อื่น", "เข้าไปช่วยพยุงเพื่อนและพาไปทำแผลที่ห้องพยาบาล", "ยืนหัวเราะเพื่อน"],
+          a: 1,
+          exp: "การมีน้ำใจช่วยเหลือเพื่อนเมื่อเพื่อนบาดเจ็บเป็นพฤติกรรมที่ถูกต้องของเด็กดี"
+        },
+        {
+          q: "การแต่งกายในข้อใด เหมาะสมที่สุดสำหรับการเรียนวิชาพลศึกษาและเล่นกีฬา?",
+          options: ["สวมชุดนักเรียนกระโปรงยาวและรองเท้าแตะ", "สวมชุดพละและรองเท้าผ้าใบที่กระชับพอดีเท้า", "สวมชุดนอน"],
+          a: 1,
+          exp: "ชุดพละระบายเหงื่อได้ดี และรองเท้าผ้าใบช่วยรองรับแรงกระแทก ป้องกันการลื่นล้มและข้อเท้าพลิก"
+        },
+        {
+          q: "สัตว์ในข้อใด เคลื่อนที่ด้วยการ 'คลาน' สอดคล้องกับการเคลื่อนไหวร่างกายแบบเคลื่อนที่ของมนุษย์?",
+          options: ["เต่า", "นกแก้ว", "ปลาทอง"],
+          a: 0,
+          exp: "เต่าเคลื่อนที่โดยการคลานต้วมเตี้ยมไปข้างหน้าบนพื้นดิน"
+        },
+        {
+          q: "การฝึกเดินบนเส้นตรงหรือสะพานไม้แคบๆ ช่วยพัฒนาทักษะทางร่างกายด้านใดมากที่สุด?",
+          options: ["การได้ยินเสียง", "การทรงตัวของร่างกาย", "การมองเห็นในที่มืด"],
+          a: 1,
+          exp: "การเดินบนทางแคบช่วยฝึกกล้ามเนื้อข้อเท้าและระบบประสาทสั่งการในการทรงตัวไม่ให้ล้ม"
+        },
+        {
+          q: "อาหารชนิดใดที่เด็กวัย ป.1 ควรรับประทานทุกวันเพื่อช่วยให้ 'กระดูกและฟันแข็งแรง'?",
+          options: ["นมสดรสจืด", "น้ำชาเขียวหวาน", "ลูกอมคาราเมล"],
+          a: 0,
+          exp: "นมมีแคลเซียมและฟอสฟอรัสสูง ซึ่งเป็นสารอาหารจำเป็นในการสร้างกระดูกและฟันให้แข็งแรง"
+        },
+        {
+          q: "ข้อใดเป็นอาหารมื้อหลักที่มีประโยชน์และช่วยให้ร่างกายเจริญเติบโตสมวัย?",
+          options: ["ข้าวสวย ต้มจืดเต้าหู้หมูสับ และไข่เจียว", "บะหมี่กึ่งสำเร็จรูปดิบโรยผงชูรส", "น้ำอัดลมกับมันฝรั่งทอด"],
+          a: 0,
+          exp: "อาหารมื้อหลักควรมีสารอาหารครบถ้วน มีโปรตีนจากไข่และหมู คาร์โบไฮเดรตจากข้าว และวิตามินจากผัก"
+        },
+        {
+          q: "เพื่อป้องกันอุบัติเหตุในห้องเรียน นักเรียน 'ไม่ควร' ปฏิบัติตนตามข้อใดเด็ดขาด?",
+          options: ["นั่งเรียนอย่างเรียบร้อย", "วิ่งไล่จับและปีนป่ายเหยียบบนโต๊ะเก้าอี้", "ยกมือถามเมื่อไม่เข้าใจ"],
+          a: 1,
+          exp: "การวิ่งเล่นและปีนป่ายบนโต๊ะเก้าอี้อาจทำให้ลื่นพลัดตกศีรษะกระแทกพื้นจนเกิดอันตรายร้ายแรงได้"
+        },
+        {
+          q: "หลังเล่นกีฬากลางแจ้งเสร็จแล้ว รู้สึกเหนื่อยและกระหายน้ำ เครื่องดื่มใดดีต่อร่างกายที่สุด?",
+          options: ["น้ำเปล่าสะอาดที่อุณหภูมิห้อง", "น้ำอัดลมหวานเย็นจัด", "กาแฟเย็นใส่นม"],
+          a: 0,
+          exp: "น้ำเปล่าสะอาดช่วยชดเชยน้ำที่สูญเสียไปกับเหงื่อได้อย่างปลอดภัยและดีต่อสุขภาพที่สุด"
+        },
+        {
+          q: "เด็กวัยประถมศึกษาปีที่ 1 ควรนอนหลับพักผ่อนอย่างน้อยวันละกี่ชั่วโมงเพื่อให้ร่างกายหลั่งฮอร์โมนการเจริญเติบโต?",
+          options: ["ประมาณ 2 - 3 ชั่วโมง", "ประมาณ 8 - 10 ชั่วโมง", "นอนเพียง 5 ชั่วโมง"],
+          a: 1,
+          exp: "เด็กวัยเรียนต้องการการนอนหลับ 8–10 ชั่วโมงต่อวันเพื่อให้สมองและร่างกายเจริญเติบโตเต็มที่และตื่นมาสดชื่น"
+        }
+      ]
+    };
+
+    // State
+    let currentSet = 'set1';
+    let userAnswers = { set1: {}, set2: {} };
+    let instantCheck = false;
+    let submitted = { set1: false, set2: false };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderQuestions();
+      updateProgress();
+    });
+
+    function switchSet(setName) {
+      currentSet = setName;
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-rose-600', 'text-white', 'shadow-sm', 'shadow-rose-200');
+        btn.classList.add('bg-slate-100', 'text-slate-600');
+      });
+      const activeBtn = document.getElementById(`tab-${setName}`);
+      activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+      activeBtn.classList.add('bg-rose-600', 'text-white', 'shadow-sm', 'shadow-rose-200');
+
+      document.getElementById('score-card').classList.add('hidden');
+      renderQuestions();
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById('questions-container');
+      const questions = examData[currentSet];
+      const answers = userAnswers[currentSet];
+      const isSub = submitted[currentSet];
+      const choices = ['ก', 'ข', 'ค'];
+
+      container.innerHTML = questions.map((item, idx) => {
+        const selected = answers[idx];
+        const isAnswered = selected !== undefined;
+        let cardBorder = "border-slate-200";
+
+        if (isSub || (instantCheck && isAnswered)) {
+          cardBorder = selected === item.a ? "border-emerald-300 bg-emerald-50/25" : "border-rose-300 bg-rose-50/25";
+        }
+
+        return `
+          <div class="question-card bg-white p-4 sm:p-5 rounded-2xl border ${cardBorder} shadow-sm transition-all" id="q-card-${idx}">
+            <div class="flex items-start gap-2.5">
+              <span class="flex-shrink-0 w-7 h-7 rounded-lg bg-rose-100 text-rose-800 font-bold font-display text-sm flex items-center justify-center mt-0.5">
+                ${idx + 1}
+              </span>
+              <div class="flex-1">
+                <h3 class="text-slate-900 font-medium text-base sm:text-lg leading-snug">
+                  ${item.q}
+                </h3>
+              </div>
+            </div>
+
+            <!-- Options Grid -->
+            <div class="grid grid-cols-1 gap-2.5 mt-4 sm:ml-9">
+              ${item.options.map((opt, optIdx) => {
+                const isThisSelected = selected === optIdx;
+                let optStyle = "bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800";
+                let badgeStyle = "bg-white border-slate-300 text-slate-600";
+
+                if (isSub || (instantCheck && isAnswered)) {
+                  if (optIdx === item.a) {
+                    optStyle = "bg-emerald-100/70 border-emerald-400 text-emerald-950 font-semibold";
+                    badgeStyle = "bg-emerald-600 text-white border-emerald-600";
+                  } else if (isThisSelected && optIdx !== item.a) {
+                    optStyle = "bg-rose-100/70 border-rose-300 text-rose-950 line-through opacity-80";
+                    badgeStyle = "bg-rose-600 text-white border-rose-600";
+                  }
+                } else if (isThisSelected) {
+                  optStyle = "bg-rose-50 border-rose-500 text-rose-950 font-medium ring-1 ring-rose-500";
+                  badgeStyle = "bg-rose-600 text-white border-rose-600";
+                }
+
+                return `
+                  <button type="button" 
+                          onclick="selectOption(${idx}, ${optIdx})"
+                          class="w-full text-left p-3 rounded-xl border ${optStyle} transition flex items-center gap-3 cursor-pointer">
+                    <span class="w-6 h-6 rounded-full border ${badgeStyle} text-xs font-bold font-display flex items-center justify-center flex-shrink-0">
+                      ${choices[optIdx]}
+                    </span>
+                    <span class="text-sm sm:text-base">${opt}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Explanation Feedback -->
+            ${(isSub || (instantCheck && isAnswered)) ? `
+              <div class="mt-4 sm:ml-9 p-3 rounded-xl text-xs sm:text-sm ${selected === item.a ? 'bg-emerald-100/60 text-emerald-900 border border-emerald-200' : 'bg-rose-100/60 text-rose-900 border border-rose-200'}">
+                <div class="font-bold font-display flex items-center gap-1.5 mb-1">
+                  <span>${selected === item.a ? '🎉 เก่งมาก ตอบถูกต้อง!' : '💡 คำตอบที่ถูกต้องคือ: ข้อ ' + choices[item.a]}</span>
+                </div>
+                <p class="text-slate-700 leading-relaxed font-normal">${item.exp}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectOption(qIdx, optIdx) {
+      if (submitted[currentSet]) return;
+
+      userAnswers[currentSet][qIdx] = optIdx;
+      updateProgress();
+
+      if (instantCheck) {
+        renderQuestions();
+      } else {
+        const card = document.getElementById(`q-card-${qIdx}`);
+        const buttons = card.querySelectorAll('button');
+        buttons.forEach((btn, i) => {
+          const badge = btn.querySelector('span:first-child');
+          if (i === optIdx) {
+            btn.className = "w-full text-left p-3 rounded-xl border bg-rose-50 border-rose-500 text-rose-950 font-medium ring-1 ring-rose-500 transition flex items-center gap-3 cursor-pointer";
+            badge.className = "w-6 h-6 rounded-full border bg-rose-600 text-white border-rose-600 text-xs font-bold font-display flex items-center justify-center flex-shrink-0";
+          } else {
+            btn.className = "w-full text-left p-3 rounded-xl border bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800 transition flex items-center gap-3 cursor-pointer";
+            badge.className = "w-6 h-6 rounded-full border bg-white border-slate-300 text-slate-600 text-xs font-bold font-display flex items-center justify-center flex-shrink-0";
+          }
+        });
+      }
+    }
+
+    function updateProgress() {
+      const answered = Object.keys(userAnswers[currentSet]).length;
+      document.getElementById('answered-count').innerText = answered;
+      const pct = (answered / 20) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+
+    function toggleInstantMode() {
+      instantCheck = document.getElementById('instant-mode').checked;
+      renderQuestions();
+    }
+
+    function resetCurrentSet() {
+      if (confirm("ต้องการล้างคำตอบในชุดนี้เพื่อเริ่มฝึกทำใหม่ใช่หรือไม่?")) {
+        userAnswers[currentSet] = {};
+        submitted[currentSet] = false;
+        document.getElementById('score-card').classList.add('hidden');
+        renderQuestions();
+        updateProgress();
+      }
+    }
+
+    function submitExam() {
+      const answers = userAnswers[currentSet];
+      const totalAnswered = Object.keys(answers).length;
+
+      if (totalAnswered < 20) {
+        if (!confirm(`นักเรียนยังตอบไม่ครบ 20 ข้อ (ทำไปแล้ว ${totalAnswered} ข้อ) ต้องการตรวจคำตอบเลยหรือไม่?`)) {
+          return;
+        }
+      }
+
+      submitted[currentSet] = true;
+      const questions = examData[currentSet];
+      let score = 0;
+
+      questions.forEach((q, idx) => {
+        if (answers[idx] === q.a) score++;
+      });
+
+      const pct = Math.round((score / 20) * 100);
+      let remark = "";
+      let bgGrad = "";
+
+      if (pct >= 85) {
+        remark = "ยอดเยี่ยมมากครับ! มีความรู้ความเข้าใจเรื่องสุขภาพและการดูแลตนเองเป็นเลิศ 🌟";
+        bgGrad = "from-emerald-500 to-teal-600";
+      } else if (pct >= 70) {
+        remark = "เก่งมากครับ! ทบทวนเรื่องประเภทการเคลื่อนไหวและสุขอนามัยอีกนิดเดียว ได้คะแนนเต็มแน่นอน 👏";
+        bgGrad = "from-rose-600 to-pink-600";
+      } else {
+        remark = "ทำได้ดีแล้วครับ! ลองอ่านคำอธิบายในข้อที่ตอบผิด แล้วกด 'ล้างคำตอบ' เพื่อฝึกทำใหม่อีกรอบนะครับ ✌️";
+        bgGrad = "from-amber-500 to-orange-600";
+      }
+
+      const scoreCard = document.getElementById('score-card');
+      scoreCard.className = `no-print mb-6 p-6 rounded-2xl bg-gradient-to-r ${bgGrad} text-white shadow-lg text-center transition-all`;
+      scoreCard.innerHTML = `
+        <div class="text-sm font-semibold uppercase tracking-wider text-white/80 font-display">ผลการทดสอบสุขศึกษาและพลศึกษา ป.1</div>
+        <div class="text-4xl sm:text-5xl font-extrabold font-display my-2">${score} <span class="text-2xl font-normal opacity-80">/ 20 คะแนน</span></div>
+        <div class="text-base sm:text-lg font-medium text-white/95 max-w-lg mx-auto leading-relaxed">${remark}</div>
+        <div class="mt-4 flex items-center justify-center gap-3">
+          <button onclick="window.scrollTo({top: 450, behavior: 'smooth'})" class="bg-white text-slate-800 hover:bg-slate-100 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm transition shadow">
+            🔍 ดูเฉลยละเอียดและข้อคิดด้านล่าง
+          </button>
+        </div>
+      `;
+      scoreCard.classList.remove('hidden');
+
+      renderQuestions();
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
