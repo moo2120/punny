@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แบบทดสอบภาษาอังกฤษ ป.1 (Reading Comprehension) เทอม 1</title>
+  <!-- Google Fonts: Lexend (เน้นอ่านง่ายสำหรับเด็ก), Prompt & Sarabun -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Prompt:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Sarabun', 'sans-serif'],
+            display: ['Prompt', 'sans-serif'],
+            reading: ['Lexend', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Sarabun', sans-serif;
+      background-color: #f8fafc;
+    }
+    h1, h2, h3, h4, .font-display {
+      font-family: 'Prompt', sans-serif;
+    }
+    .font-reading {
+      font-family: 'Lexend', sans-serif;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white;
+        color: black;
+      }
+      .question-card {
+        page-break-inside: avoid;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        margin-bottom: 1.25rem !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Header Banner -->
+  <header class="bg-gradient-to-r from-sky-600 via-indigo-600 to-blue-700 text-white shadow-lg sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center space-x-3 text-center sm:text-left">
+        <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-2xl shadow-inner">
+          🇬🇧
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold font-display tracking-tight">English Reading Comprehension ป.1 (เทอม 1)</h1>
+          <p class="text-xs text-sky-100">ความเข้าใจในการอ่านภาษาอังกฤษ • ฝึกสะกดคำ • อ่านประโยคและเนื้อเรื่องสั้น</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="no-print text-xs bg-white/10 hover:bg-white/20 border border-white/30 text-white px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition">
+          🖨️ พิมพ์แบบฝึกหัด
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-4xl mx-auto px-3 sm:px-4 py-6 flex-1 w-full">
+
+    <!-- Concept Overview Banner -->
+    <div class="no-print mb-6 bg-white border border-sky-100 rounded-2xl p-4 sm:p-5 shadow-sm">
+      <div class="flex items-start gap-3">
+        <span class="text-2xl mt-0.5">📖</span>
+        <div>
+          <h2 class="font-bold text-sky-950 font-display text-base sm:text-lg">โครงสร้างข้อสอบการอ่านภาษาอังกฤษ ป.1 เทอม 1</h2>
+          <p class="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+            ครอบคลุม: <strong>1) Phonics & CVC Words</strong> (การออกเสียงและประสมคำง่าย ๆ) <strong>2) Sight Words & Grammar</strong> (He/She/It, in/on/under, have/has) และ <strong>3) Short Reading Passages</strong> (อ่านนิทานและเรื่องเล่าสั้น 2–3 บรรทัด แล้วจับใจความข้อมูลสำคัญ)
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Set Selector Tabs -->
+    <div class="no-print flex space-x-2 border-b border-slate-200 pb-2 mb-6 overflow-x-auto custom-scroll">
+      <button onclick="switchSet('set1')" id="tab-set1" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap bg-sky-600 text-white shadow-sm shadow-sky-200">
+        <span>📘</span> ชุดที่ 1: Phonics, คำศัพท์ และประโยคพื้นฐาน (30 ข้อ)
+      </button>
+      <button onclick="switchSet('set2')" id="tab-set2" class="tab-btn px-4 py-2.5 rounded-xl font-medium text-sm transition-all flex items-center gap-2 whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">
+        <span>📙</span> ชุดที่ 2: ไวยากรณ์ในประโยค และการอ่านจับใจความ (30 ข้อ)
+      </button>
+    </div>
+
+    <!-- Status & Tool Bar -->
+    <div class="no-print bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2 text-xs sm:text-sm font-medium text-slate-700">
+        <span>ทำไปแล้ว:</span>
+        <span id="answered-count" class="font-bold text-sky-600 font-display text-base">0</span>
+        <span class="text-slate-400">/ 30 ข้อ</span>
+        <div class="w-24 sm:w-32 bg-slate-100 rounded-full h-2.5 ml-2 overflow-hidden border border-slate-200">
+          <div id="progress-bar" class="bg-sky-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="instant-mode" class="sr-only peer" onchange="toggleInstantMode()">
+          <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-600"></div>
+          <span class="ml-2 text-xs text-slate-700 select-none">โหมดเฉลยทันที</span>
+        </label>
+        <button onclick="resetCurrentSet()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition font-medium">
+          🔄 ล้างคำตอบ
+        </button>
+      </div>
+    </div>
+
+    <!-- Score Summary Modal Banner -->
+    <div id="score-card" class="hidden no-print mb-6 p-5 rounded-2xl border transition-all text-center"></div>
+
+    <!-- Question Container -->
+    <div id="questions-container" class="space-y-4 sm:space-y-5">
+      <!-- Generated via JavaScript -->
+    </div>
+
+    <!-- Action Bottom Bar -->
+    <div class="no-print mt-8 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-slate-500 text-center sm:text-left">
+        💡 แนะนำ: ให้นักเรียนฝึกอ่านออกเสียงภาษาอังกฤษทีละคำ ใช้นิ้วชี้ตามตัวหนังสือ แล้วหาคำตอบด้วยตัวเอง
+      </p>
+      <button onclick="submitExam()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold font-display px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+        <span>✅ ตรวจคำตอบทั้งชุด</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-12 no-print">
+    <div class="max-w-4xl mx-auto px-4">
+      <p class="font-medium text-slate-700">แบบฝึกพัฒนาทักษะการอ่านภาษาอังกฤษ ชั้นประถมศึกษาปีที่ 1 (Term 1)</p>
+      <p class="mt-1">สอดคล้องตามหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน (ฉบับปรับปรุง 2560) • กลุ่มสาระการเรียนรู้ภาษาต่างประเทศ</p>
+    </div>
+  </footer>
+
+  <!-- Question Data & Interactive Scripts -->
+  <script>
+    const examData = {
+      set1: [
+        {
+          q: "Phonics: Which word starts with the /b/ sound?",
+          context: null,
+          options: ["bed", "cat", "pen"],
+          a: 0,
+          exp: "คำว่า 'bed' ขึ้นต้นด้วยพยัญชนะ b ออกเสียง /b/ (เบอะ) ส่วน cat ออกเสียง /k/ และ pen ออกเสียง /p/"
+        },
+        {
+          q: "Rhyming: Which word rhymes with 'cat' (has the -at sound)?",
+          context: null,
+          options: ["hat", "dog", "sun"],
+          a: 0,
+          exp: "cat กับ hat มีเสียงสัมผัสสระและตัวสะกดเดียวกันคือเสียง /-æt/ (แคท - แฮท)"
+        },
+        {
+          q: "Read and choose: What is a 'ruler' used for?",
+          context: null,
+          options: ["Drawing straight lines", "Drinking water", "Sleeping"],
+          a: 0,
+          exp: "ruler แปลว่า 'ไม้บรรทัด' ใช้สำหรับขีดเส้นตรง (Drawing straight lines)"
+        },
+        {
+          q: "Complete the sentence: 'The sky is ________.'",
+          context: null,
+          options: ["blue", "red", "pink"],
+          a: 0,
+          exp: "The sky is blue. แปลว่า ท้องฟ้ามีสีฟ้า (เป็นสีธรรมชาติของท้องฟ้า)"
+        },
+        {
+          q: "Read the number word: 'seven'. What number is it?",
+          context: null,
+          options: ["5", "7", "9"],
+          a: 1,
+          exp: "'seven' คือตัวเลข 7 (five = 5, nine = 9)"
+        },
+        {
+          q: "Read and choose: 'I have two ________ on my face to see things.'",
+          context: null,
+          options: ["eyes", "noses", "mouths"],
+          a: 0,
+          exp: "eyes คือ ดวงตา เรามีดวงตาสองข้างไว้สำหรับมองเห็น (see things)"
+        },
+        {
+          q: "Vocabulary: 'This is my pencil ________.' (กล่องดินสอ)",
+          context: null,
+          options: ["case", "dog", "chair"],
+          a: 0,
+          exp: "pencil case แปลว่า กล่องใส่ดินสอ"
+        },
+        {
+          q: "Sight Words: 'I ________ a student.'",
+          context: null,
+          options: ["am", "is", "are"],
+          a: 0,
+          exp: "ประธาน 'I' ต้องใช้คู่กับ Verb to be คือ 'am' เสมอ (I am a student.)"
+        },
+        {
+          q: "Complete the sentence: 'She ________ a pink doll.'",
+          context: null,
+          options: ["has", "have", "are"],
+          a: 0,
+          exp: "ประธานเอกพจน์บุรุษที่ 3 (She) ใช้คู่กับกริยา 'has' แปลว่า มี (She has a pink doll.)"
+        },
+        {
+          q: "Read and choose the opposite: 'An elephant is big. An ant is ________.'",
+          context: null,
+          options: ["small", "hot", "tall"],
+          a: 0,
+          exp: "big แปลว่า ใหญ่ คำตรงข้ามคือ small แปลว่า เล็ก (ช้างตัวใหญ่ มดตัวเล็ก)"
+        },
+        {
+          q: "Pronouns: 'Tom is a boy. ________ is seven years old.'",
+          context: null,
+          options: ["He", "She", "It"],
+          a: 0,
+          exp: "Tom เป็นเด็กผู้ชาย สรรพนามที่ใช้แทนเด็กผู้ชายคนเดียวคือ 'He'"
+        },
+        {
+          q: "Pronouns: 'Look at Mary. ________ has a lovely bag.'",
+          context: null,
+          options: ["She", "He", "It"],
+          a: 0,
+          exp: "Mary เป็นผู้หญิง สรรพนามที่ใช้แทนผู้หญิงคนเดียวคือ 'She'"
+        },
+        {
+          q: "Pronouns: 'This is my puppy. ________ is brown.'",
+          context: null,
+          options: ["It", "He", "They"],
+          a: 0,
+          exp: "puppy คือ ลูกสุนัข สรรพนามที่ใช้แทนสัตว์ 1 ตัวคือ 'It'"
+        },
+        {
+          q: "Prepositions: 'The book is ________ the desk.' (วางอยู่บนโต๊ะ)",
+          context: null,
+          options: ["on", "under", "in"],
+          a: 0,
+          exp: "'on' แปลว่า บน (on the desk = อยู่บนโต๊ะ)"
+        },
+        {
+          q: "Prepositions: 'The fish swims ________ the water.'",
+          context: null,
+          options: ["in", "under", "on"],
+          a: 0,
+          exp: "'in' แปลว่า ใน (in the water = อยู่ในน้ำ)"
+        },
+        {
+          q: "Prepositions: 'The cat is sleeping ________ the bed.' (นอนอยู่ใต้เตียง)",
+          context: null,
+          options: ["under", "on", "in"],
+          a: 0,
+          exp: "'under' แปลว่า ใต้/ข้างใต้ (under the bed = อยู่ใต้เตียง)"
+        },
+        {
+          q: "Plural Nouns: 'Look! There are three ________.'",
+          context: null,
+          options: ["birds", "bird", "a bird"],
+          a: 0,
+          exp: "เมื่อมีจำนวนมากกว่า 1 (three) คำนามต้องเติม -s คือ 'birds'"
+        },
+        {
+          q: "Q&A: 'What color is the banana?' -> '________.'",
+          context: null,
+          options: ["It is yellow.", "It is a book.", "It is three."],
+          a: 0,
+          exp: "คำถามถามเรื่องสี (What color) จึงตอบว่า 'It is yellow.' (กล้วยมีสีเหลือง)"
+        },
+        {
+          q: "Q&A: 'How many legs does a dog have?' -> '________.'",
+          context: null,
+          options: ["Four legs", "Two legs", "Six legs"],
+          a: 0,
+          exp: "สุนัขมี 4 ขา (Four legs)"
+        },
+        {
+          q: "Actions: 'A bird can ________ in the sky.'",
+          context: null,
+          options: ["fly", "swim", "read"],
+          a: 0,
+          exp: "fly แปลว่า บิน นกสามารถบินบนท้องฟ้าได้ ส่วน swim คือว่ายน้ำ และ read คืออ่าน"
+        },
+        {
+          q: "From the passage: How old is Ben?",
+          context: "Passage: 'Hello, my name is Ben. I am 7 years old. I have a yellow school bag. In my bag, I have two books and three pencils.'",
+          options: ["7 years old", "6 years old", "8 years old"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'I am 7 years old.' เบนอายุ 7 ขวบ"
+        },
+        {
+          q: "From the passage: What color is Ben's school bag?",
+          context: "Passage: 'Hello, my name is Ben. I am 7 years old. I have a yellow school bag. In my bag, I have two books and three pencils.'",
+          options: ["Yellow", "Blue", "Green"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'I have a yellow school bag.' กระเป๋าของเบนมีสีเหลือง"
+        },
+        {
+          q: "From the passage: How many pencils does Ben have in his bag?",
+          context: "Passage: 'Hello, my name is Ben. I am 7 years old. I have a yellow school bag. In my bag, I have two books and three pencils.'",
+          options: ["Three pencils", "Two pencils", "Five pencils"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'three pencils' มีดินสอ 3 แท่ง (ส่วน books มี 2 เล่ม)"
+        },
+        {
+          q: "From the story: What animal is Kitty?",
+          context: "Story: 'This is Kitty. Kitty is a white cat. She likes milk. She is sitting on the mat.'",
+          options: ["A cat", "A dog", "A bird"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'Kitty is a white cat.' คิตตี้เป็นแมว"
+        },
+        {
+          q: "From the story: What color is Kitty?",
+          context: "Story: 'This is Kitty. Kitty is a white cat. She likes milk. She is sitting on the mat.'",
+          options: ["White", "Black", "Brown"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'white cat' คิตตี้มีสีขาว"
+        },
+        {
+          q: "From the story: Where is Kitty sitting?",
+          context: "Story: 'This is Kitty. Kitty is a white cat. She likes milk. She is sitting on the mat.'",
+          options: ["On the mat", "Under the table", "In the box"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'She is sitting on the mat.' นั่งอยู่บนเสื่อ"
+        },
+        {
+          q: "From the passage: How is the father?",
+          context: "Passage: 'Look at my family. This is my father. He is tall. This is my mother. She is pretty. I love my family.'",
+          options: ["He is tall.", "He is short.", "He is sad."],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'He is tall.' คุณพ่อตัวสูง"
+        },
+        {
+          q: "From the passage: Who is pretty?",
+          context: "Passage: 'Look at my family. This is my father. He is tall. This is my mother. She is pretty. I love my family.'",
+          options: ["Mother", "Father", "Cat"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'This is my mother. She is pretty.' คุณแม่เป็นคนสวย"
+        },
+        {
+          q: "Sign Reading: If you see a red sign saying 'STOP', what should you do?",
+          context: null,
+          options: ["หยุดเดิน (Stop moving)", "วิ่งเร็ว ๆ (Run fast)", "กินข้าว (Eat food)"],
+          a: 0,
+          exp: "ป้าย STOP หมายถึง ให้หยุด"
+        },
+        {
+          q: "Greetings: When you meet your teacher at 8:00 in the morning, what do you say?",
+          context: null,
+          options: ["Good morning", "Good night", "Good afternoon"],
+          a: 0,
+          exp: "เวลาเช้า (8:00 น.) กล่าวทักทายว่า 'Good morning' (สวัสดีตอนเช้า)"
+        }
+      ],
+      set2: [
+        {
+          q: "Phonics: Which word has the short /e/ sound (as in 'pen')?",
+          context: null,
+          options: ["red", "pig", "sun"],
+          a: 0,
+          exp: "'red' มีเสียงสระเอะสั้น /e/ เหมือนกับ 'pen' ส่วน pig เป็นเสียง /ɪ/ และ sun เป็นเสียง /ʌ/"
+        },
+        {
+          q: "CVC Sentence: 'The sun is ________ and bright today.'",
+          context: null,
+          options: ["hot", "cup", "bed"],
+          a: 0,
+          exp: "hot แปลว่า ร้อน (พระอาทิตย์ส่องแสงร้อนและสว่างจ้า)"
+        },
+        {
+          q: "Odd One Out: Which word is NOT a color?",
+          context: null,
+          options: ["apple", "green", "pink"],
+          a: 0,
+          exp: "apple เป็นผลไม้ (คำนาม) ไม่ใช่ชื่อสี ส่วน green (เขียว) และ pink (ชมพู) เป็นสี"
+        },
+        {
+          q: "Word Category: Which word is an animal?",
+          context: null,
+          options: ["duck", "desk", "door"],
+          a: 0,
+          exp: "duck คือ เป็ด (สัตว์) ส่วน desk คือ โต๊ะเขียนหนังสือ และ door คือ ประตู"
+        },
+        {
+          q: "Number Math Reading: 'five + three = ________'",
+          context: null,
+          options: ["eight", "seven", "nine"],
+          a: 0,
+          exp: "five (5) บวก three (3) ได้เท่ากับ eight (8)"
+        },
+        {
+          q: "Body Parts: 'We smell flowers with our ________.'",
+          context: null,
+          options: ["nose", "eyes", "ears"],
+          a: 0,
+          exp: "smell แปลว่า ดมกลิ่น เราดมกลิ่นดอกไม้ด้วย nose (จมูก)"
+        },
+        {
+          q: "Family: 'My father's father is my ________.'",
+          context: null,
+          options: ["grandfather", "brother", "sister"],
+          a: 0,
+          exp: "พ่อของคุณพ่อ คือ grandfather (คุณปู่)"
+        },
+        {
+          q: "School Tools: 'I use an ________ to erase pencil marks.'",
+          context: null,
+          options: ["eraser", "umbrella", "apple"],
+          a: 0,
+          exp: "eraser แปลว่า ยางลบ ใช้สำหรับลบรอยดินสอ"
+        },
+        {
+          q: "Opposites: 'A giraffe is tall. A turtle is ________.'",
+          context: null,
+          options: ["short", "big", "fast"],
+          a: 0,
+          exp: "tall แปลว่า สูง คำตรงข้ามคือ short แปลว่า เตี้ย"
+        },
+        {
+          q: "Daily Vocabulary: 'At night, I sleep in my ________.'",
+          context: null,
+          options: ["bed", "box", "pot"],
+          a: 0,
+          exp: "bed แปลว่า เตียงนอน (ฉันนอนหลับบนเตียงนอนของฉัน)"
+        },
+        {
+          q: "Verb to be: 'These ________ four sharp pencils.'",
+          context: null,
+          options: ["are", "is", "am"],
+          a: 0,
+          exp: "These ใช้กับคำนามพหูพจน์ (four pencils) จึงต้องใช้คู่กับ 'are'"
+        },
+        {
+          q: "Have/Has: 'A rabbit ________ two long ears.'",
+          context: null,
+          options: ["has", "have", "are"],
+          a: 0,
+          exp: "A rabbit เป็นสัตว์ตัวเดียว (เอกพจน์) ต้องใช้ 'has' แปลว่า มี"
+        },
+        {
+          q: "Can/Cannot: 'A fish can swim, but it ________ walk.'",
+          context: null,
+          options: ["cannot", "can", "is"],
+          a: 0,
+          exp: "cannot แปลว่า ไม่สามารถ (ปลาว่ายน้ำได้ แต่ปลาเดินไม่ได้)"
+        },
+        {
+          q: "Pronouns: 'Tina and I are at school. ________ are in the classroom.'",
+          context: null,
+          options: ["We", "They", "He"],
+          a: 0,
+          exp: "Tina and I (ทีน่าและฉัน) มีตัวเราอยู่ด้วย สรรพนามคือ 'We' (พวกเรา)"
+        },
+        {
+          q: "Word Order: Which sentence is arranged correctly?",
+          context: null,
+          options: ["The apple is red.", "Red the apple is.", "Is red apple the."],
+          a: 0,
+          exp: "โครงสร้างประโยคบอกเล่าภาษาอังกฤษที่ถูกต้องคือ ประธาน (The apple) + กริยา (is) + ส่วนขยาย (red)"
+        },
+        {
+          q: "Q&A Reading: 'What is this?' [Point to a chair] -> '________.'",
+          context: null,
+          options: ["It is a chair.", "It is blue.", "I am fine."],
+          a: 0,
+          exp: "คำถามถามว่า 'นี่คืออะไร' ต้องตอบระบุชื่อสิ่งของ: 'It is a chair.' (นี่คือเก้าอี้)"
+        },
+        {
+          q: "Prepositions: 'Look at the bird! It is sitting ________ the tree branch.'",
+          context: null,
+          options: ["on", "under", "in"],
+          a: 0,
+          exp: "นกเกาะอยู่ 'บน' กิ่งไม้ ใช้คำว่า 'on'"
+        },
+        {
+          q: "Prepositions: 'The toys are ________ the toy box.' (อยู่ในกล่องของเล่น)",
+          context: null,
+          options: ["in", "under", "on"],
+          a: 0,
+          exp: "อยู่ 'ข้างใน' ใช้คำว่า 'in'"
+        },
+        {
+          q: "Reading Sign: If you see a sign 'KEEP QUIET' in the library, what should you do?",
+          context: null,
+          options: ["ห้ามส่งเสียงดัง (Do not make noise)", "เปิดเพลงดัง ๆ (Play loud music)", "วิ่งแข่งกัน (Run around)"],
+          a: 0,
+          exp: "KEEP QUIET แปลว่า โปรดรักษาความสงบ หรือ ห้ามส่งเสียงดัง"
+        },
+        {
+          q: "Situation Reading: 'It is raining outside. Take your ________.'",
+          context: null,
+          options: ["umbrella", "chair", "pencil"],
+          a: 0,
+          exp: "ฝนตกข้างนอก ต้องพก umbrella (ร่ม)"
+        },
+        {
+          q: "From the story: Who is Max?",
+          context: "Story: 'Sam has a little dog. Its name is Max. Max is brown and black. Max has four short legs and a wagging tail. Max likes to run in the park.'",
+          options: ["Sam's dog", "Sam's cat", "Sam's brother"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'Sam has a little dog. Its name is Max.' แม็กซ์คือสุนัขของแซม"
+        },
+        {
+          q: "From the story: What colors is Max?",
+          context: "Story: 'Sam has a little dog. Its name is Max. Max is brown and black. Max has four short legs and a wagging tail. Max likes to run in the park.'",
+          options: ["Brown and black", "White and red", "Yellow and blue"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'Max is brown and black.' สีน้ำตาลและดำ"
+        },
+        {
+          q: "From the story: Where does Max like to run?",
+          context: "Story: 'Sam has a little dog. Its name is Max. Max is brown and black. Max has four short legs and a wagging tail. Max likes to run in the park.'",
+          options: ["In the park", "In the bedroom", "Under the car"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'Max likes to run in the park.' ชอบวิ่งในสวนสาธารณะ"
+        },
+        {
+          q: "From the passage: What day is today?",
+          context: "Passage: 'Today is Monday. Pam goes to school. She wears a pink dress and black shoes. She has an apple for lunch.'",
+          options: ["Monday", "Friday", "Sunday"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'Today is Monday.' วันนี้คือวันจันทร์"
+        },
+        {
+          q: "From the passage: What color are Pam's shoes?",
+          context: "Passage: 'Today is Monday. Pam goes to school. She wears a pink dress and black shoes. She has an apple for lunch.'",
+          options: ["Black", "Pink", "Red"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'black shoes' รองเท้าสีดำ (ส่วนชุด dress สีชมพู)"
+        },
+        {
+          q: "From the passage: What fruit does Pam have for lunch?",
+          context: "Passage: 'Today is Monday. Pam goes to school. She wears a pink dress and black shoes. She has an apple for lunch.'",
+          options: ["An apple", "A banana", "An orange"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'She has an apple for lunch.' แพมทานแอปเปิลเป็นมื้อกลางวัน"
+        },
+        {
+          q: "From the story: What color is the frog?",
+          context: "Story: 'Look at the frog. The frog is green. It is on the big green leaf. The frog can jump very high.'",
+          options: ["Green", "Yellow", "Blue"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'The frog is green.' กบมีสีเขียว"
+        },
+        {
+          q: "From the story: Where is the frog sitting?",
+          context: "Story: 'Look at the frog. The frog is green. It is on the big green leaf. The frog can jump very high.'",
+          options: ["On the big leaf", "Under the water", "In a box"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'It is on the big green leaf.' อยู่บนใบไม้ใหญ่"
+        },
+        {
+          q: "From the story: How many red toy cars does Dan have?",
+          context: "Story: 'Dan has three red toy cars and two blue toy balls. He plays happily with his friend Leo.'",
+          options: ["Three", "Two", "Five"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'three red toy cars' รถของเล่นมี 3 คัน (ส่วนลูกบอลมี 2 ลูก)"
+        },
+        {
+          q: "From the story: Who does Dan play with?",
+          context: "Story: 'Dan has three red toy cars and two blue toy balls. He plays happily with his friend Leo.'",
+          options: ["Leo", "Ben", "Sam"],
+          a: 0,
+          exp: "จากเนื้อเรื่อง: 'He plays happily with his friend Leo.' แดนเล่นกับเพื่อนชื่อ ลีโอ"
+        }
+      ]
+    };
+
+    // App State
+    let currentSet = 'set1';
+    let userAnswers = { set1: {}, set2: {} };
+    let instantCheck = false;
+    let submitted = { set1: false, set2: false };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderQuestions();
+      updateProgress();
+    });
+
+    function switchSet(setName) {
+      currentSet = setName;
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-sky-600', 'text-white', 'shadow-sm', 'shadow-sky-200');
+        btn.classList.add('bg-slate-100', 'text-slate-600');
+      });
+      const activeBtn = document.getElementById(`tab-${setName}`);
+      activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+      activeBtn.classList.add('bg-sky-600', 'text-white', 'shadow-sm', 'shadow-sky-200');
+
+      document.getElementById('score-card').classList.add('hidden');
+      renderQuestions();
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderQuestions() {
+      const container = document.getElementById('questions-container');
+      const questions = examData[currentSet];
+      const answers = userAnswers[currentSet];
+      const isSub = submitted[currentSet];
+      const choices = ['A', 'B', 'C'];
+
+      container.innerHTML = questions.map((item, idx) => {
+        const selected = answers[idx];
+        const isAnswered = selected !== undefined;
+        let cardBorder = "border-slate-200";
+
+        if (isSub || (instantCheck && isAnswered)) {
+          cardBorder = selected === item.a ? "border-emerald-300 bg-emerald-50/25" : "border-rose-300 bg-rose-50/25";
+        }
+
+        return `
+          <div class="question-card bg-white p-4 sm:p-5 rounded-2xl border ${cardBorder} shadow-sm transition-all" id="q-card-${idx}">
+            <div class="flex items-start gap-2.5">
+              <span class="flex-shrink-0 w-7 h-7 rounded-lg bg-sky-100 text-sky-800 font-bold font-display text-sm flex items-center justify-center mt-0.5">
+                ${idx + 1}
+              </span>
+              <div class="flex-1">
+                ${item.context ? `
+                  <div class="bg-sky-50 border border-sky-200 p-3 rounded-xl mb-2.5 font-reading text-slate-800 text-sm sm:text-base leading-relaxed">
+                    ${item.context}
+                  </div>
+                ` : ''}
+                <h3 class="text-slate-900 font-medium text-base sm:text-lg leading-snug font-reading">
+                  ${item.q}
+                </h3>
+              </div>
+            </div>
+
+            <!-- Options Grid -->
+            <div class="grid grid-cols-1 gap-2.5 mt-4 sm:ml-9">
+              ${item.options.map((opt, optIdx) => {
+                const isThisSelected = selected === optIdx;
+                let optStyle = "bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800";
+                let badgeStyle = "bg-white border-slate-300 text-slate-600";
+
+                if (isSub || (instantCheck && isAnswered)) {
+                  if (optIdx === item.a) {
+                    optStyle = "bg-emerald-100/70 border-emerald-400 text-emerald-950 font-semibold";
+                    badgeStyle = "bg-emerald-600 text-white border-emerald-600";
+                  } else if (isThisSelected && optIdx !== item.a) {
+                    optStyle = "bg-rose-100/70 border-rose-300 text-rose-950 line-through opacity-80";
+                    badgeStyle = "bg-rose-600 text-white border-rose-600";
+                  }
+                } else if (isThisSelected) {
+                  optStyle = "bg-sky-50 border-sky-500 text-sky-950 font-medium ring-1 ring-sky-500";
+                  badgeStyle = "bg-sky-600 text-white border-sky-600";
+                }
+
+                return `
+                  <button type="button" 
+                          onclick="selectOption(${idx}, ${optIdx})"
+                          class="w-full text-left p-3 rounded-xl border ${optStyle} transition flex items-center gap-3 cursor-pointer">
+                    <span class="w-6 h-6 rounded-full border ${badgeStyle} text-xs font-bold font-display flex items-center justify-center flex-shrink-0">
+                      ${choices[optIdx]}
+                    </span>
+                    <span class="text-sm sm:text-base font-reading">${opt}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Explanation Feedback -->
+            ${(isSub || (instantCheck && isAnswered)) ? `
+              <div class="mt-4 sm:ml-9 p-3 rounded-xl text-xs sm:text-sm ${selected === item.a ? 'bg-emerald-100/60 text-emerald-900 border border-emerald-200' : 'bg-rose-100/60 text-rose-900 border border-rose-200'}">
+                <div class="font-bold font-display flex items-center gap-1.5 mb-1">
+                  <span>${selected === item.a ? '🎉 Great Job! ตอบถูกต้อง' : '💡 Answer: ข้อ ' + choices[item.a]}</span>
+                </div>
+                <p class="text-slate-700 leading-relaxed font-normal">${item.exp}</p>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectOption(qIdx, optIdx) {
+      if (submitted[currentSet]) return;
+
+      userAnswers[currentSet][qIdx] = optIdx;
+      updateProgress();
+
+      if (instantCheck) {
+        renderQuestions();
+      } else {
+        const card = document.getElementById(`q-card-${qIdx}`);
+        const buttons = card.querySelectorAll('button');
+        buttons.forEach((btn, i) => {
+          const badge = btn.querySelector('span:first-child');
+          if (i === optIdx) {
+            btn.className = "w-full text-left p-3 rounded-xl border bg-sky-50 border-sky-500 text-sky-950 font-medium ring-1 ring-sky-500 transition flex items-center gap-3 cursor-pointer";
+            badge.className = "w-6 h-6 rounded-full border bg-sky-600 text-white border-sky-600 text-xs font-bold font-display flex items-center justify-center flex-shrink-0";
+          } else {
+            btn.className = "w-full text-left p-3 rounded-xl border bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-800 transition flex items-center gap-3 cursor-pointer";
+            badge.className = "w-6 h-6 rounded-full border bg-white border-slate-300 text-slate-600 text-xs font-bold font-display flex items-center justify-center flex-shrink-0";
+          }
+        });
+      }
+    }
+
+    function updateProgress() {
+      const answered = Object.keys(userAnswers[currentSet]).length;
+      document.getElementById('answered-count').innerText = answered;
+      const pct = (answered / 30) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+
+    function toggleInstantMode() {
+      instantCheck = document.getElementById('instant-mode').checked;
+      renderQuestions();
+    }
+
+    function resetCurrentSet() {
+      if (confirm("ต้องการล้างคำตอบในชุดนี้เพื่อเริ่มทำใหม่ใช่หรือไม่?")) {
+        userAnswers[currentSet] = {};
+        submitted[currentSet] = false;
+        document.getElementById('score-card').classList.add('hidden');
+        renderQuestions();
+        updateProgress();
+      }
+    }
+
+    function submitExam() {
+      const answers = userAnswers[currentSet];
+      const totalAnswered = Object.keys(answers).length;
+
+      if (totalAnswered < 30) {
+        if (!confirm(`นักเรียนยังทำไม่ครบ 30 ข้อ (ทำไปแล้ว ${totalAnswered} ข้อ) ต้องการตรวจคำตอบเลยหรือไม่?`)) {
+          return;
+        }
+      }
+
+      submitted[currentSet] = true;
+      const questions = examData[currentSet];
+      let score = 0;
+
+      questions.forEach((q, idx) => {
+        if (answers[idx] === q.a) score++;
+      });
+
+      const pct = Math.round((score / 30) * 100);
+      let remark = "";
+      let bgGrad = "";
+
+      if (pct >= 85) {
+        remark = "Excellent! สุดยอดมากครับ อ่านภาษาอังกฤษเข้าใจได้ดีเยี่ยม พร้อมสอบปลายภาคแน่นอน 🌟";
+        bgGrad = "from-emerald-500 to-teal-600";
+      } else if (pct >= 70) {
+        remark = "Good Job! ทำได้ดีมากครับ ลองทบทวนข้อที่พลาดและอ่านคำอธิบายเพิ่มความมั่นใจอีกนิดนะ 👏";
+        bgGrad = "from-sky-600 to-indigo-600";
+      } else {
+        remark = "Keep Trying! ฝึกฝนอ่านออกเสียงบ่อย ๆ และลองทำใหม่อีกรอบ หนูทำได้แน่นอนครับ ✌️";
+        bgGrad = "from-amber-500 to-orange-600";
+      }
+
+      const scoreCard = document.getElementById('score-card');
+      scoreCard.className = `no-print mb-6 p-6 rounded-2xl bg-gradient-to-r ${bgGrad} text-white shadow-lg text-center transition-all`;
+      scoreCard.innerHTML = `
+        <div class="text-sm font-semibold uppercase tracking-wider text-white/80 font-display">Reading Assessment Result</div>
+        <div class="text-4xl sm:text-5xl font-extrabold font-display my-2">${score} <span class="text-2xl font-normal opacity-80">/ 30 Score</span></div>
+        <div class="text-base sm:text-lg font-medium text-white/95 max-w-lg mx-auto leading-relaxed">${remark}</div>
+        <div class="mt-4 flex items-center justify-center gap-3">
+          <button onclick="window.scrollTo({top: 450, behavior: 'smooth'})" class="bg-white text-slate-800 hover:bg-slate-100 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm transition shadow">
+            🔍 ดูเฉลยและคำแปลภาษาไทยด้านล่าง
+          </button>
+        </div>
+      `;
+      scoreCard.classList.remove('hidden');
+
+      renderQuestions();
+      window.scrollTo({ top: 120, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
