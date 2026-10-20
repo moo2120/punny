@@ -1,0 +1,415 @@
+:root {
+  --primary: #4A90E2;
+  --success: #48CFAD;
+  --warning: #FFCE54;
+  --danger: #FC6E51;
+  --purple: #AC92EC;
+  --bg: #F5F7FA;
+  --card-bg: #FFFFFF;
+  --font-family: 'Fredoka', 'Quicksand', -apple-system, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--bg);
+  color: #434A54;
+  overflow-x: hidden;
+  padding-bottom: 40px;
+}
+
+/* แถบนำทางด้านบน */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #FFF;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-btn {
+  background: #E6E9ED;
+  border: none;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.nav-btn:active { transform: scale(0.95); }
+.pet-nav-btn { background: #FFCE54; color: #434A54; }
+
+.stars-counter {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #F6BB42;
+  background: #FFF9E6;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 2px solid #F6BB42;
+}
+
+/* หน้าจอต่างๆ (SPA Screens) */
+.screen {
+  display: none;
+  padding: 20px;
+  max-width: 650px;
+  margin: 0 auto;
+  animation: fadeIn 0.25s ease-out;
+}
+.screen.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header-box { text-align: center; margin-bottom: 24px; }
+.header-box h1 { font-size: 2rem; color: #37BC9B; }
+
+/* แผนที่ 11 ด่าน */
+.islands-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.island-card {
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 20px 12px;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: all 0.2s;
+}
+.island-card:active { transform: scale(0.96); }
+.island-card.unlocked { border-color: #E8CEFF; }
+.island-icon { font-size: 3rem; margin-bottom: 8px; }
+.island-title { font-size: 1.05rem; font-weight: 600; color: #434A54; }
+.island-badge {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  background: #F5F7FA;
+  padding: 4px 10px;
+  border-radius: 12px;
+  color: #AAB2BD;
+}
+
+/* รายการนิทาน */
+.back-pill {
+  background: #E6E9ED;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+
+.unit-title { font-size: 1.6rem; color: #4A90E2; margin-bottom: 16px; }
+
+.stories-grid { display: flex; flex-direction: column; gap: 12px; }
+.story-row-card {
+  display: flex;
+  align-items: center;
+  background: #FFF;
+  padding: 16px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.story-row-card:active { transform: scale(0.98); }
+.story-row-card .row-emoji { font-size: 2.2rem; margin-right: 16px; }
+.story-row-card .row-name { font-size: 1.2rem; font-weight: 600; flex: 1; }
+.story-row-card .row-star { font-size: 1.2rem; }
+
+/* หน้านิทานและคาราโอเกะ */
+.reader-card {
+  background: #FFF;
+  border-radius: 28px;
+  padding: 24px 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  text-align: center;
+}
+.story-illustration { font-size: 5rem; margin-bottom: 12px; }
+.reader-card h2 { font-size: 1.8rem; margin-bottom: 20px; color: #3BAFDA; }
+
+.story-text-container {
+  background: #FDFBEE;
+  border: 2px dashed #F5D76E;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+.story-line {
+  font-size: 1.45rem;
+  line-height: 2.2rem;
+  margin-bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.word-span {
+  padding: 2px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.word-span.speaking {
+  background: #FFCE54;
+  color: #000;
+  transform: scale(1.15);
+  font-weight: 700;
+}
+.line-emoji { margin-left: 8px; font-size: 1.5rem; }
+
+/* ปุ่มคำสั่งขนาดใหญ่ */
+.btn-giant {
+  width: 100%;
+  padding: 16px;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+  transition: transform 0.1s;
+}
+.btn-giant:active { transform: translateY(4px); box-shadow: none; }
+.play-btn { background: #48CFAD; color: #FFF; margin-bottom: 12px; }
+.next-mission-btn { background: #4A90E2; color: #FFF; }
+
+/* หน้ามินิเกม */
+.game-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.mission-tag {
+  background: #AC92EC;
+  color: #FFF;
+  padding: 6px 16px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.btn-close {
+  background: #E6E9ED;
+  border: none;
+  font-size: 1.1rem;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+}
+
+.mission-card {
+  background: #FFF;
+  border-radius: 28px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+.prompt-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #EBF2FA;
+  padding: 14px 18px;
+  border-radius: 18px;
+  margin-bottom: 20px;
+}
+.prompt-box h3 { font-size: 1.25rem; color: #2B5797; }
+.tts-small-btn {
+  background: #FFF;
+  border: none;
+  font-size: 1.3rem;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+/* การจัดวางกลไกเกมย่อย */
+.game-playfield { min-height: 280px; }
+
+/* ช้อยส์แบบปุ่มขนาดใหญ่ */
+.choice-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.tap-card {
+  display: flex;
+  align-items: center;
+  background: #F5F7FA;
+  border: 3px solid #CCD1D9;
+  border-radius: 20px;
+  padding: 16px 20px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tap-card:active { transform: scale(0.97); }
+.tap-card.correct { background: #E8F8F5; border-color: #37BC9B; color: #16A085; }
+.tap-card.wrong { animation: shake 0.3s; background: #FDEDEC; border-color: #E74C3C; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+/* ลานม้วนฟิล์ม 1-2-3-4 (Story Sequence) */
+.sequence-slots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.seq-box {
+  background: #FDFBEE;
+  border: 2px dashed #F5D76E;
+  border-radius: 18px;
+  padding: 16px;
+  text-align: center;
+  min-height: 100px;
+  cursor: pointer;
+}
+.seq-box.filled { background: #FFF; border-style: solid; border-color: #48CFAD; }
+
+/* เวนน์ไดอะแกรม (Venn Diagram) */
+.venn-container {
+  display: flex;
+  position: relative;
+  height: 180px;
+  margin-bottom: 20px;
+}
+.venn-circle {
+  flex: 1;
+  border: 3px solid #4A90E2;
+  border-radius: 50%;
+  opacity: 0.85;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.venn-left { background: rgba(74, 144, 226, 0.15); margin-right: -40px; }
+.venn-right { background: rgba(246, 187, 66, 0.15); border-color: #F6BB42; margin-left: -40px; }
+.venn-middle {
+  position: absolute;
+  left: 35%;
+  width: 30%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  font-weight: 700;
+  color: #37BC9B;
+}
+
+/* ลานสัตว์เลี้ยง (Pet Sanctuary) */
+.pet-card {
+  background: #FFF;
+  border-radius: 28px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+.pet-avatar {
+  font-size: 6rem;
+  margin: 16px 0;
+  display: inline-block;
+  animation: bouncePet 2s infinite ease-in-out;
+}
+@keyframes bouncePet {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.pet-bubble {
+  background: #E6E9ED;
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.bar-outer {
+  background: #CCD1D9;
+  height: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 8px 0 24px 0;
+}
+.bar-inner {
+  background: #ED5565;
+  height: 100%;
+  transition: width 0.3s;
+}
+.btn-speaker {
+  background: #48CFAD;
+  color: #FFF;
+  font-size: 1.2rem;
+  font-family: inherit;
+  font-weight: 700;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-bottom: 16px;
+}
+.vocab-bubble-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.vocab-bubble {
+  background: #EBF2FA;
+  border: 2px solid #4A90E2;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.vocab-bubble:active { transform: scale(0.95); }
+
+/* ผ้าใบพลุกระดาษ */
+#confettiCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+}
