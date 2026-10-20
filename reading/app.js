@@ -1,253 +1,189 @@
-/* ============================================================
-   1. จัดการข้อมูลสถานะของเกม (State & LocalStorage)
-============================================================ */
-let gameState = {
+/* ================= 1. Game State & Persistence ================= */
+let state = {
   stars: 0,
-  unlockedStoryIds: [1],
-  completedStoryIds: [],
-  petHappiness: 60,
-  currentStory: null
+  completedIds: [],
+  petHappiness: 70,
+  currentStory: null,
+  currentQIndex: 0
 };
 
-// โหลดเซฟเก่าจากบราวเซอร์
-function loadGameProgress() {
-  const saved = localStorage.getItem("fun_reading_save_v1");
+function loadState() {
+  const saved = localStorage.getItem("fun_reading_save_all");
   if (saved) {
-    try {
-      gameState = Object.assign(gameState, JSON.parse(saved));
-    } catch(e) { console.error("Error loading save", e); }
+    try { state = Object.assign(state, JSON.parse(saved)); } catch(e){}
   }
-  updateTopNavStars();
+  document.getElementById("totalStars").innerText = state.stars;
 }
 
-function saveGameProgress() {
-  localStorage.setItem("fun_reading_save_v1", JSON.stringify(gameState));
-  updateTopNavStars();
+function saveState() {
+  localStorage.setItem("fun_reading_save_all", JSON.stringify(state));
+  document.getElementById("totalStars").innerText = state.stars;
 }
 
-function updateTopNavStars() {
-  document.getElementById("totalStars").innerText = gameState.stars;
-}
-
-/* ============================================================
-   2. ระบบเสียงสังเคราะห์ (Web Audio API - Zero MP3 files)
-============================================================ */
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+/* ================= 2. Web Audio API SFX ================= */
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSound(type) {
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
+  if (ctx.state === 'suspended') ctx.resume();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
   osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  const now = audioCtx.currentTime;
+  gain.connect(ctx.destination);
+  const t = ctx.currentTime;
 
   if (type === 'correct') {
-    // เสียง ติ๊ง-ต่อง คอร์ด C เมเจอร์
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(523.25, now); // C5
-    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
-    gain.gain.setValueAtTime(0.3, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-    osc.start(now);
-    osc.stop(now + 0.5);
+    osc.frequency.setValueAtTime(523.25, t);
+    osc.frequency.setValueAtTime(659.25, t + 0.08);
+    osc.frequency.setValueAtTime(783.99, t + 0.16);
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    osc.start(t);
+    osc.stop(t + 0.4);
   } else if (type === 'wrong') {
-    // เสียง ดึ๋ง สั่นนุ่มนวล
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(200, now);
-    osc.frequency.linearRampToValueAtTime(140, now + 0.2);
-    gain.gain.setValueAtTime(0.2, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-    osc.start(now);
-    osc.stop(now + 0.3);
+    osc.frequency.setValueAtTime(220, t);
+    osc.frequency.linearRampToValueAtTime(140, t + 0.15);
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+    osc.start(t);
+    osc.stop(t + 0.25);
   } else if (type === 'pop') {
-    // เสียง ป๊อป แตกฟองสบู่
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(400, now);
-    osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
-    gain.gain.setValueAtTime(0.3, now);
-    gain.gain.linearRampToValueAtTime(0.001, now + 0.08);
-    osc.start(now);
-    osc.stop(now + 0.08);
+    osc.frequency.setValueAtTime(450, t);
+    osc.frequency.exponentialRampToValueAtTime(800, t + 0.06);
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.linearRampToValueAtTime(0.001, t + 0.06);
+    osc.start(t);
+    osc.stop(t + 0.06);
   }
 }
 
-/* ============================================================
-   3. ระบบเสียงอ่านออกเสียงภาษาอังกฤษ (Web Speech API)
-============================================================ */
-function speakText(text, onWordBoundary = null, onEnd = null) {
+/* ================= 3. Web Speech API (English Voice) ================= */
+function speak(text, onWord = null, onDone = null) {
   if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel(); // ตัดเสียงเก่าทิ้งก่อน
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 0.85;
 
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-US';
-  utterance.rate = 0.85; // ลดสปีดลงเล็กน้อยสำหรับเด็ก ป.1
-
-  if (onWordBoundary) {
-    utterance.onboundary = (e) => {
-      if (e.name === 'word') {
-        onWordBoundary(e.charIndex);
-      }
+  if (onWord) {
+    u.onboundary = (e) => {
+      if (e.name === 'word') onWord(e.charIndex);
     };
   }
-  if (onEnd) {
-    utterance.onend = onEnd;
-  }
-
-  window.speechSynthesis.speak(utterance);
+  if (onDone) u.onend = onDone;
+  window.speechSynthesis.speak(u);
 }
 
-/* ============================================================
-   4. การสลับหน้าจอ (Screen Navigation)
-============================================================ */
-function showScreen(screenId) {
+/* ================= 4. Navigation & Screens ================= */
+function showScreen(id) {
   window.speechSynthesis.cancel();
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(screenId).classList.add('active');
+  document.getElementById(id).classList.add('active');
   window.scrollTo(0, 0);
 }
 
-/* ============================================================
-   5. หน้า 1: เรนเดอร์แผนที่เกาะ 11 หน่วย (World Map)
-============================================================ */
 function renderWorldMap() {
   const container = document.getElementById("islandsContainer");
   container.innerHTML = "";
 
-  UNITS_META.forEach(unit => {
-    // นับจำนวนนิทานในหมวดนี้
-    const storiesInUnit = STORY_DATABASE.filter(s => s.unit === unit.id);
-    const completedInUnit = storiesInUnit.filter(s => gameState.completedStoryIds.includes(s.id)).length;
+  UNITS_META.forEach(u => {
+    const storiesInU = ALL_STORIES.filter(s => s.unit === u.id);
+    const doneCount = storiesInU.filter(s => state.completedIds.includes(s.id)).length;
 
-    const card = document.createElement("div");
-    card.className = "island-card unlocked";
-    card.onclick = () => openUnit(unit.id);
-
-    card.innerHTML = `
-      <div class="island-icon">${unit.icon}</div>
-      <div class="island-title">Unit ${unit.id}: ${unit.title}</div>
-      <div class="island-badge">⭐ ${completedInUnit}/${storiesInUnit.length}</div>
+    const div = document.createElement("div");
+    div.className = "island-card";
+    div.onclick = () => openUnit(u.id);
+    div.innerHTML = `
+      <div class="island-icon">${u.icon}</div>
+      <div class="island-title">Unit ${u.id}<br>${u.title}</div>
+      <div class="island-badge">⭐ ${doneCount}/${storiesInU.length}</div>
     `;
-    container.appendChild(card);
+    container.appendChild(div);
   });
 }
 
-/* ============================================================
-   6. หน้า 2: หน้ารายชื่อนิทานประจำหน่วย (Story List)
-============================================================ */
-let activeUnitId = 1;
-
 function openUnit(unitId) {
-  activeUnitId = unitId;
-  const unitMeta = UNITS_META.find(u => u.id === unitId);
-  document.getElementById("currentUnitTitle").innerText = `${unitMeta.icon} Unit ${unitId}: ${unitMeta.title}`;
+  const uMeta = UNITS_META.find(u => u.id === unitId);
+  document.getElementById("currentUnitTitle").innerText = `${uMeta.icon} Unit ${uMeta.id}: ${uMeta.title}`;
 
   const container = document.getElementById("storiesContainer");
   container.innerHTML = "";
 
-  const stories = STORY_DATABASE.filter(s => s.unit === unitId);
-
-  if (stories.length === 0) {
-    container.innerHTML = "<p style='text-align:center; padding: 20px;'>More stories coming soon! 🎈</p>";
-  } else {
-    stories.forEach(story => {
-      const isDone = gameState.completedStoryIds.includes(story.id);
-      const row = document.createElement("div");
-      row.className = "story-row-card";
-      row.onclick = () => openStoryReader(story);
-
-      row.innerHTML = `
-        <div class="row-emoji">${story.emojiHero}</div>
-        <div class="row-name">${story.title}</div>
-        <div class="row-star">${isDone ? "⭐" : "⚪"}</div>
-      `;
-      container.appendChild(row);
-    });
-  }
+  const stories = ALL_STORIES.filter(s => s.unit === unitId);
+  stories.forEach(s => {
+    const isDone = state.completedIds.includes(s.id);
+    const row = document.createElement("div");
+    row.className = "story-row-card";
+    row.onclick = () => openReader(s);
+    row.innerHTML = `
+      <div class="row-emoji">${s.emoji}</div>
+      <div class="row-name">${s.title}</div>
+      <div class="row-star">${isDone ? "⭐" : "⚪"}</div>
+    `;
+    container.appendChild(row);
+  });
 
   showScreen("storySelectScreen");
 }
 
-/* ============================================================
-   7. หน้า 3: หน้านิทาน + คาราโอเกะ (Story Reader)
-============================================================ */
-function openStoryReader(story) {
-  gameState.currentStory = story;
-  document.getElementById("storyEmojiHero").innerText = story.emojiHero;
+/* ================= 5. Story Reader ================= */
+function openReader(story) {
+  state.currentStory = story;
+  document.getElementById("storyEmojiHero").innerText = story.emoji;
   document.getElementById("readerTitle").innerText = story.title;
 
-  const linesBox = document.getElementById("storyLinesBox");
-  linesBox.innerHTML = "";
+  const box = document.getElementById("storyLinesBox");
+  box.innerHTML = "";
 
-  story.lines.forEach((lineObj, lineIdx) => {
-    const lineElem = document.createElement("div");
-    lineElem.className = "story-line";
-    lineElem.id = `line-${lineIdx}`;
+  story.lines.forEach((l, idx) => {
+    const lineDiv = document.createElement("div");
+    lineDiv.className = "story-line";
+    lineDiv.id = `line-${idx}`;
 
-    // แยกคำเพื่อให้แตะฟังเสียงทีละคำได้
-    const words = lineObj.text.split(" ");
-    words.forEach(w => {
+    l.text.split(" ").forEach(w => {
       const span = document.createElement("span");
       span.className = "word-span";
       span.innerText = w + " ";
       span.onclick = (e) => {
         e.stopPropagation();
         playSound('pop');
-        speakText(w);
+        speak(w);
       };
-      lineElem.appendChild(span);
+      lineDiv.appendChild(span);
     });
 
-    // ใส่ไอคอนท้ายประโยค (Rebus)
-    const iconSpan = document.createElement("span");
-    iconSpan.className = "line-emoji";
-    iconSpan.innerText = lineObj.icon;
-    lineElem.appendChild(iconSpan);
+    const icon = document.createElement("span");
+    icon.className = "line-emoji";
+    icon.innerText = l.icon;
+    lineDiv.appendChild(icon);
 
-    linesBox.appendChild(lineElem);
+    box.appendChild(lineDiv);
   });
 
   showScreen("storyReaderScreen");
 }
 
-// อ่านทั้งเรื่องแบบคาราโอเกะ
 function readStoryAloud() {
-  const story = gameState.currentStory;
+  const story = state.currentStory;
   if (!story) return;
 
   const fullText = story.lines.map(l => l.text).join(" ");
-  const allWordSpans = document.querySelectorAll(".word-span");
+  const spans = document.querySelectorAll(".word-span");
+  spans.forEach(s => s.classList.remove("speaking"));
 
-  allWordSpans.forEach(s => s.classList.remove("speaking"));
-
-  let currentWordIdx = 0;
-  speakText(
-    fullText,
-    (charIdx) => {
-      if (currentWordIdx < allWordSpans.length) {
-        allWordSpans.forEach(s => s.classList.remove("speaking"));
-        allWordSpans[currentWordIdx].classList.add("speaking");
-        currentWordIdx++;
-      }
-    },
-    () => {
-      allWordSpans.forEach(s => s.classList.remove("speaking"));
+  let wIndex = 0;
+  speak(fullText, () => {
+    if (wIndex < spans.length) {
+      spans.forEach(s => s.classList.remove("speaking"));
+      spans[wIndex].classList.add("speaking");
+      wIndex++;
     }
-  );
+  }, () => spans.forEach(s => s.classList.remove("speaking")));
 }
 
-function startMission() {
-  const story = gameState.currentStory;
-  if (!story) return;
-
-  document.getElementById("gameMissionBadge").innerText = `${story.unitTitle} Mission`;
-  document.getElementById("gameInstruction").innerText = story.game.instruction;
-
-  renderGamePlayfield(story.game);
+/* ================= 6. Mission Player Engine ================= */
+function startStoryMission() {
+  state.currentQIndex = 0;
+  loadCurrentQuestion();
   showScreen("gamePlayScreen");
 }
 
@@ -256,193 +192,144 @@ function exitToReader() {
 }
 
 function speakInstruction() {
-  const inst = document.getElementById("gameInstruction").innerText;
-  speakText(inst);
+  speak(document.getElementById("gameInstruction").innerText);
 }
 
-/* ============================================================
-   8. หน้า 4: Engine จัดการมินิเกมตามหมวดหมู่ (Mini-Games)
-============================================================ */
-function renderGamePlayfield(game) {
+function loadCurrentQuestion() {
+  const story = state.currentStory;
+  const qObj = story.questions[state.currentQIndex];
+
+  document.getElementById("gameProgressTag").innerText = `Question ${state.currentQIndex + 1}/${story.questions.length}`;
+  document.getElementById("gameInstruction").innerText = qObj.q;
+
   const field = document.getElementById("dynamicGameArea");
   field.innerHTML = "";
 
-  // แบบที่ 1: แตะเลือกคำตอบ (Story Details, Predictions, Cause & Effect, Character)
-  if (game.type === "tap-choice" || game.type === "color-builder") {
+  // 1. Sequence Ordering
+  if (qObj.type === "sequence") {
+    let step = 1;
+    const grid = document.createElement("div");
+    grid.className = "sequence-slots";
+
+    const shuffled = [...qObj.items].map((text, idx) => ({ text, correctStep: idx + 1 }))
+                                    .sort(() => Math.random() - 0.5);
+
+    shuffled.forEach(item => {
+      const b = document.createElement("div");
+      b.className = "seq-box";
+      b.innerText = item.text;
+      b.onclick = () => {
+        if (item.correctStep === step) {
+          playSound('pop');
+          b.classList.add("filled");
+          b.innerHTML = `<strong>#${step}</strong><br>${item.text}`;
+          b.style.pointerEvents = "none";
+          step++;
+          if (step > qObj.items.length) handleCorrect();
+        } else {
+          playSound('wrong');
+          b.classList.add("wrong");
+          setTimeout(() => b.classList.remove("wrong"), 350);
+        }
+      };
+      grid.appendChild(b);
+    });
+    field.appendChild(grid);
+  }
+  // 2. Venn Diagram
+  else if (qObj.type === "venn") {
+    const wrap = document.createElement("div");
+    wrap.innerHTML = `
+      <div style="text-align:center; margin-bottom:12px; font-weight:700; font-size:1.25rem;">
+        Drop: <span style="color:#E67E22;">${qObj.item}</span>
+      </div>
+      <div class="venn-container">
+        <div class="venn-circle venn-left" onclick="checkVennChoice('left')">${qObj.left}</div>
+        <div class="venn-middle" onclick="checkVennChoice('both')">⭐ Both</div>
+        <div class="venn-circle venn-right" onclick="checkVennChoice('right')">${qObj.right}</div>
+      </div>
+    `;
+    field.appendChild(wrap);
+
+    window.checkVennChoice = (c) => {
+      if (c === qObj.target) handleCorrect();
+      else { playSound('wrong'); speak("Try again!"); }
+    };
+  }
+  // 3. Regular Choices (Details, True/False, Predictions, etc.)
+  else {
     const list = document.createElement("div");
     list.className = "choice-cards-container";
 
-    game.choices.forEach(ch => {
+    qObj.choices.forEach(ch => {
       const card = document.createElement("div");
       card.className = "tap-card";
       card.innerText = ch.text;
       card.onclick = () => {
         if (ch.correct) {
           card.classList.add("correct");
-          playSound("correct");
-          fireConfetti();
-          speakText("Awesome! That is right!");
-          finishMissionSuccess();
+          handleCorrect();
         } else {
           card.classList.add("wrong");
-          playSound("wrong");
-          speakText("Try again!");
-          setTimeout(() => card.classList.remove("wrong"), 400);
+          playSound('wrong');
+          speak("Try again!");
+          setTimeout(() => card.classList.remove("wrong"), 350);
         }
       };
       list.appendChild(card);
     });
     field.appendChild(list);
   }
-
-  // แบบที่ 2: ลำดับเหตุการณ์ 1-2-3-4 (Story Sequence)
-  else if (game.type === "sequence") {
-    let currentStep = 1;
-    const grid = document.createElement("div");
-    grid.className = "sequence-slots";
-
-    // สลับตำแหน่งการ์ดให้เด็กเรียง
-    const shuffled = [...game.items].sort(() => Math.random() - 0.5);
-
-    shuffled.forEach(item => {
-      const box = document.createElement("div");
-      box.className = "seq-box";
-      box.innerText = item.text;
-
-      box.onclick = () => {
-        if (item.step === currentStep) {
-          playSound("pop");
-          box.classList.add("filled");
-          box.innerHTML = `<strong>#${currentStep}</strong><br>${item.text}`;
-          box.style.pointerEvents = "none";
-          currentStep++;
-
-          if (currentStep > game.items.length) {
-            playSound("correct");
-            fireConfetti();
-            speakText("You are a great director!");
-            finishMissionSuccess();
-          }
-        } else {
-          playSound("wrong");
-          box.classList.add("wrong");
-          setTimeout(() => box.classList.remove("wrong"), 400);
-        }
-      };
-      grid.appendChild(box);
-    });
-    field.appendChild(grid);
-  }
-
-  // แบบที่ 3: เวนน์ไดอะแกรม (Compare & Contrast)
-  else if (game.type === "venn") {
-    const wrap = document.createElement("div");
-    wrap.innerHTML = `
-      <div style="text-align:center; margin-bottom:12px; font-weight:700; font-size:1.3rem;">
-        Drop here: <span style="color:#E67E22;">${game.item}</span>
-      </div>
-      <div class="venn-container">
-        <div class="venn-circle venn-left" onclick="checkVenn('left')">${game.leftLabel}</div>
-        <div class="venn-middle" onclick="checkVenn('both')">⭐ Both!</div>
-        <div class="venn-circle venn-right" onclick="checkVenn('right')">${game.rightLabel}</div>
-      </div>
-    `;
-    field.appendChild(wrap);
-
-    window.checkVenn = (choice) => {
-      if (choice === game.target) {
-        playSound("correct");
-        fireConfetti();
-        speakText("Correct! Both apples grow on trees!");
-        finishMissionSuccess();
-      } else {
-        playSound("wrong");
-        speakText("Think again. Does both of them have this?");
-      }
-    };
-  }
-
-  // แบบที่ 4: ตรวจสอบข้อเท็จจริง (True/False - Identifying Facts)
-  else if (game.type === "true-false") {
-    const list = document.createElement("div");
-    list.className = "choice-cards-container";
-
-    const btnTrue = document.createElement("div");
-    btnTrue.className = "tap-card";
-    btnTrue.innerHTML = "✅ TRUE (It's a fact!)";
-    btnTrue.onclick = () => answerTF(true);
-
-    const btnFalse = document.createElement("div");
-    btnFalse.className = "tap-card";
-    btnFalse.innerHTML = "❌ FALSE (Not true!)";
-    btnFalse.onclick = () => answerTF(false);
-
-    list.appendChild(btnTrue);
-    list.appendChild(btnFalse);
-    field.appendChild(list);
-
-    function answerTF(ans) {
-      if (ans === game.isTrue) {
-        playSound("correct");
-        fireConfetti();
-        speakText("Great detective work!");
-        finishMissionSuccess();
-      } else {
-        playSound("wrong");
-        speakText("Oops! Check the story again!");
-      }
-    }
-  }
 }
 
-// เมื่อผ่านด่าน แจกดาว และปลดล็อก
-function finishMissionSuccess() {
-  const story = gameState.currentStory;
-  if (!gameState.completedStoryIds.includes(story.id)) {
-    gameState.completedStoryIds.push(story.id);
-    gameState.stars += 3;
-    gameState.petHappiness = Math.min(100, gameState.petHappiness + 15);
-    saveGameProgress();
-  }
+function handleCorrect() {
+  playSound('correct');
+  fireConfetti();
+  speak("Good job!");
 
   setTimeout(() => {
-    alert("🎉 Mission Accomplished! You earned 3 Stars! ⭐⭐⭐");
-    showScreen("storySelectScreen");
-    openUnit(story.unit); // รีเฟรชรายการ
-  }, 1200);
+    state.currentQIndex++;
+    if (state.currentQIndex < state.currentStory.questions.length) {
+      loadCurrentQuestion();
+    } else {
+      completeStory();
+    }
+  }, 1000);
 }
 
-/* ============================================================
-   9. หน้า 5: สวนสัตว์เลี้ยงคำศัพท์ (Vocab Pet Sanctuary)
-============================================================ */
-let targetVocab = "";
+function completeStory() {
+  const story = state.currentStory;
+  if (!state.completedIds.includes(story.id)) {
+    state.completedIds.push(story.id);
+    state.stars += 3;
+    state.petHappiness = Math.min(100, state.petHappiness + 15);
+    saveState();
+  }
+
+  alert(`🎉 Mission Complete! You mastered "${story.title}"! (+3 Stars ⭐)`);
+  openUnit(story.unit);
+}
+
+/* ================= 7. Vocab Pet Sanctuary ================= */
+let petTarget = "";
 
 function openPetMode() {
-  document.getElementById("petHeartBar").style.width = `${gameState.petHappiness}%`;
+  document.getElementById("petHeartBar").style.width = `${state.petHappiness}%`;
   generateVocabQuiz();
   showScreen("petScreen");
 }
 
 function generateVocabQuiz() {
-  // รวบรวมคำศัพท์ทั้งหมดจากนิทานที่เคยอ่านจบ
-  let wordsPool = [];
-  STORY_DATABASE.forEach(s => {
-    wordsPool = wordsPool.concat(s.vocab);
-  });
-  wordsPool = [...new Set(wordsPool)]; // คำไม่ซ้ำ
+  let pool = [];
+  ALL_STORIES.forEach(s => { pool = pool.concat(s.vocab); });
+  pool = [...new Set(pool)];
 
-  if (wordsPool.length < 3) {
-    wordsPool = ["cat", "hat", "dog", "sun", "big", "run"];
-  }
+  petTarget = pool[Math.floor(Math.random() * pool.length)];
 
-  // สุ่มคำเป้าหมาย 1 คำ
-  targetVocab = wordsPool[Math.floor(Math.random() * wordsPool.length)];
-
-  // สุ่มตัวเลือกหลอก 2 คำ
-  const choices = [targetVocab];
+  const choices = [petTarget];
   while (choices.length < 3) {
-    const randomW = wordsPool[Math.floor(Math.random() * wordsPool.length)];
-    if (!choices.includes(randomW)) choices.push(randomW);
+    const r = pool[Math.floor(Math.random() * pool.length)];
+    if (!choices.includes(r)) choices.push(r);
   }
   choices.sort(() => Math.random() - 0.5);
 
@@ -450,53 +337,50 @@ function generateVocabQuiz() {
   container.innerHTML = "";
 
   choices.forEach(w => {
-    const btn = document.createElement("div");
-    btn.className = "vocab-bubble";
-    btn.innerText = w;
-    btn.onclick = () => {
-      if (w === targetVocab) {
-        playSound("correct");
+    const b = document.createElement("div");
+    b.className = "vocab-bubble";
+    b.innerText = w;
+    b.onclick = () => {
+      if (w === petTarget) {
+        playSound('correct');
         fireConfetti();
-        gameState.petHappiness = Math.min(100, gameState.petHappiness + 10);
-        gameState.stars += 1;
-        saveGameProgress();
-        document.getElementById("petHeartBar").style.width = `${gameState.petHappiness}%`;
+        state.petHappiness = Math.min(100, state.petHappiness + 10);
+        state.stars += 1;
+        saveState();
+        document.getElementById("petHeartBar").style.width = `${state.petHappiness}%`;
         document.getElementById("petSpeech").innerText = `Yummy! I love '${w}'! 😋`;
-        speakText(`Yummy! ${w}!`);
-        setTimeout(generateVocabQuiz, 1500);
+        speak(`Yummy! ${w}!`);
+        setTimeout(generateVocabQuiz, 1400);
       } else {
-        playSound("wrong");
-        speakText("Not that one. Listen again!");
+        playSound('wrong');
+        speak("Listen again!");
       }
     };
-    container.appendChild(btn);
+    container.appendChild(b);
   });
 
   playVocabAudioPrompt();
 }
 
 function playVocabAudioPrompt() {
-  speakText(targetVocab);
+  speak(petTarget);
 }
 
-/* ============================================================
-   10. เอฟเฟกต์พลุกระดาษฉลองชัย (Canvas Confetti)
-============================================================ */
+/* ================= 8. Canvas Confetti ================= */
 function fireConfetti() {
   const canvas = document.getElementById("confettiCanvas");
-  const ctx = canvas.getContext("2d");
+  const ctx2 = canvas.getContext("2d");
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
   const pieces = [];
   const colors = ["#4A90E2", "#48CFAD", "#FFCE54", "#FC6E51", "#AC92EC"];
-
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 35; i++) {
     pieces.push({
       x: canvas.width / 2,
       y: canvas.height / 2,
-      vx: (Math.random() - 0.5) * 16,
-      vy: (Math.random() - 0.7) * 16,
+      vx: (Math.random() - 0.5) * 14,
+      vy: (Math.random() - 0.7) * 14,
       size: Math.random() * 8 + 4,
       color: colors[Math.floor(Math.random() * colors.length)]
     });
@@ -504,27 +388,23 @@ function fireConfetti() {
 
   let frames = 0;
   function update() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx2.clearRect(0, 0, canvas.width, canvas.height);
     pieces.forEach(p => {
       p.x += p.vx;
       p.y += p.vy;
-      p.vy += 0.4; // แรงโน้มถ่วง
-      ctx.fillStyle = p.color;
-      ctx.fillRect(p.x, p.y, p.size, p.size);
+      p.vy += 0.4;
+      ctx2.fillStyle = p.color;
+      ctx2.fillRect(p.x, p.y, p.size, p.size);
     });
-
     frames++;
-    if (frames < 50) {
-      requestAnimationFrame(update);
-    } else {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+    if (frames < 45) requestAnimationFrame(update);
+    else ctx2.clearRect(0, 0, canvas.width, canvas.height);
   }
   update();
 }
 
-/* เริ่มต้นระบบเมื่อโหลดหน้าเสร็จ */
+/* Initial Load */
 window.addEventListener("DOMContentLoaded", () => {
-  loadGameProgress();
+  loadState();
   renderWorldMap();
 });
