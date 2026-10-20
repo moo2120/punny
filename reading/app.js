@@ -167,7 +167,7 @@ function readStoryAloud() {
   if (!story) return;
 
   const fullText = story.lines.map(l => l.text).join(" ");
-  const spans = document.querySelectorAll(".word-span");
+  const spans = document.querySelectorAll("#storyLinesBox .word-span");
   spans.forEach(s => s.classList.remove("speaking"));
 
   let wIndex = 0;
@@ -180,11 +180,65 @@ function readStoryAloud() {
   }, () => spans.forEach(s => s.classList.remove("speaking")));
 }
 
-/* ================= 6. Mission Player Engine ================= */
+/* ================= 6. Mission Player Engine (มีเนื้อเรื่องกำกับเสมอ) ================= */
 function startStoryMission() {
   state.currentQIndex = 0;
+  renderMissionStoryBanner(); // เรนเดอร์เนื้อเรื่องกำกับไว้ด้านบน
   loadCurrentQuestion();
   showScreen("gamePlayScreen");
+}
+
+// เรนเดอร์กล่องเนื้อเรื่องย่อส่วนไว้ด้านบนของข้อสอบ
+function renderMissionStoryBanner() {
+  const story = state.currentStory;
+  if (!story) return;
+
+  document.getElementById("missionStoryTitle").innerText = `📖 ${story.title}`;
+  const linesBox = document.getElementById("missionStoryLines");
+  linesBox.innerHTML = "";
+
+  story.lines.forEach(l => {
+    const row = document.createElement("div");
+    row.className = "banner-line-row";
+
+    l.text.split(" ").forEach(w => {
+      const span = document.createElement("span");
+      span.className = "word-span";
+      span.innerText = w + " ";
+      span.onclick = (e) => {
+        e.stopPropagation();
+        playSound('pop');
+        speak(w);
+      };
+      row.appendChild(span);
+    });
+
+    const icon = document.createElement("span");
+    icon.className = "line-emoji";
+    icon.innerText = l.icon;
+    row.appendChild(icon);
+
+    linesBox.appendChild(row);
+  });
+}
+
+// ฟังเสียงเนื้อเรื่องซ้ำขณะทำข้อสอบ
+function readMissionStoryAloud() {
+  const story = state.currentStory;
+  if (!story) return;
+
+  const fullText = story.lines.map(l => l.text).join(" ");
+  const spans = document.querySelectorAll("#missionStoryLines .word-span");
+  spans.forEach(s => s.classList.remove("speaking"));
+
+  let wIndex = 0;
+  speak(fullText, () => {
+    if (wIndex < spans.length) {
+      spans.forEach(s => s.classList.remove("speaking"));
+      spans[wIndex].classList.add("speaking");
+      wIndex++;
+    }
+  }, () => spans.forEach(s => s.classList.remove("speaking")));
 }
 
 function exitToReader() {
@@ -240,7 +294,7 @@ function loadCurrentQuestion() {
   else if (qObj.type === "venn") {
     const wrap = document.createElement("div");
     wrap.innerHTML = `
-      <div style="text-align:center; margin-bottom:12px; font-weight:700; font-size:1.25rem;">
+      <div style="text-align:center; margin-bottom:12px; font-weight:700; font-size:1.15rem;">
         Drop: <span style="color:#E67E22;">${qObj.item}</span>
       </div>
       <div class="venn-container">
