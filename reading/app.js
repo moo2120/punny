@@ -437,23 +437,42 @@ function completeStory() {
 
 /* ================= 7. Vocab Pet Sanctuary ================= */
 let petTarget = "";
+let remainingVocabPool = []; // คลังเก็บคำที่ "ยังไม่ถูกตอบ" ในรอบนี้
 
 function openPetMode() {
   document.getElementById("petHeartBar").style.width = `${state.petHappiness}%`;
+  // รีเซ็ตคลังคำศัพท์ใหม่ทุกครั้งที่เปิดเข้าโหมดสัตว์เลี้ยง
+  initVocabPool();
   generateVocabQuiz();
   showScreen("petScreen");
 }
 
-function generateVocabQuiz() {
+// รวมคำศัพท์ทั้งหมดและลบคำซ้ำ
+function initVocabPool() {
   let pool = [];
   ALL_STORIES.forEach(s => { pool = pool.concat(s.vocab); });
-  pool = [...new Set(pool)];
+  remainingVocabPool = [...new Set(pool)];
+}
 
-  petTarget = pool[Math.floor(Math.random() * pool.length)];
+function generateVocabQuiz() {
+  // รวบรวมคำศัพท์ทั้งหมดไว้สำหรับใช้ทำ "ตัวเลือกหลอก"
+  let allWords = [];
+  ALL_STORIES.forEach(s => { allWords = allWords.concat(s.vocab); });
+  allWords = [...new Set(allWords)];
 
+  // ถ้าเด็กเล่นจนตอบถูกครบทุกคำแล้ว ให้รีเซ็ตคลังเริ่มรอบใหม่
+  if (!remainingVocabPool || remainingVocabPool.length === 0) {
+    initVocabPool();
+  }
+
+  // 1. สุ่มคำเป้าหมายจากรายการคำที่ "ยังไม่เคยตอบถูก"
+  const targetIndex = Math.floor(Math.random() * remainingVocabPool.length);
+  petTarget = remainingVocabPool[targetIndex];
+
+  // 2. สุ่มตัวเลือกหลอก 2 คำ (ดึงจากคลังคำทั้งหมด)
   const choices = [petTarget];
   while (choices.length < 3) {
-    const r = pool[Math.floor(Math.random() * pool.length)];
+    const r = allWords[Math.floor(Math.random() * allWords.length)];
     if (!choices.includes(r)) choices.push(r);
   }
   choices.sort(() => Math.random() - 0.5);
@@ -472,10 +491,17 @@ function generateVocabQuiz() {
         state.petHappiness = Math.min(100, state.petHappiness + 10);
         state.stars += 1;
         saveState();
+        
         document.getElementById("petHeartBar").style.width = `${state.petHappiness}%`;
-        document.getElementById("petSpeech").innerText = `Yummy! I love '${w}'! 😋`;
-        speak(`Yummy! ${w}!`);
-        setTimeout(generateVocabQuiz, 1400);
+        
+        // จุดที่ 1: เปลี่ยนคำชม ไม่พูดทวนคำศัพท์ซ้ำ
+        document.getElementById("petSpeech").innerText = `Yummy! Great job! 😋`;
+        speak("Great job!"); 
+
+        // จุดที่ 2: ตัดคำที่ตอบถูกแล้วออกจากคิวทันที ไม่วนกลับมาถามซ้ำอีก
+        remainingVocabPool.splice(targetIndex, 1);
+
+        setTimeout(generateVocabQuiz, 1200);
       } else {
         playSound('wrong');
         speak("Listen again!");
