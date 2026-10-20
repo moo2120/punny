@@ -38,7 +38,7 @@
       <div class="stories-grid" id="storiesContainer"></div>
     </section>
 
-    <!-- 3. หน้านิทาน + คาราโอเกะ -->
+    <!-- 3. หน้านิทานเต็ม + คาราโอเกะ -->
     <section id="storyReaderScreen" class="screen">
       <button class="back-pill" onclick="showScreen('storySelectScreen')">⬅️ Back</button>
       
@@ -60,13 +60,23 @@
       </div>
     </section>
 
-    <!-- 4. หน้าทำภารกิจ/มินิเกม -->
+    <!-- 4. หน้าทำภารกิจ/มินิเกม (มีเนื้อเรื่องกำกับอยู่ด้านบนเสมอ) -->
     <section id="gamePlayScreen" class="screen">
       <div class="game-top-bar">
         <span id="gameProgressTag" class="mission-tag">Question 1/4</span>
         <button class="btn-close" onclick="exitToReader()">✕</button>
       </div>
 
+      <!-- กล่องเนื้อเรื่องกำกับให้อ่านประกอบโจทย์เสมอ -->
+      <div class="mission-story-banner" id="missionStoryBanner">
+        <div class="banner-header">
+          <span id="missionStoryTitle" class="banner-title">📖 Story</span>
+          <button class="banner-listen-btn" onclick="readMissionStoryAloud()" title="Listen again">🔊 Listen</button>
+        </div>
+        <div class="banner-lines" id="missionStoryLines"></div>
+      </div>
+
+      <!-- การ์ดโจทย์คำถามและตัวเลือก -->
       <div class="mission-card">
         <div class="prompt-box">
           <h3 id="gameInstruction">Instruction</h3>
