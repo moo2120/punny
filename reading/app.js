@@ -20,7 +20,7 @@ function saveState() {
   document.getElementById("totalStars").innerText = state.stars;
 }
 
-/* ================= 2. Web Audio API SFX ================= */
+/* ================= 2. Web Audio API SFX (เสียงเอฟเฟกต์) ================= */
 const ctx = new (window.AudioContext || window.webkitAudioContext)();
 
 function playSound(type) {
@@ -56,13 +56,86 @@ function playSound(type) {
   }
 }
 
-/* ================= 3. Web Speech API (English Voice) ================= */
-function speak(text, onWord = null, onDone = null) {
+/* ================= 3. ระบบคัดเลือกเสียงพรีเมียม (Smart Natural Voice Engine) ================= */
+let bestVoice = null;
+
+function loadBestVoice() {
+  if (!('speechSynthesis' in window)) return;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || voices.length === 0) return;
+
+  // รายชื่อเสียงคุณภาพสูงระดับสตูดิโอ (จัดลำดับตามความนิยมของแต่ละระบบปฏิบัติการ)
+  const priorityVoices = [
+    // เสียงพรีเมียมบน Google Chrome / Android
+    "Google US English",
+    // เสียงพรีเมียมบน iOS / iPad / Mac
+    "Samantha",
+    "Ava (Premium)",
+    "Ava",
+    "Allison",
+    "Siri",
+    // เสียง Natural บน Windows / Edge
+    "Microsoft Jenny Online (Natural) - English (United States)",
+    "Microsoft Guy Online (Natural) - English (United States)",
+    "Microsoft Aria Online (Natural) - English (United States)",
+    "Natural",
+    "Enhanced"
+  ];
+
+  // 1. ค้นหาจากเสียงระดับพรีเมียมก่อน
+  for (const name of priorityVoices) {
+    const found = voices.find(v => v.name.includes(name) && v.lang.startsWith("en"));
+    if (found) {
+      bestVoice = found;
+      return;
+    }
+  }
+
+  // 2. ถ้าไม่เจอ ให้เลือกเสียง en-US ใดๆ ที่ไม่ใช่เสียงสังเคราะห์หยาบ
+  const fallbackUS = voices.find(v => v.lang === "en-US" || v.lang === "en_US");
+  if (fallbackUS) {
+    bestVoice = fallbackUS;
+    return;
+  }
+
+  // 3. ตัวเลือกสุดท้าย: เสียงภาษาอังกฤษใดก็ได้
+  bestVoice = voices.find(v => v.lang.startsWith("en")) || null;
+}
+
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.onvoiceschanged = loadBestVoice;
+  loadBestVoice();
+}
+
+/* ฟังก์ชันทำความสะอาดข้อความ: ตัด Emoji และขีดเส้นใต้ ก่อนสั่งอ่าน */
+function cleanTextForSpeech(raw) {
+  if (!raw) return "";
+  return raw
+    // ลบ Emoji ทุกชนิด
+    .replace(/\p{Extended_Pictographic}/ug, '')
+    // ลบขีดเส้นใต้คำถาม เช่น ______
+    .replace(/_+/g, ' ')
+    // ลบสัญลักษณ์พิเศษ เช่น ➔ หรือเครื่องหมายดอกจัน
+    .replace(/[➔➜➡*~`#]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function speak(rawText, onWord = null, onDone = null) {
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
+
+  const textToRead = cleanTextForSpeech(rawText);
+  if (!textToRead) return;
+
+  const u = new SpeechSynthesisUtterance(textToRead);
+  
+  if (bestVoice) {
+    u.voice = bestVoice;
+  }
   u.lang = 'en-US';
-  u.rate = 0.85;
+  u.rate = 0.92;   // ปรับสปีดกระชับ ไม่ยานคราง
+  u.pitch = 1.04;  // โทนเสียงสดใส เป็นมิตรกับเด็ก
 
   if (onWord) {
     u.onboundary = (e) => {
@@ -183,12 +256,11 @@ function readStoryAloud() {
 /* ================= 6. Mission Player Engine (มีเนื้อเรื่องกำกับเสมอ) ================= */
 function startStoryMission() {
   state.currentQIndex = 0;
-  renderMissionStoryBanner(); // เรนเดอร์เนื้อเรื่องกำกับไว้ด้านบน
+  renderMissionStoryBanner();
   loadCurrentQuestion();
   showScreen("gamePlayScreen");
 }
 
-// เรนเดอร์กล่องเนื้อเรื่องย่อส่วนไว้ด้านบนของข้อสอบ
 function renderMissionStoryBanner() {
   const story = state.currentStory;
   if (!story) return;
@@ -222,7 +294,6 @@ function renderMissionStoryBanner() {
   });
 }
 
-// ฟังเสียงเนื้อเรื่องซ้ำขณะทำข้อสอบ
 function readMissionStoryAloud() {
   const story = state.currentStory;
   if (!story) return;
@@ -310,7 +381,7 @@ function loadCurrentQuestion() {
       else { playSound('wrong'); speak("Try again!"); }
     };
   }
-  // 3. Regular Choices (Details, True/False, Predictions, etc.)
+  // 3. Regular Choices
   else {
     const list = document.createElement("div");
     list.className = "choice-cards-container";
