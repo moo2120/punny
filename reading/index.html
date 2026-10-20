@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Fun with Reading - Storyland</title>
+  <!-- ฟอนต์สำหรับเด็กประถม: ตัว 'a' และ 'g' หัวกลมเหมือนลายมือโรงเรียน -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- แถบด้านบนแสดงความคืบหน้า -->
+  <header class="top-nav">
+    <button id="btnHome" class="nav-btn" onclick="showScreen('worldMapScreen')">🗺️ Map</button>
+    <div class="stars-counter">⭐ <span id="totalStars">0</span></div>
+    <button id="btnPet" class="nav-btn pet-nav-btn" onclick="openPetMode()">🐾 My Pet</button>
+  </header>
+
+  <!-- Canvas สำหรับเอฟเฟกต์พลุกระดาษฉลองชัยชนะ -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <main class="app-container">
+
+    <!-- หน้า 1: แผนที่โลก 11 หน่วยการเรียนรู้ (World Map) -->
+    <section id="worldMapScreen" class="screen active">
+      <div class="header-box">
+        <h1>🌟 Storyland World 🌟</h1>
+        <p>Choose an island to read and play!</p>
+      </div>
+      <div class="islands-grid" id="islandsContainer"></div>
+    </section>
+
+    <!-- หน้า 2: รายชื่อนิทานในแต่ละหน่วย (Story Selection) -->
+    <section id="storySelectScreen" class="screen">
+      <button class="back-pill" onclick="showScreen('worldMapScreen')">⬅️ Back to Map</button>
+      <h2 id="currentUnitTitle" class="unit-title">Unit</h2>
+      <div class="stories-grid" id="storiesContainer"></div>
+    </section>
+
+    <!-- หน้า 3: หน้านิทาน + คาราโอเกะอ่านออกเสียง (Story Reader) -->
+    <section id="storyReaderScreen" class="screen">
+      <button class="back-pill" onclick="showScreen('storySelectScreen')">⬅️ Back</button>
+      
+      <div class="reader-card">
+        <div class="story-illustration" id="storyEmojiHero">📖</div>
+        <h2 id="readerTitle">Story Title</h2>
+        
+        <div class="story-text-container" id="storyLinesBox"></div>
+
+        <div class="audio-controls">
+          <button id="btnReadAloud" class="btn-giant play-btn" onclick="readStoryAloud()">
+            🔊 Read to Me
+          </button>
+        </div>
+
+        <button class="btn-giant next-mission-btn" onclick="startMission()">
+          🎮 Start Mission! ➔
+        </button>
+      </div>
+    </section>
+
+    <!-- หน้า 4: ลานประลองมินิเกมตามแต่ละหน่วย (Mission Stage) -->
+    <section id="gamePlayScreen" class="screen">
+      <div class="game-top-bar">
+        <span id="gameMissionBadge" class="mission-tag">Mission</span>
+        <button class="btn-close" onclick="exitToReader()">✕ Exit</button>
+      </div>
+
+      <div class="mission-card" id="missionCard">
+        <div class="prompt-box">
+          <h3 id="gameInstruction">Instruction here</h3>
+          <button class="tts-small-btn" onclick="speakInstruction()">🔊</button>
+        </div>
+
+        <!-- กล่องสำหรับโหลดหน้าเกมเพลย์เฉพาะของแต่ละหน่วย -->
+        <div id="dynamicGameArea" class="game-playfield"></div>
+      </div>
+    </section>
+
+    <!-- หน้า 5: โหมดสัตว์เลี้ยงทบทวนคำศัพท์ (Vocab Pet Sanctuary) -->
+    <section id="petScreen" class="screen">
+      <button class="back-pill" onclick="showScreen('worldMapScreen')">⬅️ Back to Map</button>
+      <div class="pet-card">
+        <h2>🐾 Word Pet Sanctuary</h2>
+        <div class="pet-avatar-stage">
+          <div id="petAvatar" class="pet-avatar">🐶</div>
+          <div class="pet-bubble" id="petSpeech">Feed me some words!</div>
+        </div>
+
+        <div class="pet-stats">
+          <div class="stat-bar">
+            <span>❤️ Happiness</span>
+            <div class="bar-outer"><div id="petHeartBar" class="bar-inner" style="width: 50%;"></div></div>
+          </div>
+        </div>
+
+        <div class="vocab-game-box">
+          <h3>🎮 Snack Time: Tap the word you hear!</h3>
+          <button class="btn-speaker" onclick="playVocabAudioPrompt()">🔊 Say Word</button>
+          <div class="vocab-bubble-row" id="vocabChoicesBox"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
